@@ -46,7 +46,7 @@ from SPColors import *
 from SPKeyMaps import KeyMaps
 
 # Which themes do we have?
-SUPPORTEDTHEMES = ['default', 'childsplay','cognitionplay', 'seniorplay', \
+SUPPORTEDTHEMES = ['childsplay','cognitionplay', 'seniorplay', \
                     'mpt', 'braintrainer']
 # Which keymaps do we have?
 SUPPORTEDKEYMAPS = KeyMaps.supportedmaps
@@ -62,10 +62,10 @@ ALPHABETDIR = SPBasePaths.ALPHABETDIR
 PYTHONCPDIR = SPBasePaths.PYTHONCPDIR
 
 GUITHEMESPATH = os.path.join(ACTIVITYDATADIR, 'SPData', 'gui','themes')
-DEFAULTGUITHEMESPATH = os.path.join(GUITHEMESPATH,'default')
+DEFAULTGUITHEMESPATH = os.path.join(GUITHEMESPATH,'childsplay')
 
 THEMESPATH = os.path.join(ACTIVITYDATADIR, 'SPData', 'themes')
-DEFAULTTHEMESPATH = os.path.join(THEMESPATH,'default')
+DEFAULTTHEMESPATH = os.path.join(THEMESPATH,'childsplay')
 
 CORESOUNDSDIR = os.path.join(ACTIVITYDATADIR, 'SPData', 'base', 'sounds')
 

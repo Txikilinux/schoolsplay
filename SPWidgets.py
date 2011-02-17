@@ -30,7 +30,7 @@ from SPConstants import *
 import logging 
 if not NoGtk:
     import pangofont
-module_logger = logging.getLogger("schoolsplay.SPWidgets_lgpl")
+module_logger = logging.getLogger("schoolsplay.SPWidgets")
 
 LOCALE_RTL = utils.get_locale()[1]
 if LOCALE_RTL:
@@ -66,7 +66,7 @@ def Init(theme):
             d[k] = v
     d['theme'] = theme
     d['themepath'] = os.path.dirname(rc)
-    d['defaultpath'] = os.path.join( GUITHEMESPATH,'default')
+    d['defaultpath'] = os.path.join( GUITHEMESPATH,'childsplay')
     if d.has_key('button_background_image_left') and \
                                 os.path.exists(os.path.join(d['themepath'], \
                                                 d['button_background_image_left'])):
