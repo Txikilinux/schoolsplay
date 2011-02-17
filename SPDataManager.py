@@ -236,12 +236,14 @@ class DataManager:
             result = query.first()
             session.close()
             # we must also check if the SPusers group exists.
-            orm = self.orms_userdb['group_names']
-            session = self.Session_userdb()
-            g_result = session.query(orm).filter_by(group_name = 'SPusers').first()
-            if not g_result:
-                session.add(orm(group_name='SPusers'))
-            session.commit()
+            orm, session = spgoodies.get_orm('group_names', 'user')
+            rows = [row for row in session.query(orm).order_by(orm.group_name).all()]
+            if not rows:
+                # we set a first group
+                neworm = orm()
+                neworm.group_name = 'SP Group'
+                session.add(neworm)
+                session.commit()
             session.close()
         self.logger.debug("%s has user id %s" % (username, result.user_id))
         self.current_user_id = result.user_id
