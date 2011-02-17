@@ -1,0 +1,6 @@
+What do we break when we upgrade from previous stable:
+
+Existing 2.1 ~/.schoolsplay.rc must be removed.
+
+
+

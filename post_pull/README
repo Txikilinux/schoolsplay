@@ -1,0 +1,18 @@
+The scripts in this directory are executed after a git pull 
+was done from inside the F1 dialog by the user.
+The scripts must be named like 1.sh, 2.sh etc.
+(You could use any name but numbers seems The Right Thing)
+The script must be a Bash script and you must include "set -e"
+to prevent cascading errors.
+You should also include a single line echo command to let the
+user know what's happening.
+
+The script will run under the BT+ users' permissions.
+
+Once a script is run it's name is stored inside 
+~/.schoolsplay.rc/post_pull.
+The program checks this file to see which scripts are runned before 
+and checks to see if there are any newer scripts.
+If it finds any scripts in this directory which aren't named in the 
+post_pull file it will run it and send the any output to the dialog
+in the F1 dialog.

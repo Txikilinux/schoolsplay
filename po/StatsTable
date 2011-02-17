@@ -1,0 +1,16 @@
+Mon Feb  7 16:21:30 2011
+============================ sv =================================
+Result of compiling seniorplay.po sv into seniorplay.mo:
+output: 146 translated messages, 32 fuzzy translations, 87 untranslated messages.
+============================ fr =================================
+Result of compiling seniorplay.po fr into seniorplay.mo:
+output: 146 translated messages, 32 fuzzy translations, 87 untranslated messages.
+============================ nl =================================
+Result of compiling seniorplay.po nl into seniorplay.mo:
+output: 265 translated messages.
+============================ de =================================
+Result of compiling seniorplay.po de into seniorplay.mo:
+output: 146 translated messages, 32 fuzzy translations, 87 untranslated messages.
+============================ en =================================
+Result of compiling seniorplay.po en into seniorplay.mo:
+output: 147 translated messages, 31 fuzzy translations, 87 untranslated messages.

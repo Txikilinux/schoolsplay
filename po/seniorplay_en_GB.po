@@ -1,0 +1,1437 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 2.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-02-07 16:19+0100\n"
+"PO-Revision-Date: 2010-10-02 14:16+0100\n"
+"Last-Translator: Rene Dohmen <acidjunk@gmail.com>\n"
+"Language-Team: en_GB <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../SPHelpText.py:72
+msgid ""
+"\n"
+"\n"
+"Touch the 'Play' button to continue the game."
+msgstr ""
+"\n"
+"\n"
+"Touch the 'Play' button to continue the game."
+
+#: ../SPHelpText.py:67
+msgid ""
+"\n"
+"\n"
+"Touch the changed picture."
+msgstr ""
+"\n"
+"\n"
+"Touch the changed picture."
+
+#: ../controlpanel_lgpl/lib/picimport.py:183
+#, python-format
+msgid ""
+"%s pictures imported from %s.\n"
+"You can remove your storage device."
+msgstr ""
+
+#: ../SPMenu.py:332
+msgid "A collection of braintrain games for seniors."
+msgstr "A collection of braintrain games for seniors."
+
+#: ../SPMainCore.py:418
+msgid "Activity :"
+msgstr "Activity :"
+
+#: ../SPMainCore.py:508
+#, python-format
+msgid "Activity : %s"
+msgstr "Activity : %s"
+
+#: ../lib/dltr.py:407
+msgid "Activity:"
+msgstr "Activity:"
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:345
+msgid "Add, Edit or Delete a user."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/picimport.py:209
+msgid "All previously imported pictures removed."
+msgstr ""
+
+#: ../SPMenu.py:333
+msgid ""
+"All the games have there own help page, just start a game and hit the stars "
+"on top of the screen to select another difficulty."
+msgstr ""
+"All the games have there own help page. Start a game and hit the stars on "
+"top of the screen to select another difficulty."
+
+#: ../SPHelpText.py:136
+msgid "Alphabet"
+msgstr "Alphabet"
+
+#: ../lib/spinbottle.py:119 ../lib/synonyms.py:117
+msgid "Already found:"
+msgstr "Already found:"
+
+#: ../lib/quiz_math.py:106
+msgid "Answer the math questions."
+msgstr "Answer the math questions."
+
+#: ../lib/quiz_melody.py:111 ../lib/quiz_text.py:112 ../lib/quiz_royal.py:117
+#: ../lib/quiz_history.py:237 ../lib/quiz_sayings.py:105
+#: ../lib/quiz_picture.py:103 ../lib/quiz.py:137
+msgid "Answer the quiz questions."
+msgstr "Answer the quiz questions."
+
+#: ../lib/story.py:86
+msgid "Answers:"
+msgstr "Answers:"
+
+#: ../SPMainCore.py:766
+msgid ""
+"Are sure you want to quit the dailytraining ? All the results will be lost."
+msgstr ""
+"Are sure you want to quit the dailytraining ? All the results will be lost."
+
+#: ../lib/puzzle.py:227
+msgid "At the bottom you'll see a image of the complete puzzle."
+msgstr "At the bottom you'll see a image of the complete puzzle."
+
+#: ../lib/quiz_general.py:160 ../lib/quiz.py:139
+msgid "At the top of the screen, you will see a general knowledge question."
+msgstr "At the top of the screen, you will see a general knowledge question."
+
+#: ../lib/quiz_math.py:108
+msgid "At the top of the screen, you will see a math problem."
+msgstr "At the top of the screen, you will see a math problem."
+
+#: ../lib/quiz_picture.py:105
+msgid ""
+"At the top of the screen, you will see a picture on the screen with a "
+"related question."
+msgstr ""
+"At the top of the screen, you will see a picture on the screen with a "
+"related question."
+
+#: ../lib/quiz_royal.py:119
+msgid ""
+"At the top of the screen, you will see a question about a member of Royalty"
+msgstr ""
+"At the top of the screen, you will see a question about a member of Royalty."
+
+#: ../lib/quiz_melody.py:113
+#, fuzzy
+msgid ""
+"At the top of the screen, you will see a question and hear a piece of music."
+msgstr ""
+"At the top of the screen, you will see a question about a member of Royalty."
+
+#: ../lib/quiz_history.py:239
+msgid ""
+"At the top of the screen, you will see a question from general knowledge "
+"question from the selected period."
+msgstr ""
+"At the top of the screen, you will see a question from general knowledge "
+"question from the selected period."
+
+#: ../lib/quiz_text.py:114 ../lib/quiz_sayings.py:107
+#, fuzzy
+msgid "At the top of the screen, you will see a question."
+msgstr "At the top of the screen, you will see a general knowledge question."
+
+#: ../controlpanel_lgpl/lib/change_pass.py:205
+#: ../controlpanel_lgpl/lib/gamemanagement.py:230
+#: ../controlpanel_lgpl/lib/usermanagement.py:206
+#: ../controlpanel_lgpl/lib/usermanagement.py:444
+#: ../controlpanel_lgpl/lib/groupmanagement.py:195
+#: ../controlpanel_lgpl/lib/groupmanagement.py:311
+#: ../controlpanel_lgpl/lib/language_select.py:181
+msgid "Back"
+msgstr ""
+
+#: ../lib/numbers_sp.py:190
+#, fuzzy
+msgid "Begin"
+msgstr "Login"
+
+#: ../lib/quiz_melody.py:114 ../lib/quiz_text.py:115
+#: ../lib/quiz_general.py:161 ../lib/quiz_royal.py:120
+#: ../lib/quiz_history.py:240 ../lib/quiz_sayings.py:108
+#: ../lib/quiz_math.py:109 ../lib/quiz_picture.py:106 ../lib/quiz.py:140
+msgid ""
+"Below it are a choice of possible answers.\n"
+"Touch the correct answer."
+msgstr ""
+"Below it are a choice of possible answers.\n"
+"Touch the correct answer."
+
+#: ../controlpanel_lgpl/Start_screen.py:97
+msgid "CHOOSE A GROUP"
+msgstr ""
+
+#: ../controlpanel_lgpl/Start_screen.py:54
+msgid "CHOOSE A USER"
+msgstr ""
+
+#: ../controlpanel_lgpl/Start_screen.py:174
+msgid "CHOOSE AN ACTION"
+msgstr ""
+
+#: ../SPWidgets.py:1161 ../SPWidgets.py:1173 ../SPMainCore.py:717
+#: ../controlpanel_lgpl/lib/picimport.py:194
+#: ../controlpanel_lgpl/Start_screen.py:345
+msgid "Cancel"
+msgstr "Cancel"
+
+#: ../SPHelpText.py:117 ../SPHelpText.py:118
+#: ../controlpanel_lgpl/lib/change_pass.py:89
+msgid "Change password"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/change_pass.py:163
+#, python-format
+msgid "Changing password for %s"
+msgstr ""
+
+#: ../lib/ichanger.py:316 ../lib/numbers_sp.py:194
+#: ../languageDefinitions.py:25
+msgid "Cheat"
+msgstr "Cheat"
+
+#: ../SPMainCore.py:210
+#, python-format
+msgid "Childsplay_sp - educational activities, using theme:%s"
+msgstr "Childsplay_sp - educational activities, using theme:%s"
+
+#: ../SPgdm.py:73
+msgid "Childsplay_sp login"
+msgstr "Childsplay_sp login"
+
+#: ../controlpanel_lgpl/lib/dt_sequence.py:187
+msgid "Choose a dailytraining sequence to use in the dailytraining activity."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:311
+msgid "Choose a group for the new user."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/groupmanagement.py:177
+msgid "Choose a group to edit."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:188
+msgid "Choose a user to edit."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/language_select.py:157
+msgid "Choose the language BT+ will use."
+msgstr ""
+
+#: ../lib/memory_sp.py:188
+msgid "Classic memory game where you have to find pairs of cards."
+msgstr "Classic memory game where you have to find pairs of cards."
+
+#: ../lib/soundmemory.py:190
+msgid "Classic memory game where you have to find pairs of sounds."
+msgstr "Classic memory game where you have to find pairs of sounds."
+
+#: ../SPMainCore.py:845 ../controlpanel_lgpl/lib/picimport.py:179
+#: ../controlpanel_lgpl/lib/picimport.py:205
+msgid "Close"
+msgstr ""
+
+#: ../languageDefinitions.py:34
+msgid "Continue movie"
+msgstr "Continue movie"
+
+#: ../lib/soundmemory.py:198 ../lib/electro_sp.py:200
+msgid "Correctness is more important than speed"
+msgstr "Correctness is more important than speed."
+
+#: ../lib/memory_sp.py:196 ../lib/numbers_sp.py:237
+#, fuzzy
+msgid "Correctness is more important than speed."
+msgstr "Correctness is more important than speed."
+
+#: ../SPMainCore.py:1110 ../SPMainCore.py:1282
+#, python-format
+msgid "Current activity : %s"
+msgstr "Current activity : %s"
+
+#: ../controlpanel_lgpl/lib/language_select.py:187
+#, fuzzy, python-format
+msgid "Current locale set to %s"
+msgstr "Current activity : %s"
+
+#: ../controlpanel_lgpl/lib/dt_sequence.py:146
+#: ../controlpanel_lgpl/lib/dt_sequence.py:212
+#, python-format
+msgid "Current sequence is '%s'"
+msgstr ""
+
+#: ../languageDefinitions.py:43
+#, fuzzy
+msgid "Daily Training"
+msgstr "Training"
+
+#: ../SPHelpText.py:115
+#, fuzzy
+msgid "Daily training sequence"
+msgstr "Training"
+
+#: ../controlpanel_lgpl/lib/gamemanagement.py:106
+#, fuzzy
+msgid "Dailytraining"
+msgstr "Training"
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:396
+msgid "Date of birth, "
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:400
+msgid "Day: "
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:460
+#: ../controlpanel_lgpl/lib/groupmanagement.py:327
+msgid "Delete"
+msgstr ""
+
+#: ../lib/dltr.py:464
+msgid "Details"
+msgstr ""
+
+#: ../languageDefinitions.py:31
+msgid "Did you enjoy this?"
+msgstr "Did you enjoy this?"
+
+#: ../controlpanel_lgpl/lib/gamemanagement.py:214
+msgid "Disabled activities"
+msgstr ""
+
+#: ../controlpanel_lgpl/Start_screen.py:344
+#, fuzzy
+msgid "Do you really want to powerdown the system ?"
+msgstr "Do you really want to quit?"
+
+#: ../SPMainCore.py:716
+msgid "Do you really want to quit ?"
+msgstr "Do you really want to quit?"
+
+#: ../controlpanel_lgpl/lib/dt_sequence.py:97
+msgid "Dt_sequence"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/groupmanagement.py:281
+msgid "Edit or delete a group."
+msgstr ""
+
+#: ../lib/electro_sp.py:182
+msgid "Electro_sp"
+msgstr "Electro_sp"
+
+#: ../controlpanel_lgpl/lib/gamemanagement.py:218
+msgid "Enabled activities"
+msgstr ""
+
+#: ../SPMainCore.py:493 ../SPMainCore.py:501
+msgid "Error !"
+msgstr "Error !"
+
+#: ../SPMainCore.py:500
+#, python-format
+msgid ""
+"Error constructing activity\n"
+"%s"
+msgstr ""
+"Error constructing activity\n"
+"%s"
+
+#: ../SPMainCore.py:492
+#, python-format
+msgid ""
+"Error importing activity\n"
+"%s"
+msgstr ""
+"Error importing activity\n"
+"%s"
+
+#: ../SPWidgets.py:1672
+msgid "Exercises"
+msgstr "Exercises"
+
+#: ../controlpanel_lgpl/lib/picimport.py:178
+#, python-format
+msgid ""
+"Failed to import pictures: %s\n"
+"Try to remove previously imported pictures."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/picimport.py:204
+#, python-format
+msgid ""
+"Failed to remove directory: %s\n"
+"Please inform the BT+ team."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/zorgenquete.py:183
+#: ../controlpanel_lgpl/lib/zorgenquete.py:192
+#: ../controlpanel_lgpl/lib/zorgenquete.py:201
+#, python-format
+msgid "Familytree: %s"
+msgstr ""
+
+#: ../lib/findit_sp.py:208
+msgid "Findit"
+msgstr "Findit"
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:123
+#, fuzzy
+msgid "First name:"
+msgstr "Username:"
+
+#: ../lib/fishtank.py:218
+msgid "Fishtank"
+msgstr "Fishtank"
+
+#: ../controlpanel_lgpl/lib/picimport.py:225
+#, python-format
+msgid "Found storage device(s): %s"
+msgstr ""
+
+#: ../SPHelpText.py:137
+msgid "Fun"
+msgstr "Fun"
+
+#: ../lib/fishtank.py:240
+msgid "Fun/Mousetraining"
+msgstr "Fun/Mousetraining"
+
+#: ../controlpanel_lgpl/Start_screen.py:197
+#, python-format
+msgid "GIVE YOUR %s PASSWORD"
+msgstr ""
+
+#: ../SPHelpText.py:120 ../controlpanel_lgpl/lib/gamemanagement.py:120
+msgid "Gamemanagement"
+msgstr ""
+
+#: ../SPMainCore.py:909
+#, fuzzy, python-format
+msgid "Generated by %s version %s for the %s activity"
+msgstr "Generated by Childsplay_sp version %s for the %s activity"
+
+#: ../languageDefinitions.py:24
+msgid "Good!"
+msgstr "Good!"
+
+#: ../controlpanel_lgpl/lib/groupmanagement.py:268
+msgid "Group name already in use, can't store it!"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/groupmanagement.py:287
+#, fuzzy
+msgid "Group name:"
+msgstr "Username:"
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:121
+msgid "Group:"
+msgstr ""
+
+#: ../SPHelpText.py:114 ../controlpanel_lgpl/lib/groupmanagement.py:89
+msgid "Groupmanagement"
+msgstr ""
+
+#: ../lib/spinbottle.py:208 ../lib/synonyms.py:154
+msgid "Hit the 'Begin' button to start."
+msgstr "Hit the 'Begin' button to start."
+
+#: ../SPMainCore.py:573
+msgid "Hit the 'space' key or a mousebutton to skip the countdown"
+msgstr "Hit the 'space' key or a mousebutton to skip the countdown"
+
+#: ../lib/ichanger.py:280
+msgid "Ichanger"
+msgstr "Ichanger"
+
+#: ../lib/dltr.py:282
+msgid "If you ready to start the next activity, hit the 'start' button."
+msgstr "If you ready to start the next activity, hit the 'start' button."
+
+#: ../controlpanel_lgpl/lib/picimport.py:152
+#, fuzzy
+msgid "Import"
+msgstr "Picture Quiz"
+
+#: ../controlpanel_lgpl/lib/picimport.py:167
+msgid "Importing pictures:"
+msgstr ""
+
+#: ../lib/fishtank.py:228
+msgid ""
+"In the last level the fish needs to be clicked two times while they try to "
+"escape."
+msgstr ""
+"In the last level the fish needs to be clicked two times while they try to "
+"escape."
+
+#: ../SPMainCore.py:922 ../SPMainCore.py:1120
+msgid "Information"
+msgstr "Information"
+
+#: ../SPMainCore.py:826 ../SPMainCore.py:832
+#, python-format
+msgid "Information about %s"
+msgstr "Information about %s"
+
+#: ../controlpanel_lgpl/lib/picimport.py:143
+msgid ""
+"Insert an USB-stick with your pictures, wait five seconds, and hit the "
+"'Import' button. When you want to remove all the previously imported "
+"pictures use the 'Remove' button. The following image formats are supported: "
+"png, jpg and tiff."
+msgstr ""
+
+#: ../SPHelpText.py:54
+msgid ""
+"It seems that we cannot use the sound card right now and because this "
+"activity is all about sound, we just quit. This problem can also be caused "
+"by another application which uses the soundcard right now."
+msgstr ""
+"It seems that we cannot use the sound card right now and because this "
+"activity is all about sound, we just quit. This problem can also be caused "
+"by another application which uses the soundcard right now."
+
+#: ../SPHelpText.py:133
+msgid "Keyboardtraining"
+msgstr "Keyboardtraining"
+
+#: ../controlpanel_lgpl/Start_screen.py:195
+#, python-format
+msgid "LOGIN AS %s"
+msgstr ""
+
+#: ../SPHelpText.py:135
+msgid "Language"
+msgstr "Language"
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:124
+#, fuzzy
+msgid "Last name:"
+msgstr "Username:"
+
+#: ../controlpanel_lgpl/lib/language_select.py:203
+#, python-format
+msgid "Locale set to %s"
+msgstr ""
+
+#: ../SPgdm.py:122
+msgid "Login"
+msgstr "Login"
+
+#: ../languageDefinitions.py:42 ../controlpanel_lgpl/lib/gamemanagement.py:105
+msgid "Long Term"
+msgstr ""
+
+#: ../lib/numbers_sp.py:229
+msgid "Look carefully and try to remember their positions on the screen."
+msgstr ""
+
+#: ../lib/puzzle.py:233
+msgid "Look closely at the complete puzzle picture at the bottom."
+msgstr "Look closely at the complete puzzle picture at the bottom."
+
+#: ../lib/memory_sp.py:190
+msgid ""
+"Look closely at the pictures when you have them memorized touch 'START'.\n"
+"The pictures turn around, you must match the memorized repeated cards."
+msgstr ""
+"Look closely at the pictures when you have them memorized touch 'START'.\n"
+"The pictures turn around, you must match the memorized repeated cards."
+
+#: ../lib/synonyms.py:116
+msgid "Make a word with the letter: "
+msgstr "Make a word with the letter: "
+
+#: ../SPHelpText.py:131 ../lib/quiz_math.py:122
+msgid "Math"
+msgstr "Math"
+
+#: ../lib/quiz_math.py:97
+msgid "Math Quiz"
+msgstr "Math Quiz"
+
+#: ../lib/quiz_melody.py:102
+msgid "Melody Quiz"
+msgstr "Melody Quiz"
+
+#: ../SPHelpText.py:61
+msgid ""
+"Memorize the pictures.\n"
+"\n"
+"One of these pictures will be replaced by a new picture.\n"
+"\n"
+"Touch the 'Start' button to begin the game."
+msgstr ""
+"Memorize the pictures.\n"
+"\n"
+"One of these pictures will be replaced by a new picture.\n"
+"\n"
+"Touch the 'Start' button to begin the game."
+
+#: ../SPHelpText.py:130 ../lib/quiz_melody.py:128 ../lib/quiz_text.py:127
+#: ../lib/soundmemory.py:204 ../lib/memory_sp.py:179 ../lib/memory_sp.py:202
+#: ../lib/quiz_sayings.py:120 ../lib/electro_sp.py:206 ../lib/quiz.py:157
+#: ../lib/simon_sp.py:150 ../languageDefinitions.py:36
+msgid "Memory"
+msgstr "Memory"
+
+#: ../lib/simon_sp.py:144
+msgid "Mind the sound sequence as well as the colors sequence."
+msgstr "Mind the sound sequence as well as the colors sequence."
+
+#: ../SPHelpText.py:138 ../lib/ichanger.py:303 ../lib/findit_sp.py:233
+#: ../lib/quiz_general.py:173 ../lib/quiz_royal.py:132
+#: ../lib/quiz_history.py:252 ../lib/quiz_picture.py:118
+#: ../lib/photoalbum.py:200 ../lib/numbers_sp.py:243 ../lib/wipe.py:124
+#: ../lib/story.py:215 ../lib/video.py:167 ../lib/spinbottle.py:222
+#: ../lib/synonyms.py:167 ../lib/dltr.py:259
+#: ../controlpanel_lgpl/lib/change_pass.py:111
+#: ../controlpanel_lgpl/lib/gamemanagement.py:142
+#: ../controlpanel_lgpl/lib/picimport.py:111
+#: ../controlpanel_lgpl/lib/usermanagement.py:114
+#: ../controlpanel_lgpl/lib/dt_sequence.py:119
+#: ../controlpanel_lgpl/lib/groupmanagement.py:111
+#: ../controlpanel_lgpl/lib/update_btp.py:115
+#: ../controlpanel_lgpl/lib/zorgenquete.py:111
+#: ../controlpanel_lgpl/lib/language_select.py:109
+msgid "Miscellaneous"
+msgstr "Miscellaneous"
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:410
+msgid "Month: "
+msgstr ""
+
+#: ../SPHelpText.py:134
+msgid "Mousetraining"
+msgstr "Mousetraining"
+
+#: ../SPMainCore.py:824 ../SPMainCore.py:829
+msgid "Movie"
+msgstr ""
+
+#: ../lib/wipe.py:83
+msgid "New"
+msgstr ""
+
+#: ../languageDefinitions.py:37
+msgid "New Games"
+msgstr "New Games"
+
+#: ../controlpanel_lgpl/lib/groupmanagement.py:189
+msgid "New group"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/change_pass.py:254
+msgid "New password is to short."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/change_pass.py:176
+#, fuzzy
+msgid "New password:"
+msgstr "New word"
+
+#: ../controlpanel_lgpl/lib/change_pass.py:256
+msgid "New passwords don't match"
+msgstr ""
+
+#: ../languageDefinitions.py:29
+msgid "New question"
+msgstr "New question"
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:200
+#, fuzzy
+msgid "New user"
+msgstr "New word"
+
+#: ../languageDefinitions.py:28
+msgid "New word"
+msgstr "New word"
+
+#: ../languageDefinitions.py:35
+msgid "Next movie"
+msgstr "Next movie"
+
+#: ../SPMainCore.py:637 ../SPMainCore.py:767 ../SPMainCore.py:770
+#: ../languageDefinitions.py:33
+msgid "No"
+msgstr "No"
+
+#: ../SPWidgets.py:1573
+msgid "No data available for this level"
+msgstr "No data available for this level."
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:479
+msgid "No first and last name given"
+msgstr ""
+
+#: ../lib/photoalbum.py:233
+#, python-format
+msgid ""
+"No photo albums found !\n"
+"You should place your pictures inside directories called 'Album_1', "
+"'Album_2' etc\n"
+" Place these directories inside %s"
+msgstr ""
+"No photo albums found !\n"
+"You should place your pictures inside directories called 'Album_1', "
+"'Album_2' etc\n"
+" Place these directories inside %s"
+
+#: ../controlpanel_lgpl/lib/picimport.py:190
+msgid "No previously imported pictures found."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/picimport.py:222
+msgid "No storage medium found."
+msgstr ""
+
+#: ../lib/photoalbum.py:188 ../lib/video.py:155
+#: ../controlpanel_lgpl/lib/language_select.py:97
+msgid "Number of levels : 1"
+msgstr "Number of levels : 1"
+
+#: ../controlpanel_lgpl/lib/change_pass.py:99
+#: ../controlpanel_lgpl/lib/gamemanagement.py:130
+#: ../controlpanel_lgpl/lib/picimport.py:99
+#: ../controlpanel_lgpl/lib/usermanagement.py:102
+#: ../controlpanel_lgpl/lib/dt_sequence.py:107
+#: ../controlpanel_lgpl/lib/groupmanagement.py:99
+#: ../controlpanel_lgpl/lib/update_btp.py:103
+#: ../controlpanel_lgpl/lib/zorgenquete.py:99
+#, fuzzy
+msgid "Number of levels : 5"
+msgstr "Number of levels : 1"
+
+#: ../lib/quiz_melody.py:116 ../lib/spinbottle.py:210 ../lib/synonyms.py:156
+msgid "Number of levels : 6"
+msgstr "Number of levels : 6"
+
+#: ../lib/numbers_sp.py:218
+#, fuzzy
+msgid "Numbers_sp"
+msgstr "Numbers"
+
+#: ../SPWidgets.py:1161 ../SPMainCore.py:493 ../SPMainCore.py:501
+#: ../SPMainCore.py:717 ../SPMainCore.py:722 ../SPMainCore.py:723
+#: ../SPMainCore.py:822 ../SPMainCore.py:911 ../SPMainCore.py:922
+#: ../SPMainCore.py:1120 ../lib/dltr.py:464 ../lib/dltr.py:468
+#: ../controlpanel_lgpl/lib/picimport.py:194
+#: ../controlpanel_lgpl/lib/picimport.py:196
+#: ../controlpanel_lgpl/Start_screen.py:345
+#: ../controlpanel_lgpl/Start_screen.py:348
+msgid "OK"
+msgstr "OK"
+
+#: ../controlpanel_lgpl/lib/zorgenquete.py:175
+#: ../controlpanel_lgpl/lib/zorgenquete.py:198
+msgid "Off"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/change_pass.py:167
+msgid "Old password:"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/zorgenquete.py:166
+#: ../controlpanel_lgpl/lib/zorgenquete.py:189
+msgid "On"
+msgstr ""
+
+#: ../lib/story.py:202
+msgid ""
+"On the next screen you will see a short text, read it and try to remember as "
+"much as possible."
+msgstr ""
+"On the next screen you will see a short text, read it and try to remember as "
+"much as possible."
+
+#: ../lib/synonyms.py:152
+#, python-format
+msgid ""
+"On the next screen you'll find a keyboard, try to make as much words as "
+"possible that begin with the letter '%s'."
+msgstr ""
+"On the next screen you'll find a keyboard, try to make as much words as "
+"possible that begin with the letter '%s'."
+
+#: ../lib/spinbottle.py:206
+#, python-format
+msgid ""
+"On the next screen you'll find a keyboard, try to name as much %s as "
+"possible with the same letter."
+msgstr ""
+"On the next screen you'll find a keyboard, try to name as much %s as "
+"possible with the same letter."
+
+#: ../lib/simon_sp.py:133
+msgid "On the screen are four blocks of different colours."
+msgstr "On the screen are four blocks of different colours."
+
+#: ../lib/findit_sp.py:217
+msgid ""
+"On the screen you will see two almost identical pictures.\n"
+"However, there are differences between the images."
+msgstr ""
+"On the screen you will see two almost identical pictures.\n"
+"However, there are differences between the images."
+
+#: ../lib/spinbottle.py:207 ../lib/synonyms.py:153
+msgid "Only words from the dictionary are allowed."
+msgstr "Only words from the dictionary are allowed."
+
+#: ../languageDefinitions.py:30
+msgid "Other category"
+msgstr "Other category"
+
+#: ../SPWidgets.py:1605
+#, python-format
+msgid "Percentile scores for level %s"
+msgstr "Percentile scores for level %s"
+
+#: ../lib/photoalbum.py:178
+msgid "Photoalbum"
+msgstr "Photoalbum"
+
+#: ../controlpanel_lgpl/lib/picimport.py:89
+#, fuzzy
+msgid "Picimport"
+msgstr "Picture Quiz"
+
+#: ../lib/quiz_picture.py:94
+msgid "Picture Quiz"
+msgstr "Picture Quiz"
+
+#: ../SPHelpText.py:116
+#, fuzzy
+msgid "Picture import"
+msgstr "Picture Quiz"
+
+#: ../lib/puzzle.py:225
+msgid "Place the puzzle piece on the right where you think it belongs..."
+msgstr "Place the puzzle piece on the right where you think it belongs."
+
+#: ../lib/quiz_history.py:205
+msgid "Please enter your year of birth."
+msgstr ""
+
+#: ../lib/memory_sp.py:258
+msgid "Please, choose a set of cards."
+msgstr "Please, choose a set of cards."
+
+#: ../lib/wipe.py:156
+#, fuzzy
+msgid "Please, choose a set of images."
+msgstr "Please, choose a set of puzzle images."
+
+#: ../lib/puzzle.py:295
+msgid "Please, choose a set of puzzle images."
+msgstr "Please, choose a set of puzzle images."
+
+#: ../controlpanel_lgpl/Start_screen.py:345
+msgid "Powerdown ?"
+msgstr ""
+
+#: ../lib/simon_sp.py:134
+msgid "Press the Start button with your finger."
+msgstr "Press the Start button with your finger."
+
+#: ../SPHelpText.py:132 ../lib/puzzle.py:216 ../lib/puzzle.py:239
+#: ../languageDefinitions.py:38
+msgid "Puzzle"
+msgstr "Puzzle"
+
+#: ../controlpanel_lgpl/lib/gamemanagement.py:106
+#, fuzzy
+msgid "Puzzles"
+msgstr "Puzzle"
+
+#: ../SPMainCore.py:637 ../SPMainCore.py:767
+msgid "Question ?"
+msgstr "Question?"
+
+#: ../SPMainCore.py:832
+#, fuzzy
+msgid "Quit"
+msgstr "Quit?"
+
+#: ../SPMainCore.py:717
+msgid "Quit ?"
+msgstr "Quit?"
+
+#: ../lib/quiz.py:128 ../languageDefinitions.py:39
+msgid "Quiz"
+msgstr "Quiz"
+
+#: ../lib/quiz_history.py:228
+msgid "Quiz history"
+msgstr "Quiz history"
+
+#: ../lib/quiz_royal.py:108
+msgid "Quiz royal"
+msgstr "Quiz royal"
+
+#: ../lib/quiz_math.py:111
+msgid ""
+"Remember, the order of operations is multiplication or division and then "
+"addition or subtraction."
+msgstr ""
+"Remember, the order of operations is multiplication & division followed by "
+"addition & subtraction."
+
+#: ../controlpanel_lgpl/lib/picimport.py:157
+msgid "Remove"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/change_pass.py:185
+msgid "Repeat:"
+msgstr ""
+
+#: ../SPMainCore.py:911 ../lib/dltr.py:464
+msgid "Results"
+msgstr "Results"
+
+#: ../SPMainCore.py:911 ../SPMainCore.py:915
+msgid "Save image"
+msgstr "Save image"
+
+#: ../lib/quiz_sayings.py:96
+msgid "Sayings Quiz"
+msgstr "Proverb Quiz"
+
+#: ../lib/dltr.py:408
+msgid "Score:"
+msgstr "Score:"
+
+#: ../SPHelpText.py:122
+#, fuzzy
+msgid "Select Language"
+msgstr "Language"
+
+#: ../SPMenu.py:319
+msgid ""
+"Select an activity and click on the button, the activity will be started."
+msgstr ""
+"Select an activity and click on the button, the activity will be started."
+
+#: ../controlpanel_lgpl/lib/language_select.py:87
+#, fuzzy
+msgid "Select language"
+msgstr "Language"
+
+#: ../SPMenu.py:310
+msgid "Seniorplay"
+msgstr "Seniorplay"
+
+#: ../SPMainCore.py:845
+msgid "Set volume level"
+msgstr ""
+
+#: ../lib/ichanger.py:289
+msgid ""
+"Several images from the past will appear on the screen.\n"
+"Look carefully at them and remember what you see."
+msgstr ""
+"Several images from the past will appear on the screen.\n"
+"Look carefully at them and try to remember what you see."
+
+#: ../languageDefinitions.py:41 ../controlpanel_lgpl/lib/gamemanagement.py:105
+msgid "Short Term"
+msgstr ""
+
+#: ../lib/simon_sp.py:122
+msgid "Simon_sp"
+msgstr "Simon_sp"
+
+#: ../lib/soundmemory.py:181
+msgid "Soundmemory"
+msgstr "Soundmemory"
+
+#: ../lib/spinbottle.py:196
+msgid "Spin the bottle"
+msgstr "Spin the bottle"
+
+#: ../lib/ichanger.py:314 ../lib/memory_sp.py:386 ../languageDefinitions.py:26
+#: ../lib/dltr.py:293
+msgid "Start"
+msgstr "Start"
+
+#: ../lib/spinbottle.py:129 ../lib/synonyms.py:365
+msgid "Starting a new exercise"
+msgstr "Starting a new exercise"
+
+#: ../SPMainCore.py:565
+#, python-format
+msgid "Starting level %s"
+msgstr "Starting level %s"
+
+#: ../SPMainCore.py:737
+msgid "Stopping timers, please wait..."
+msgstr "Stopping timers, please wait..."
+
+#: ../lib/story.py:192
+msgid "Story"
+msgstr "Story"
+
+#: ../lib/story.py:87 ../lib/spinbottle.py:120 ../lib/synonyms.py:118
+msgid "Suggestions:"
+msgstr "Suggestions:"
+
+#: ../lib/synonyms.py:140
+msgid "Synonyms"
+msgstr "Synonyms"
+
+#: ../lib/quiz_text.py:103
+#, fuzzy
+msgid "Text Quiz"
+msgstr "Math Quiz"
+
+#: ../lib/simon_sp.py:136
+msgid "The  blocks will light up randomly along with sound clues."
+msgstr "The  buttons will light up randomly along with sound clues."
+
+#: ../lib/quiz_melody.py:110 ../lib/ichanger.py:288 ../lib/quiz_text.py:111
+#: ../lib/findit_sp.py:216 ../lib/fishtank.py:226 ../lib/soundmemory.py:189
+#: ../lib/memory_sp.py:187 ../lib/quiz_general.py:158 ../lib/quiz_royal.py:116
+#: ../lib/quiz_history.py:236 ../lib/quiz_sayings.py:104
+#: ../lib/electro_sp.py:190 ../lib/quiz_math.py:105 ../lib/quiz_picture.py:102
+#: ../lib/quiz.py:136 ../lib/photoalbum.py:186 ../lib/numbers_sp.py:226
+#: ../lib/simon_sp.py:130 ../lib/puzzle.py:224 ../lib/wipe.py:110
+#: ../lib/story.py:200 ../lib/video.py:153 ../lib/spinbottle.py:204
+#: ../lib/synonyms.py:150 ../lib/dltr.py:246
+#: ../controlpanel_lgpl/lib/change_pass.py:97
+#: ../controlpanel_lgpl/lib/gamemanagement.py:128
+#: ../controlpanel_lgpl/lib/picimport.py:97
+#: ../controlpanel_lgpl/lib/usermanagement.py:100
+#: ../controlpanel_lgpl/lib/dt_sequence.py:105
+#: ../controlpanel_lgpl/lib/groupmanagement.py:97
+#: ../controlpanel_lgpl/lib/update_btp.py:101
+#: ../controlpanel_lgpl/lib/zorgenquete.py:97
+#: ../controlpanel_lgpl/lib/language_select.py:95
+msgid "The aim of this activity:"
+msgstr "The aim of this activity:"
+
+#: ../lib/findit_sp.py:221
+msgid "The arrows to the left take you to the previous image."
+msgstr "The button with the arrow to the left takes you to the previous image."
+
+#: ../lib/memory_sp.py:262 ../lib/puzzle.py:299
+msgid "The difficulty of the set increases from left to right."
+msgstr "The difficulty of the set increases from left to right."
+
+#: ../lib/electro_sp.py:191
+msgid "The game is to match pairs of pictures"
+msgstr "The game is to match pairs of pictures."
+
+#: ../controlpanel_lgpl/lib/groupmanagement.py:346
+msgid "The group is updated."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/groupmanagement.py:273
+msgid "The new group is stored in the database."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:290
+msgid "The new user-record is stored in the database."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/change_pass.py:261
+msgid "The password is updated."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:499
+msgid "The user-record is deleted."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:493
+msgid "The user-record is updated."
+msgstr ""
+
+#: ../lib/numbers_sp.py:230
+msgid "Then push the 'BEGIN' button. The numbers will disappear."
+msgstr ""
+
+#: ../SPMainCore.py:1389
+#, python-format
+msgid ""
+"There was an error in %s. Please check the logs and inform the developers"
+msgstr ""
+"There was an error in %s. Please check the logs and inform the developers."
+
+#: ../SPHelpText.py:46
+#, python-format
+msgid ""
+"There was an error in the database this can be caused by many things but "
+"most of the time it's caused by the fact that your version of the database "
+"doesn't match the version of the program. I will backup your original "
+"database and then replace it with a new one. The original database is now "
+"called sp.db_back and it's placed in %s"
+msgstr ""
+"There was an error in the database this can be caused by many things but "
+"most of the time it's caused by the fact that your version of the database "
+"doesn't match the version of the program. I will backup your original "
+"database and then replace it with a new one. The original database is now "
+"called sp.db_back and it's placed in %s"
+
+#: ../lib/ichanger.py:309 ../lib/findit_sp.py:240 ../lib/fishtank.py:247
+#: ../lib/soundmemory.py:210 ../lib/memory_sp.py:209
+#: ../lib/quiz_general.py:180 ../lib/quiz_royal.py:138
+#: ../lib/quiz_history.py:259 ../lib/electro_sp.py:212
+#: ../lib/quiz_picture.py:124 ../lib/quiz.py:163 ../lib/photoalbum.py:206
+#: ../lib/numbers_sp.py:253 ../lib/simon_sp.py:156 ../lib/puzzle.py:246
+#: ../lib/wipe.py:135 ../lib/video.py:174 ../lib/spinbottle.py:229
+#: ../lib/synonyms.py:174 ../controlpanel_lgpl/lib/change_pass.py:129
+#: ../controlpanel_lgpl/lib/gamemanagement.py:183
+#: ../controlpanel_lgpl/lib/picimport.py:121
+#: ../controlpanel_lgpl/lib/usermanagement.py:140
+#: ../controlpanel_lgpl/lib/dt_sequence.py:152
+#: ../controlpanel_lgpl/lib/groupmanagement.py:131
+#: ../controlpanel_lgpl/lib/update_btp.py:126
+#: ../controlpanel_lgpl/lib/zorgenquete.py:122
+#: ../controlpanel_lgpl/lib/language_select.py:120
+#, python-format
+msgid "This activity has %s levels"
+msgstr "This activity has %s levels."
+
+#: ../lib/dltr.py:247
+msgid ""
+"This activity is known as the daily training which is a collection of "
+"activities."
+msgstr ""
+"This activity is known as the daily training which is a collection of "
+"activities."
+
+#: ../SPMenu.py:318
+msgid "This is the menu used to select an activity."
+msgstr "This is the menu used to select an activity."
+
+#: ../SPMainCore.py:814
+#, python-format
+msgid "Tip:%s"
+msgstr "Tip:%s"
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:122
+msgid "Title:"
+msgstr ""
+
+#: ../lib/quizengine.py:723
+#, fuzzy, python-format
+msgid ""
+"To little questions found in %s for locale '%s', found %s questions should "
+"be at least 10"
+msgstr ""
+"To little questions found in %s, found %s questions should be at least 10."
+
+#: ../lib/ichanger.py:291
+msgid ""
+"Touch the 'START' button on the right.\n"
+"The images will dissappear and when they return, one will have changed.\n"
+"Touch the picture which has changed."
+msgstr ""
+"Touch the 'START' button on the right.\n"
+"The images will dissappear and when they return, one will have changed.\n"
+"Touch the picture which has changed."
+
+#: ../languageDefinitions.py:40
+msgid "Training"
+msgstr "Training"
+
+#: ../languageDefinitions.py:27
+msgid "Try again!"
+msgstr "Try again!"
+
+#: ../lib/numbers_sp.py:231
+msgid ""
+"Try to find the numbers, in the correct order and from low to high, by "
+"touching them on the screen."
+msgstr ""
+
+#: ../lib/fishtank.py:227
+msgid "Try to remove the fish by clicking on them with the mouse."
+msgstr "Try to remove the fish by clicking on them with the mouse."
+
+#: ../lib/simon_sp.py:131
+msgid "Try to repeat the sequence of sounds played."
+msgstr "Try to repeat the sequence of sounds played."
+
+#: ../controlpanel_lgpl/lib/change_pass.py:213
+#: ../controlpanel_lgpl/lib/usermanagement.py:452
+#: ../controlpanel_lgpl/lib/groupmanagement.py:319
+msgid "Update"
+msgstr ""
+
+#: ../SPHelpText.py:119
+msgid "Update BrainTrainerPlus"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/update_btp.py:93
+msgid "Update_btp"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/groupmanagement.py:181
+msgid "Use the 'New group' button to add a new group."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:192
+msgid "Use the 'New user' button to add a new user."
+msgstr ""
+
+#: ../SPMenu.py:320
+msgid "Use the 'sub menu' buttons for the different activity menus"
+msgstr "Use the 'sub menu' buttons for the different activity menus."
+
+#: ../SPMenu.py:334
+msgid "Use the menu below to choose between the different game categories"
+msgstr "Use the menu below to choose between the different game categories."
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:286
+msgid "User name already in use, can't store it!"
+msgstr ""
+
+#: ../SPMainCore.py:405
+#, python-format
+msgid "User: %s"
+msgstr "User: %s"
+
+#: ../SPHelpText.py:113 ../controlpanel_lgpl/lib/usermanagement.py:92
+#, fuzzy
+msgid "Usermanagement"
+msgstr "Username:"
+
+#: ../SPgdm.py:104
+msgid "Username:"
+msgstr "Username:"
+
+#: ../lib/video.py:145
+msgid "Video"
+msgstr "Video"
+
+#: ../controlpanel_lgpl/Start_screen.py:203
+msgid "WRONG PASSWORD !!"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/picimport.py:179
+#: ../controlpanel_lgpl/lib/picimport.py:194
+#: ../controlpanel_lgpl/lib/picimport.py:205
+msgid "Warning !"
+msgstr "Warning !"
+
+#: ../controlpanel_lgpl/lib/picimport.py:193
+msgid ""
+"Warning, your about to remove all the previously imported pictures. Hit 'OK' "
+"to continue."
+msgstr ""
+
+#: ../lib/simon_sp.py:137
+msgid ""
+"When the flashing stops you will be prompted to repeat the sequence by "
+"touching the coloured blocks."
+msgstr ""
+"When the flashing stops you will be prompted to repeat the sequence by "
+"touching the coloured blocks."
+
+#: ../lib/story.py:203
+msgid ""
+"When you finished reading the text hit the 'Begin' button and answer the "
+"questions."
+msgstr ""
+"When you finished reading the text hit the 'Begin' button and answer the "
+"questions."
+
+#: ../lib/findit_sp.py:219
+msgid ""
+"When you spot a difference, touch it with your finger.\n"
+"You can click the question mark in the middle of the screen if you need a "
+"hint."
+msgstr ""
+"When you spot a difference, touch it with your finger.\n"
+"You can click the question mark in the middle of the screen if you need a "
+"hint."
+
+#: ../lib/soundmemory.py:192
+msgid ""
+"When you touch the picture you will hear a sound.\n"
+"Match the image with others that make the same sound,to get points."
+msgstr ""
+"When you touch the picture you will hear a sound.\n"
+"Match the image with others that make the same sound, to get points."
+
+#: ../controlpanel_lgpl/lib/gamemanagement.py:241
+msgid "Which menu category do you want to edit ?"
+msgstr ""
+
+#: ../lib/wipe.py:102
+msgid "Wipe"
+msgstr ""
+
+#: ../lib/wipe.py:112
+msgid "Wipe with your finger on the screen to uncover the picture."
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/change_pass.py:252
+msgid "Wrong password !"
+msgstr ""
+
+#: ../lib/dltr.py:80
+msgid "XML data file is incorrect, please contact the maintainers."
+msgstr "XML data file is incorrect, please contact the maintainers."
+
+#: ../controlpanel_lgpl/lib/usermanagement.py:420
+msgid "Year: "
+msgstr ""
+
+#: ../SPMainCore.py:637 ../SPMainCore.py:640 ../SPMainCore.py:767
+#: ../languageDefinitions.py:32
+msgid "Yes"
+msgstr "Yes"
+
+#: ../controlpanel_lgpl/lib/gamemanagement.py:210
+#, python-format
+msgid "You are editing menu category: '%s'"
+msgstr ""
+
+#: ../lib/dltr.py:404
+msgid "You have finished the daily training module."
+msgstr "You have finished the daily training module."
+
+#: ../SPMainCore.py:636
+msgid "You play very good, do you want to try the next level ?"
+msgstr "You play very good, do you want to try the next level?"
+
+#: ../lib/electro_sp.py:193
+msgid ""
+"You select the pictures by touching them.\n"
+"As you progress through the star levels more pairs appear to match."
+msgstr ""
+"You select the pictures by touching them.\n"
+"As you progress through the star levels more pairs appear to match."
+
+#: ../lib/numbers_sp.py:227
+msgid "You will see various numbers scattered around the screen."
+msgstr ""
+
+#: ../lib/dltr.py:406
+#, fuzzy
+msgid "Your average results per group are:"
+msgstr "Your results are:"
+
+#: ../SPMainCore.py:921
+#, python-format
+msgid ""
+"Your image is saved at:\n"
+"%s"
+msgstr ""
+"Your image is saved at:\n"
+"%s"
+
+#: ../lib/dltr.py:405
+msgid "Your results are:"
+msgstr "Your results are:"
+
+#: ../SPHelpText.py:121
+msgid "Zorg enquette"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/zorgenquete.py:89
+msgid "Zorgenquete"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/zorgenquete.py:153
+msgid "Zorgenquete preferences"
+msgstr ""
+
+#: ../controlpanel_lgpl/lib/zorgenquete.py:160
+#: ../controlpanel_lgpl/lib/zorgenquete.py:169
+#: ../controlpanel_lgpl/lib/zorgenquete.py:178
+#, python-format
+msgid "Zorgenquete: %s"
+msgstr ""
+
+#: ../lib/spinbottle.py:118
+msgid "beginning with the letter: "
+msgstr "beginning with the letter: "
+
+#: ../languageDefinitions.py:52
+msgid "long-term"
+msgstr ""
+
+#: ../lib/quiz.py:151
+#, python-format
+msgid "question id: %s"
+msgstr "question id: %s"
+
+#: ../languageDefinitions.py:53
+#, fuzzy
+msgid "quiz"
+msgstr "Quiz"
+
+#: ../languageDefinitions.py:51
+msgid "short-term"
+msgstr ""
+
+#: ../lib/dltr.py:183
+#, fuzzy, python-format
+msgid ""
+"xml file %s is missing, this shouldn't "
+"happen,                                    contact the %s developers"
+msgstr ""
+"xml file %s is missing, this shouldn't happen, contact the %s developers"
+
+#: ../lib/quiz_general.py:134
+#, python-format
+msgid ""
+"xml file %s is missing, this shouldn't happen, contact the %s developers"
+msgstr ""
+"xml file %s is missing, this shouldn't happen, contact the %s developers"
+
+#~ msgid "Click the buttons in the right order"
+#~ msgstr "Touch the buttons in the right order."
+
+#~ msgid "Failed to make screenshot %s"
+#~ msgstr "Failed to make screenshot %s"
+
+#~ msgid ""
+#~ "Failed to parse the logfile, please contact the developers.\n"
+#~ "Message was: %s"
+#~ msgstr ""
+#~ "Failed to parse the logfile, please contact the developers.\n"
+#~ "Message was: %s"
+
+#~ msgid "Failed to send the email. Error: %s"
+#~ msgstr "Failed to send the email. Error: %s"
+
+#~ msgid "General knowledge Quiz"
+#~ msgstr "General knowledge Quiz"
+
+#~ msgid "Play"
+#~ msgstr "Play"
+
+#~ msgid ""
+#~ "Please give a short description or ticket number and hit [Enter] (max 50 "
+#~ "characters)"
+#~ msgstr ""
+#~ "Please give a short description or ticket number and hit [Enter] (max 50 "
+#~ "characters)"
+
+#~ msgid "Your email will be send, please wait....."
+#~ msgstr "Your email will be send, please wait....."
