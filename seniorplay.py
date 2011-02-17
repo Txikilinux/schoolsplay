@@ -20,12 +20,6 @@
 
 import sys, os, shlex
 sys.path.insert(0, "..")
-# This is only for debian testing as we don't have an official pygame 1.9 package.
-# I've created my own debian package for pygame 1.9 which lives in
-# python/site-packages so we can use both, isn't that cool :-)
-sys.path.insert(1,'/usr/lib/python2.6/site-packages')
-# Now python finds the pygame 1.9 package first.
-# It's ignored when there's no such path
 
 if sys.argv > 2:
     # construct proper restart command if we need to restart
