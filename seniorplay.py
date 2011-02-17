@@ -139,12 +139,17 @@ while not abort:
         mainscreen = mcgui.get_mainscreen()
         mcgui.start()
     except SPMainCore.MainEscapeKeyException:
-        CPmodule_logger.info("User hits exit/escape, restarting core after 1.0 sec.")
+        CPmodule_logger.info("User hits exit/escape...")
         if CMD_Options.no_login or CMD_Options.user:
             # we have no login screen or the user was passed as a cmdline option so we exit
             #sys.exit(0)
             abort = True
             CPmodule_logger.info("nologin screen, clean exit")
+        elif CMD_Options.theme == 'childsplay':
+            CPmodule_logger.info("Theme is childsplay, clean exit")
+            abort = True
+        else:
+            CPmodule_logger.info("restarting core after 1.0 sec.")
     except GDMEscapeKeyException:
         CPmodule_logger.info("login screen, clean exit")
         break
