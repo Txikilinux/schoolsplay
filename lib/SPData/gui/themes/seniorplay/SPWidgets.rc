@@ -1,4 +1,5 @@
-# This file is mandatory and is used to provide additional configuration options.
+# This file is mandatory and is used to provide additional configuration 
+# options for the widgets in SPWidgets.
 
 # a default section is mandatory
 [default]
