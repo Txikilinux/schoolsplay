@@ -236,7 +236,7 @@ class DataManager:
             result = query.first()
             session.close()
             # we must also check if the SPusers group exists.
-            orm, session = spgoodies.get_orm('group_names', 'user')
+            orm, session = self.spgoodies.get_orm('group_names', 'user')
             rows = [row for row in session.query(orm).order_by(orm.group_name).all()]
             if not rows:
                 # we set a first group
