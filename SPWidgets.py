@@ -67,29 +67,7 @@ def Init(theme):
     d['theme'] = theme
     d['themepath'] = os.path.dirname(rc)
     d['defaultpath'] = os.path.join( GUITHEMESPATH,'default')
-    if d.has_key('button_background_image_left') and \
-                                os.path.exists(os.path.join(d['themepath'], \
-                                                d['button_background_image_left'])):
-        # We create the three pieces we need to create a rounded corner button background
-        # By doing it here and using copies in make_button_bg we make it faster.
-        # when we need to create many buttons the disk IO could take to much time.
-        # the button is build from three pieces
-        BUT_LEFT = utils.load_image(os.path.join(d['themepath'], \
-                                                 d['button_background_image_left']))
-        BUT_RIGHT = utils.load_image(os.path.join(d['themepath'], \
-                                                  d['button_background_image_right']))
-        BUT_CENTER = utils.load_image(os.path.join(d['themepath'], \
-                                                 d['button_background_image_center']))
-    if d.has_key('button_hover_background_image_left') and \
-                                os.path.exists(os.path.join(d['themepath'], \
-                                                d['button_hover_background_image_left'])):
-        BUTH_LEFT = utils.load_image(os.path.join(d['themepath'], \
-                                                 d['button_hover_background_image_left']))
-        BUTH_RIGHT = utils.load_image(os.path.join(d['themepath'], \
-                                                  d['button_hover_background_image_right']))
-        BUTH_CENTER = utils.load_image(os.path.join(d['themepath'], \
-                                                 d['button_hover_background_image_center']))
-        
+            
     THEME = d
     volume_level = 50
     try:
@@ -546,7 +524,7 @@ class SimpleButtonRound(ButtonRound):
         This differs from a normal ButtonRound which should be connect a 
         function."""
     def __init__(self, txt, pos=(0, 0), fsize=18, padding=4, data=True, \
-                 length=None, colorname='blue', sizename='medium'):
+                 length=None, colorname='blue', sizename='54px'):
         fgcol = THEME['simplebuttonround_fg_color']
         ButtonRound.__init__(self, txt, pos, fsize, padding, fgcol=fgcol, \
                              length=length, colorname=colorname, sizename=sizename)
@@ -1995,21 +1973,23 @@ class ScrollWindow(Widget):
                     obj._scroll_focus = True
         self.screen.set_clip(oldclip)
 
-def make_button_bg_dynamic(width, sizename, colorname):
+def make_button_bg_dynamic(width, sizename, colorname, colorname_ro='black'):
     """width - integer for the total length of the button images.
     sizename - name for the kind of image set to use.
-    colorname - name for the color set.
-    supported size names are: 'big','medium','smal'.
+    supported size names are: '36px','54px','81px'.
+    colorname - name for the color to use.
+    colorname_ro - name for the 'rollover' color to use.
+    Supported colornames are: 'black', 'blue', 'green'.
     When a name isn't found a MakeButtonException is raised."""
-    fname = "but_%s" + "_%s_%s.png" % (colorname, sizename)
+    fname = "%s_%s.png" % (sizename, colorname)
     fname_ro = "but_%s" + "_%s_%s_ro.png" % (colorname, sizename)
     try:
-        left = utils.load_image(os.path.join(THEME['themepath'], fname % 'left'))
-        right = utils.load_image(os.path.join(THEME['themepath'], fname % 'right'))
-        center = utils.load_image(os.path.join(THEME['themepath'], fname % 'center'))
-        hleft = utils.load_image(os.path.join(THEME['themepath'], fname_ro % 'left'))
-        hright = utils.load_image(os.path.join(THEME['themepath'], fname_ro % 'right'))
-        hcenter = utils.load_image(os.path.join(THEME['themepath'], fname_ro % 'center'))
+        left = utils.load_image(os.path.join(THEME['themepath'], "%s_%s_%s.png" % (sizename, 'left', colorname)))
+        right = utils.load_image(os.path.join(THEME['themepath'], "%s_%s_%s.png" % (sizename, 'right', colorname)))
+        center = utils.load_image(os.path.join(THEME['themepath'], "%s_%s_%s.png" % (sizename, 'center', colorname)))
+        hleft = utils.load_image(os.path.join(THEME['themepath'], "%s_%s_%s.png" % (sizename, 'left', colorname_ro)))
+        hright = utils.load_image(os.path.join(THEME['themepath'], "%s_%s_%s.png" % (sizename, 'right', colorname_ro)))
+        hcenter = utils.load_image(os.path.join(THEME['themepath'], "%s_%s_%s.png" % (sizename, 'center', colorname_ro)))
     except IOError, info:
         raise MakeButtonException, info
     offset = left.get_rect().w 

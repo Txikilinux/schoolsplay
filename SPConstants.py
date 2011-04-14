@@ -46,8 +46,7 @@ from SPColors import *
 from SPKeyMaps import KeyMaps
 
 # Which themes do we have?
-SUPPORTEDTHEMES = ['default', 'childsplay','cognitionplay', 'seniorplay', \
-                    'mpt', 'braintrainer']
+SUPPORTEDTHEMES = ['default', 'childsplay','cognitionplay', 'seniorplay','braintrainer']
 # Which keymaps do we have?
 SUPPORTEDKEYMAPS = KeyMaps.supportedmaps
 # The base of the schoolsplay installation, only used on win98?
