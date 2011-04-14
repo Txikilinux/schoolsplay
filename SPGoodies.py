@@ -29,7 +29,7 @@ import utils
 class SPGoodies(Borg):
     """This class is a singleton because we want that the core and
     activity always uses the same object"""
-    def __init__(self, screen, virtkb, lang, lock,cb_pre_level_end, \
+    def __init__(self, core, screen, virtkb, lang, lock,cb_pre_level_end, \
         cb_level_end, cb_game_end, cb_info_dialog, \
         cb_display_execounter, cb_set_framerate, \
         cb_enable_dice,cb_dice_minimal_level,\
@@ -72,6 +72,7 @@ class SPGoodies(Borg):
         self.hide_level_indicator = cb_hide_level_indicator
         self.show_level_indicator = cb_show_level_indicator
         self._get_orm = cb_get_orm
+        self.core = core
                 
     # these methods are the observers that an activity can use to signal the core
     def tellcore_pre_level_end(self):
@@ -112,6 +113,7 @@ class SPGoodies(Borg):
             self.disable_level_indicator()
     def tellcore_set_dice_minimal_level(self, level):
         """Use this to set the level indicator to a minimal level.
+        The value must be the maximum number of levels minus one.
         You must call this in your start method otherwise the core will reset
         it to 1"""
         apply(self.set_dice_minimal_level, (level,))
@@ -245,3 +247,5 @@ class SPGoodies(Borg):
         return SPConstants.BASEPATH
     def get_home_theme_path(self):
         return os.path.join(SPConstants.HOMEDIR, self.theme)
+    
+

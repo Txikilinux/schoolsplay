@@ -228,7 +228,7 @@ class MainCoreGui:
         # setup SPGoodies which we pass to the activities
         # from here on we set various attributes for the spgoodies instance 
         self.screenclip = None
-        self.spgoodies = SPGoodies(self.screen, \
+        self.spgoodies = SPGoodies(self, self.screen, \
             self.get_virtkb, \
             language, \
             self.lock, \
@@ -635,6 +635,11 @@ class MainCoreGui:
         self.screen.set_clip()
         if nextlevel < 1:
             nextlevel = 1
+        if nextlevel + (self.dicebuttons.get_minimal_level() - 1) > 6:
+            nextlevel = 6 - (self.dicebuttons.get_minimal_level() - 1)
+            self.logger.info("activity %s only has %s level, reset nextlevel to %s" % (self.activity.get_name(),\
+                                                                                       self.dicebuttons.get_minimal_level() + 1,\
+                                                                                       nextlevel))
         if nextlevel and self.activity.get_name() != 'dltr':
             if levelup and (self.levelcount + self.dicebuttons.get_minimal_level() -1) < 6:
                 if not no_question:
