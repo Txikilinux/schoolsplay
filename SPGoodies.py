@@ -78,10 +78,10 @@ class SPGoodies(Borg):
         """Use this to notify the core that the pre_level is ended.
         The core will call next_level on the activity."""
         apply(self.pre_level_end)
-    def tellcore_level_end(self, store_db=None, level=1, levelup=False):
+    def tellcore_level_end(self, store_db=None, level=1, levelup=False, no_question=False):
         """Use this to notify the core that the level is ended.
         The core will call next_level on the activity."""
-        apply(self.level_end, (store_db, level, levelup))
+        apply(self.level_end, (store_db, level, levelup, no_question))
     def tellcore_game_end(self, store_db=None):
         """Use this to notify the core that the game is ended.
         The core will start the menu and delete the activity."""
@@ -243,4 +243,5 @@ class SPGoodies(Borg):
         return soundlanguagedir
     def get_base_dir(self):
         return SPConstants.BASEPATH
-        
+    def get_home_theme_path(self):
+        return os.path.join(SPConstants.HOMEDIR, self.theme)

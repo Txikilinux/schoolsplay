@@ -699,12 +699,14 @@ class Engine:
         # check to see if the soundserver still running.
         self.SS.start_server()
 
-    def init_exercises(self,answers, maxtimes, difficulty, AreWeDT, year=None):
+    def init_exercises(self,answers, maxtimes, difficulty=1, AreWeDT=False, year=None):
         """Setup some defaults for the contentfeeder.
         answers - Integer indicating how many answers we should display.
         maxtimes - the number of questions we show, 0 means until we ran out of questions
         difficulty - level of difficulty.
         """
+        if not difficulty:
+            difficulty = 1
         self.logger.debug("init_exercises: answers %s, maxtimes %s, difficulty %s, DT %s year %s" % \
                           (answers, maxtimes, difficulty, AreWeDT, year))
         self.SPG.dm.reset()
@@ -757,7 +759,7 @@ class Engine:
         if self.quiz == 'math':
             fsize = 40
         else:
-            fsize = 34
+            fsize = 32
         fnt = self.ttfpath
         self.erase_tryagain = False
         audiohash = {'silence_1000': os.path.join(self.SPG.get_libdir_path(), \
@@ -786,7 +788,7 @@ class Engine:
             self.answer4GR_surf = self.answer4GR_surf_short
             split = 23
             ans_split = 28
-            fsize = 32
+            fsize = 30
             if self.answers == 2:
                 ans_split = 23
         else:

@@ -17,12 +17,12 @@
 production = 0
 # the users dbase
 host_users = localhost
-user_sp_users = btp_user
+user_sp_users = root
 user_sp_users_pass = 
 dbasename_users = sp_users
 # the content dbase
 host_content = localhost
-user_btp_content = btp_user
+user_btp_content = root
 user_btp_content_pass = 
 dbasename_content = btp_content
 

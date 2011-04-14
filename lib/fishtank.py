@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
@@ -36,7 +35,7 @@ from pygame.constants import *
 import utils
 import Timer
 from SPConstants import *
-import SPSpriteUtils as SPSpriteUtils
+import SPSpriteUtils
 
 # containers that can be used globally to store stuff
 class Misc:
@@ -67,7 +66,7 @@ class Bubble(SPSpriteUtils.SPSprite):
         snd.play()
 
 class Fish(SPSpriteUtils.SPSprite):
-    def __init__(self,imagepair, obs):
+    def __init__(self,imagepair, obs,  parent):
         """@x and @y are the start coords. 
         The fish always starts of screen either right or left.
         @step is the amount of pixels we move
@@ -83,7 +82,8 @@ class Fish(SPSpriteUtils.SPSprite):
         # rects are the same for both images so we don't need to swap rects
         self.rect = self.image.get_rect()
         self.obs = obs
-                    
+        self.parent = parent
+        
     def start(self,x,y,step,delay,react):
         """Set the sprite and start movement"""
         self.update_counter = 0
@@ -123,7 +123,17 @@ class Fish(SPSpriteUtils.SPSprite):
                 self.image = self.image_1
             status = self.moveit.next()
             if status != -1:# reached the end of the movement
-                self.remove_sprite()
+                if self.parent.are_we_in_aquarium_mode():
+                    # special behaviour, fish turns each time it reaches the end
+                    self.mirror_image()
+                    self.stop_movement(now=1)
+                    start = self.rect.topleft
+                    end = self.start
+                    self.start = start
+                    step = self.step
+                    self.moveit = self.set_movement(start,end,step,0,dokill=1)
+                else:
+                    self.remove_sprite()
                 # placeholder: no score
 
     def callback(self,*args):
@@ -131,7 +141,7 @@ class Fish(SPSpriteUtils.SPSprite):
         and the mouse event occurs in this sprite.
         Remember that you must 'connect' a callback first with a call to
         self.connect_callback, see the SPSprite reference for info on possibilities
-        of connecting callbacks .
+        of connecting callbacks.
         """
         # enable logger to see the args
         #self.logger.debug("callback called with %s, %s" % (args[0],args[1]))
@@ -193,10 +203,16 @@ class Activity:
         self.rchash = utils.read_rcfile(os.path.join(self.my_datadir, 'fishtank.rc'))
         self.rchash['theme'] = self.theme
         
+        self.sounddir = os.path.join(self.my_datadir,'sounds')
         self.bubimg = utils.load_image(os.path.join(self.my_datadir,'backgrounds',self.theme,'blub0.png'))
-        self.bubsnd = utils.load_sound(os.path.join(self.my_datadir,'sounds','blub0.wav'))
-        self.splashsnd = utils.load_sound(os.path.join(self.my_datadir,'sounds','poolsplash.wav'))
-        
+        self.bubsnd = utils.load_sound(os.path.join(self.sounddir,'blub0.wav'))
+        self.splashsnd = utils.load_sound(os.path.join(self.sounddir,'poolsplash.wav'))
+        self.WeAreAquarium = False
+        self.aquarium_counter = 0
+        self.aquariumsound = False
+        self.aquarium_music_list = [os.path.join(self.sounddir,'bach0.ogg'),\
+                                    os.path.join(self.sounddir,'mozart0.ogg')]
+
         # You MUST call SPInit BEFORE using any of the SpriteUtils stuff
         # it returns a reference to the special CPGroup
         self.actives = SPSpriteUtils.SPInit(self.screen,self.backgr)
@@ -207,6 +223,9 @@ class Activity:
         self.screen.blit(self.orgscreen,self.blit_pos)
         self.backgr.blit(self.orgscreen,self.blit_pos)
         pygame.display.update()
+
+    def are_we_in_aquarium_mode(self):
+        return self.WeAreAquarium
 
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
@@ -258,15 +277,21 @@ class Activity:
             self.timer_b.stop()
         except:
             pass
+        try:
+            self.aquariumsound.stop()
+        except:
+            pass
         self.clear_screen()
 
     def score_observer(self, score):
-        try:
-            f = self.muzak.pop(0)
-        except IndexError:
-            self.muzak = self.muzak_org[:]
-            f = self.muzak.pop(0)
-        snd = utils.load_sound(os.path.join(self.my_datadir,'sounds', f)) 
+        self.aquarium_counter = 0
+        self.WeAreAquarium = False
+        self.aquarium_text.erase_sprite()
+        self.actives.remove(self.aquarium_text)
+        if self.aquariumsound:
+            self.aquariumsound.stop()
+
+        snd = utils.load_sound(os.path.join(self.my_datadir,'sounds', 'poolsplash.wav')) 
         snd.play()
         if score < 0:
             score = 1
@@ -301,10 +326,11 @@ class Activity:
         # from the third level the speeds are randomized.
         self.level_data = [(20,-90,8,4,2),(20,0,8,4,4),(20,0,8,4,4),(20,890,4,6,4),\
                             (20,0,4,8,4),(20,0,4,6,4)]
-        self.muzak_org = ['C3.ogg','D3.ogg','E3.ogg','C3.ogg','E3.ogg','F3.ogg',\
-                    'G3.ogg','G3.ogg','A3.ogg','G3.ogg','F3.ogg','E3.ogg',\
-                    'C3.ogg','C3.ogg','G2.ogg','C3.ogg']
 
+        surf = utils.char2surf("Aquarium mode", 14, fcol=GREEN)
+        self.aquarium_text = SPSpriteUtils.MySprite(surf, pos=(30, 580))
+        self.aquarium_text.set_use_current_background()
+        
     def next_level(self,level,dbmapper):
         """Mandatory method.
         Return True if there levels left.
@@ -350,7 +376,7 @@ class Activity:
             # we use copies, this way we can reuse the image list.
             s1, s2 = item[0].convert_alpha(),item[1].convert_alpha()
             # position and position are set when the level is started
-            fishobjects.append(Fish((s1,s2), self.score_observer))
+            fishobjects.append(Fish((s1,s2), self.score_observer, self))
         
         # setup the objects and put them in a seperate list
         # we don't destroy them so we can use them in any level.
@@ -378,7 +404,6 @@ class Activity:
         self.totalfish = len(self.livefish)
         # we store the number of fish this level will have.
         self.db_mapper.insert('fish',self.totalfish)
-        self.muzak = self.muzak_org[:]
         return True
     
     def pre_level(self, level):
@@ -422,23 +447,32 @@ class Activity:
         return None if no score value is used"""
         #m,s = timespend.split(':')
         #seconds = int(m)*60 + int(s)  
-        c = 0.7
-        score = 10.0 / (max (float(Misc.fish_clear_total/100)/float(self.totalfish), 1.0)) ** c
+#        c = 0.7
+#        score = 10.0 / (max (float(Misc.fish_clear_total/100)/float(self.totalfish), 1.0)) ** c
+        score = 8 # fishtank is not really suitable for reall scores, so now we make sure we the core does a levelup
         return score
 
     def loop(self,events):
         """Mandatory method.
         This is the main eventloop called by the core 30 times a minute."""
         myevent = None
+        if self.aquarium_counter > 300 and not self.WeAreAquarium and\
+                                     len(self.actives.sprites()):
+            self.WeAreAquarium = True
+            self.actives.add(self.aquarium_text)
+            self.aquarium_text.display_sprite()
+            self.aquariumsound = utils.load_music(random.choice(self.aquarium_music_list))
+            self.aquariumsound.play(-1)
+        self.aquarium_counter += 1
         if not self.livefish and not self.actives.sprites():
             # no more sprites left so the level is done.
             self.db_mapper.insert('clearfish',Misc.fish_clear_total)
             # we call the SPGoodies observer to notify the core the level
             # is ended and we want to store the collected data
-            levelup = False
+            levelup = True
             self.SPG.tellcore_level_end(store_db=True, \
                                         level=min(6, self.level + levelup), \
-                                            levelup=levelup)
+                                            levelup=levelup, no_question=True)
         for event in events:
             if event.type is MOUSEBUTTONDOWN:
                 # no need to query all sprites with all the events

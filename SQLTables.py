@@ -68,9 +68,10 @@ class SqlTables:
         return tables
     
     def _appendcolumns(self, t):
+        # These are the skipped Tables for default columns
         if t.name in ['users', 'options', 'activity_options', 'menu', \
                     'served_content', 'group_names', 'change_pass', 'zorgenquete', \
-                    'spconf']:
+                    'spconf',  'users_faces']:
             return 
         # Columns added to all act tables
         t.append_column(Column('table_id', Integer, primary_key=True))
@@ -92,12 +93,13 @@ class SqlTables:
             Column('first_name', Unicode(20)),\
             Column('last_name', Unicode(40)), \
             Column('birthdate', DateTime), \
-            Column('group', Unicode(20)), \
+            Column('group', Integer), \
             Column('profile', Unicode(200)), \
             Column('passwrd', Unicode(10)), \
             Column('activities', Unicode(250)), \
             Column('audio', Integer, default=50)\
             )
+    
         # The graph image needs two values:
         # average (greek: mu-value) and the standard deviation (greek: sigma-value)
         # mu is a integer between 1-10 and sigma is an integer between 0-100 which
@@ -126,8 +128,9 @@ class SqlTables:
 
         # Table to convert group name to an id
         self.group_names = Table('group_names', metadata, \
-                                 Column('table_id', Integer, primary_key=True), \
+                                 Column('group_id', Integer, primary_key=True), \
                                  Column('group_name', Unicode(50), unique=True, nullable=False))
+        
         self.spconf = Table('spconf', metadata, \
                             Column('table_id', Integer, primary_key=True), \
                             Column('activity_name', Unicode(50)), \
@@ -135,6 +138,11 @@ class SqlTables:
                             Column('value', Unicode(200)), \
                             Column('theme', Unicode(20), default='default'), \
                             Column('comment', Unicode(200)))        
+
+        self.faces = Table('users_faces',  metadata, \
+                           Column('face_id',  Integer, primary_key=True),  \
+                           Column('user_id',  Integer),  \
+                           Column('pic_name',  Unicode(255)))
 
         ################ Activity tables ########################## 
         # Every activity *must* have a sql table set.
@@ -261,7 +269,7 @@ class SqlTables:
             Column('done', Integer), \
             Column('cycles', Integer), \
             Column('epoch', Numeric))
-            
+                        
         ############ Setup an activity list #################################
         # Now we put all the tables we have into this list.
         # The Datamanager uses this list to setup the dbase tables.
@@ -279,7 +287,7 @@ class SqlTables:
                         self.usermanagement,self.groupmanagement, self.dt_sequence,\
                         self.picimport, self.change_pass, self.update_btp,\
                         self.gamemanagement, self.zorgenquete, self.language_select,\
-                        self.numbers_sp]
+                        self.numbers_sp,  self.faces]
 
 
 if __name__ == '__main__':

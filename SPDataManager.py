@@ -108,7 +108,6 @@ class DataManager:
         self.language = language
         self.spg.localesetting = language
         self._check_tables_uptodate()
-        
         # query to get all availabe cids, used to check served_content
         orm, session = self.get_orm('game_available_content', 'content')
         query = session.query(orm)
@@ -143,6 +142,8 @@ class DataManager:
         return self.language
     
     def _check_tables_uptodate(self):
+        self.logger.debug("_check_tables_uptodate")
+        reload(SPHelpText)
         modules = [x for x in os.listdir(ACTIVITYDATADIR) if '.py' in x and not '.pyc' in x]
         # check that all the activities are present in the activity_options table
         orm, session = self.get_orm('activity_options', 'user')
@@ -174,7 +175,32 @@ class DataManager:
                 session.add(orm(item=us, state='on', network='local'))
         session.commit()
         session.close()
-    
+        orm, session = self.get_orm('group_names', 'user')
+        # we must set two groups, see file SPHelpText
+        # we first remove the two groups if they exists to make sure we always have proper 
+        # localized mandatory groups
+        session.query(orm).filter_by(group_id = 1).delete()
+        session.query(orm).filter_by(group_id = 2).delete()
+        session.query(orm).filter_by(group_name = SPHelpText.DataManager.default_group_1).delete()
+        session.query(orm).filter_by(group_name = SPHelpText.DataManager.default_group_2).delete()
+        # now we make two new ones, localized and with id 1 and 2.
+        session.add(orm(group_id=1, group_name=SPHelpText.DataManager.default_group_1))
+        session.add(orm(group_id=2, group_name=SPHelpText.DataManager.default_group_2)) 
+        session.commit()
+        session.close()
+        orm, session = self.get_orm('users', 'user')
+        result = session.query(orm).filter_by(login_name = 'Demo').first()
+        if not result:
+            neworm = orm()
+            neworm.first_name = 'Demo'
+            neworm.last_name = ''
+            neworm.login_name = 'Demo'
+            neworm.audio = 75
+            neworm.group = 0
+            session.add(neworm)
+        session.commit()
+        session.close()
+        
     def _cleanup(self):
         """atexit function"""
         # Nothing to see here, please move on.
@@ -236,7 +262,7 @@ class DataManager:
             result = query.first()
             session.close()
             # we must also check if the SPusers group exists.
-            orm, session = self.spgoodies.get_orm('group_names', 'user')
+            orm, session = spgoodies.get_orm('group_names', 'user')
             rows = [row for row in session.query(orm).order_by(orm.group_name).all()]
             if not rows:
                 # we set a first group

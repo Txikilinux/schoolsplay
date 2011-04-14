@@ -155,7 +155,7 @@ class Menu:
                         self.logger.warning("No text attribute found in SPHelpText for %s" % t[3])
                         b = ImgButton(p, pos, name=t[3])
                     else:
-                        b = ImgTextButton(p, txt,pos, padding=6, fsize=14)
+                        b = ImgTextButton(p, _(txt) ,pos, padding=6, fsize=14)
                 else:    
                     if theme['menubuttons'] == 'transparent':
                         b = TransImgButton(p, hp, pos, name=t[3])

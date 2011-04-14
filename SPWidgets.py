@@ -66,7 +66,7 @@ def Init(theme):
             d[k] = v
     d['theme'] = theme
     d['themepath'] = os.path.dirname(rc)
-    d['defaultpath'] = os.path.join( GUITHEMESPATH,'childsplay')
+    d['defaultpath'] = os.path.join( GUITHEMESPATH,'default')
     if d.has_key('button_background_image_left') and \
                                 os.path.exists(os.path.join(d['themepath'], \
                                                 d['button_background_image_left'])):
@@ -1257,6 +1257,9 @@ class PrevNextButton:
             self.but.connect_callback(self._cbf, MOUSEBUTTONDOWN, 'prev')
         self.but.mouse_hover_leave()
 
+    def get_state(self):
+        return self.state
+
     # abstract methods so that this widget acts like a regular widget
     def enable(self, enable):
         self.but.enable(enable)
@@ -1765,7 +1768,7 @@ class VolumeAdjust:
         self.logger.debug("VolumeAdjust called with volume level %s" % volume)
         self.soundcheck = utils.load_sound(os.path.join(ACTIVITYDATADIR, 'CPData','volumecheck.wav'))
         self.theme = THEME['theme']
-        if volume:
+        if volume or int(volume) == 0:
             #print "we have volume"
             self.volume = int(volume)
         elif WEHAVEAUMIX:
@@ -1801,9 +1804,8 @@ class VolumeAdjust:
         
         self.volupbut = TransImgButton(imgup, imgup_ro, (px, py))
         self.volupbut.connect_callback(self._cbf, MOUSEBUTTONDOWN, 5)
-        #print "volume", type(self.volume), self.volume
+        print "volume in constructor", type(self.volume), self.volume
         if self.volume == 0:
-           #print "toggle"
             self.volumetoggle.toggle()
             self.volumetoggle.display_sprite()
                     
@@ -1814,11 +1816,16 @@ class VolumeAdjust:
         
     def _cbf_toggle_volume(self, widget, event, data):
         self.logger.debug("set volume %s" % data)
-        self.volumetoggle.toggle()
         if self.volume > 0:
             self.volume = 0
         else:
-            self.volume = 50
+            self.volume = 75
+        self.volumetoggle.toggle()
+        self.volumetoggle.display_sprite()
+        self.volstr = '%02d' % self.volume + "%"
+        self.lbl.erase_sprite()
+        self.lbl.settext(self.volstr)
+        self.lbl.display_sprite()
         subprocess.Popen("amixer set Master %s" % self.volume + "%",shell=True)
 
     def _cbf(self, widget, event, data):
@@ -1831,7 +1838,11 @@ class VolumeAdjust:
            self.volume = 99
         if self.volume < 0:
             self.volume = 0
+        if self.volume > 0 and self.volumetoggle.get_state() == 'next':
+            self.volumetoggle.toggle()
+            self.volumetoggle.display_sprite()
         self.volstr = '%02d' % self.volume + "%"
+        self.lbl.erase_sprite()
         self.lbl.settext(self.volstr)
         self.lbl.display_sprite()
         self.logger.debug("Volume set to %s" % self.volstr)

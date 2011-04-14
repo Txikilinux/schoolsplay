@@ -241,7 +241,7 @@ class Activity:
         self.SPG.tellcore_disable_level_indicator()
         self.next_level(level, dbmapper)
         return True
-        
+
     def next_level(self,level,dbmapper):
         """Mandatory method.
         Return True if there levels left.
