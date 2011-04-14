@@ -24,7 +24,7 @@ dbasename_users = sp_users
 host_content = localhost
 user_btp_content = root
 user_btp_content_pass = 
-dbasename_content = btp_content
+dbasename_content = sp_content
 
 
 
