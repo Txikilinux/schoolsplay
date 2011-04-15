@@ -180,6 +180,7 @@ class Activity:
         """Mandatory method.
         This should handle the DT logic"""
         self.AreWeDT = True
+        print "=====quiz dailytraining_next_level ",self.rchash[self.theme]
         self.num_questions = int(self.rchash[self.theme]['dt_questions'])
         self.next_level(level, dbmapper)
         return True

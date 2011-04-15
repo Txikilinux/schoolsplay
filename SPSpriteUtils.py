@@ -753,7 +753,7 @@ class CPStackGroup:
 
 class MySprite(SPSprite):
     """Container to turn a surface into a SPSprite object"""
-    def __init__(self, value, name=None):
+    def __init__(self, value, name=None, pos=(0, 0)):
         """Turn an image into a schoolsplay sprite.
         @value can be a SDL surface or a string.
         Only use this if you need a simple sprite.
@@ -773,6 +773,7 @@ class MySprite(SPSprite):
                 raise MyError, info
         self.rect = self.image.get_rect()
         SPSprite.__init__(self, self.image, name=name)
+        self.moveto(pos)
         
 class SPButton(SPSprite):
     """ Turn an image into a button like object which reacts to mouseclicks.

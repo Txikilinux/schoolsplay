@@ -389,7 +389,7 @@ class Activity:
         self.actives.add(self.startbutton)
         
         self.start_loop_flag = True
-        
+    
     def next_level(self,level,dbmapper):
         """Mandatory method.
         Return True if there levels left.

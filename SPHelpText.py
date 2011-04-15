@@ -50,6 +50,10 @@ class DataManager(object):
  I will backup your original database and then replace it with a new one.\
  The original database is now called sp.db_back and it's placed in %s" % HOMEDIR)
 
+    default_group_1 = _("Default group 1")
+    default_group_2 = _("Default group 2")
+    #default_user_1 = _("Default user 1")
+    
 class Nosound(object):
     ActivityStart = _(\
 "It seems that we cannot use the sound card right now and because this activity\
@@ -118,7 +122,7 @@ class ActivityMenuText(object):
     change_pass_admin = _("Change password")
     update_btp = _("Update BrainTrainerPlus")
     gamemanagement = _("Gamemanagement")
-    zorgenquete = _("Zorg enquette")
+    zorgenquete = "Zorg enquette"
     language_select = _("Select Language")
     
     

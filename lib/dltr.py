@@ -164,21 +164,16 @@ class Activity:
 
     def _set_up(self, mapper):
         """called by the core after this module is constructed."""
-        if self.theme == 'braintrainer' and mapper.currentuser == 'demo' or\
-                                             mapper.currentuser == 'BT+_User':
-            self.logger.debug("User is 'demo', using dailytraining_demo.xml")
-            xmlpath = os.path.join(self.SPG.get_libdir_path(),'SPData', 'themes',\
-                                   self.theme, 'dailytraining_demo.xml')
-            self.logger.debug("User is 'demo', using xml file:%s" % xmlpath)
+        if self.theme == 'braintrainer' and mapper.currentuser == 'Demo':
+            self.logger.debug("User is 'Demo', using dailytraining_demo.xml")
+            xmlpath = os.path.join(self.SPG.get_home_theme_path(), 'dailytraining_demo.xml')
+            self.logger.debug("User is 'Demo', using xml file:%s" % xmlpath)
         elif mapper.currentuser == 'SPuser' and os.path.exists\
-                (os.path.join(self.SPG.get_libdir_path(),'SPData', 'themes',\
-                              self.theme, 'dailytraining_SPUser.xml')):
-            xmlpath = os.path.join(self.SPG.get_libdir_path(),'SPData', 'themes',\
-                              self.theme, 'dailytraining_SPUser.xml')
+                (os.path.join(self.SPG.get_home_theme_path(), 'dailytraining_SPUser.xml')):
+            xmlpath = os.path.join(self.SPG.get_home_theme_path(), 'dailytraining_SPUser.xml')
             self.logger.debug("User is 'SPuser', using xml file:%s" % xmlpath)
         else:
-            xmlpath = os.path.join(self.SPG.get_libdir_path(),'SPData', 'themes',\
-                                   self.theme, 'dailytraining.xml')
+            xmlpath = os.path.join(self.SPG.get_home_theme_path(), 'dailytraining.xml')
         if not os.path.exists(xmlpath):
             raise utils.MyError, _("xml file %s is missing, this shouldn't happen,\
                                     contact the %s developers" % (xmlpath, self.theme))    
@@ -277,7 +272,7 @@ class Activity:
         if not self.runme:
             return
         self.SPG.tellcore_disable_level_indicator()
-        
+        self.SPG.tellcore_disable_score_button()
         self.screen.blit(self.backsquare, (50, 110))
         txt = [_("If you ready to start the next activity, hit the 'start' button.")]
         txt = utils.txtfmt(txt, 40)
@@ -335,6 +330,7 @@ class Activity:
         self.logger.debug("act_next_level_stopped called with: %s" % result)
         self.act_score = self.act_score + result
         self.logger.debug("activity score now %s" % self.act_score)
+        
     
     def act_hit_levelindicator(self, *args):
         """NOT USED YET
@@ -381,6 +377,7 @@ class Activity:
         self.act_start_time = utils.current_time()
         self.dbmapper.insert('activity', self.currentactname)
         self.SPG.tellcore_show_level_indicator()
+        self.SPG.tellcore_enable_score_button()
         self.SPG._menu_activity_userchoice(self.currentactname, level, cycles)
 
     def next_level(self,level,dbmapper):

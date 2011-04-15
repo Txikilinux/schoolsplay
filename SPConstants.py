@@ -46,8 +46,7 @@ from SPColors import *
 from SPKeyMaps import KeyMaps
 
 # Which themes do we have?
-SUPPORTEDTHEMES = ['childsplay','cognitionplay', 'seniorplay', \
-                    'mpt', 'braintrainer']
+SUPPORTEDTHEMES = ['default', 'childsplay','cognitionplay', 'seniorplay','braintrainer']
 # Which keymaps do we have?
 SUPPORTEDKEYMAPS = KeyMaps.supportedmaps
 # The base of the schoolsplay installation, only used on win98?
@@ -62,10 +61,10 @@ ALPHABETDIR = SPBasePaths.ALPHABETDIR
 PYTHONCPDIR = SPBasePaths.PYTHONCPDIR
 
 GUITHEMESPATH = os.path.join(ACTIVITYDATADIR, 'SPData', 'gui','themes')
-DEFAULTGUITHEMESPATH = os.path.join(GUITHEMESPATH,'childsplay')
+DEFAULTGUITHEMESPATH = os.path.join(GUITHEMESPATH,'default')
 
 THEMESPATH = os.path.join(ACTIVITYDATADIR, 'SPData', 'themes')
-DEFAULTTHEMESPATH = os.path.join(THEMESPATH,'childsplay')
+DEFAULTTHEMESPATH = os.path.join(THEMESPATH,'default')
 
 CORESOUNDSDIR = os.path.join(ACTIVITYDATADIR, 'SPData', 'base', 'sounds')
 
@@ -90,11 +89,14 @@ if sys.platform == 'win32':
             os.makedirs(HOMEDIR) 
 else:
     PLATFORM = 'All your platform are belong to us'
-    try:
-        HOMEDIR = os.path.join(os.environ['HOME'], HOME_DIR_NAME)
-    except KeyError, info:
-        print info
-        HOMEDIR = os.path.abspath(sys.path[0])
+    if os.path.exists('/data/userdata'):# BTP production machine
+        HOMEDIR = os.path.join('/data/userdata', HOME_DIR_NAME)
+    else:
+        try:
+            HOMEDIR = os.path.join(os.environ['HOME'], HOME_DIR_NAME)
+        except KeyError, info:
+            print info
+            HOMEDIR = os.path.abspath(sys.path[0])
 PSYCOPATH = os.path.join(HOMEDIR, 'schoolsplay_psyco.log')
 DBASEPATH = os.path.join(HOMEDIR, DBASE)
 
@@ -111,10 +113,7 @@ HOMEIMAGES = os.path.join(HOMEDIR, 'my_images')
 # Create a schoolsplay directory and subdirectories.
 if not os.path.exists(HOMEDIR):
     os.makedirs(HOMEDIR)
-for name in SUPPORTEDTHEMES:
-    p = os.path.join(HOMEDIR, name)
-    if not os.path.exists(p):
-        os.makedirs(p)
+
 # set font path and fontsize
 TTFSIZE = 19# used for default ttf
 TTF = os.path.join(ACTIVITYDATADIR, 'SPData', 'base', 'arial.ttf')

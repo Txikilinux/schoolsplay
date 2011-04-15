@@ -18,7 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-import sys, os, shlex
+import sys, os, shlex, glob
 sys.path.insert(0, "..")
 
 if sys.argv > 2:
@@ -60,9 +60,8 @@ CPmodule_logger.debug("Created schoolsplay loggers")
 #CPmodule_logger.info("For debugging purposes we run with some cmdline options hardcoded.")
 #CPmodule_logger.info("These must be removed before releasing this to the real world")
 #CPmodule_logger.info("Look at the top of this module for these options")
-
+from SPConstants import *
 if CMD_Options.loglevel == 'debug':
-    from SPConstants import *
     CPmodule_logger.debug("Paths defined in SPConstants:")
     for v in ['ACTIVITYDATADIR', 'ALPHABETDIR', 'BASEDIR',\
                'DBASEPATH', 'HOMEDIR', 'HOMEIMAGES', 'HOME_DIR_NAME',\
@@ -76,6 +75,17 @@ if CMD_Options.loglevel == 'debug':
 loc = CMD_Options.lang
 if loc.find('_') == -1 or loc.upper().find('utf8') == -1:
     pass
+    
+# Make sure we have xml files in a writeable place    
+for name in SUPPORTEDTHEMES:
+    p = os.path.join(HOMEDIR, name)
+    if not os.path.exists(p):
+        os.makedirs(p)
+        files = glob.glob(os.path.join(THEMESPATH, name, '*.xml'))
+        dest = os.path.join(HOMEDIR, name)
+        if files:
+            for f in files:
+                shutil.copy(f, dest)
 
 import pygame
 ## set a bigger buffer, seems that on win XP in conjuction with certain hardware

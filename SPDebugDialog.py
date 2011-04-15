@@ -28,6 +28,8 @@ import os
 import subprocess
 import glob
 
+GITBRANCH = 'master'
+
 class Debugscreen:
     def __init__(self, actname, milestone, screen):
         self.logger = logging.getLogger("schoolsplay.SPDebugDialog.Debugscreen")
@@ -167,17 +169,18 @@ class Debugscreen:
         s = utils.char2surf(line, fsize=24, fcol=DARKGREEN,bold=True)
         self.screen.blit(s, (50, 300))
         pygame.display.update()
-        process = subprocess.Popen(['git checkout master & git pull'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        process = subprocess.Popen(['git checkout %s & git pull' % GITBRANCH], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         txt = list(process.communicate())
         # we run a script which could contain stuff needed after a git update.
         self.logger.debug("Run scripts from post_pull directory, if any.")
         pp_txt = self._run_post_pull()
+        self.logger.debug(pp_txt)
         txt += pp_txt
         result = -3
         txt.append("\nThe system will be restarted with the current commandline options.")
         txtlist = [s for s in txt if s]
-        if len(txtlist) > 15:
-            txtlist = txtlist[:-50]
+        if len(txtlist) > 13:
+            txtlist = txtlist[:-40]
         txt = '\n'.join(txtlist)
         dlg = SPWidgets.Dialog(txt, dialogwidth=500, buttons=["OK"], title='Information')
         dlg.run()
@@ -185,6 +188,19 @@ class Debugscreen:
         return result
 
     def _run_post_pull(self):
+        if os.path.exists('db.conf'):
+            dbp = 'db.conf'
+            kind = 'production'
+        else:
+            dbp = 'db.dev'
+            kind = 'develop'
+        rc_hash = utils.read_rcfile(dbp)
+        rc_hash['kind'] = kind
+        rc_hash['path'] = dbp
+        cmd_list = []
+        for c, v in rc_hash['default'].items():
+            cmd_list.append('--%s=%s' % (c,v))
+        
         ppp = os.path.expanduser(os.path.join('~', '.schoolsplay.rc', 'post_pull'))
         if os.path.exists(ppp):
             f = open(ppp, 'r')
@@ -197,18 +213,17 @@ class Debugscreen:
         for s in scripts:
             if s not in scripts_done:
                 scripts_todo.append(s)
-#        print scripts
-#        print scripts_done
-#        print scripts_todo
         out = ['Running any new post_pull scripts:']
         f = open(ppp, 'a')
         for s in scripts_todo:
             self.logger.debug("Running post_pull script %s" % s)
-            process = subprocess.Popen(['sh %s' % s], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            cmd = ' '.join(['sh %s' %s] + cmd_list)
+            self.logger.debug("using cmdline options %s" % cmd)          
+            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             txt = []
             for l in process.communicate():
-                if l and l[-1] == '\n':
-                    l = l[:-1]
+                if l:
+                    l = l.replace('\n',' ')
                     txt.append(l)
             out += txt
             # TODO check exit code

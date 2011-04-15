@@ -87,31 +87,20 @@ class DbaseMaker:
             elif USEMYSQL:
                 self.logger.info("Starting mySQL dbase, %s" % rc_hash['default']['dbasename_users'])
                 import MySQLdb, _mysql_exceptions
-                if rc_hash['kind'] == 'develop':
-                    self.logger.info("Using conffile %s" % rc_hash['path'])
-                    db=MySQLdb.connect(user="root")
-                    c = db.cursor()
-                    c.execute('''CREATE DATABASE IF NOT EXISTS %s''' % rc_hash['default']['dbasename_users'])
-                    try:
-                        c.execute('''CREATE USER '%s'@'%s' IDENTIFIED BY '' ''' %\
-                                            (rc_hash['default']['user_sp_users'],\
-                                              rc_hash['default']['host_users']))
-                    except _mysql_exceptions.OperationalError:
-                        self.logger.debug("user btp_user already exists")
-                    c.execute('''GRANT ALL ON %s.* TO "%s"@"%s"''' %\
-                               (rc_hash['default']['dbasename_users'], \
-                                rc_hash['default']['user_sp_users'],\
-                                rc_hash['default']['host_users']))
-                    c.execute('''GRANT ALL ON %s.* TO "%s"@"%s"''' % \
-                              (rc_hash['default']['dbasename_content'], \
-                                rc_hash['default']['user_sp_users'],\
-                                rc_hash['default']['host_content']))
-                    db.close()
-                engine = sqla.create_engine('mysql://%s:%s@%s/%s' %\
+                self.logger.info("Using conffile %s" % rc_hash['path'])
+                db=MySQLdb.connect(host=rc_hash['default']['host_users'], \
+                                   user=rc_hash['default']['user_sp_users'], \
+                                   passwd=rc_hash['default']['user_sp_users_pass'])
+                c = db.cursor()
+                c.execute('''CREATE DATABASE IF NOT EXISTS %s''' % rc_hash['default']['dbasename_users'])
+                
+                db.close()
+                url = 'mysql://%s:%s@%s/%s' %\
                                     (rc_hash['default']['user_sp_users'], \
                                     rc_hash['default']['user_sp_users_pass'], \
                                     rc_hash['default']['host_users'], \
-                                    rc_hash['default']['dbasename_users']))
+                                    rc_hash['default']['dbasename_users'])
+                engine = sqla.create_engine(url)
                 self.metadata_usersdb = sqla.MetaData(engine)
             else:
                 self.logger.error("I'm confused about which dbase to use, please check your settings in SPConstants and make sure you have all the dependencies installed")
