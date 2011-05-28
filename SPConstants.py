@@ -21,7 +21,8 @@
 NoGtk = False
 # Set this to which dbase we use.
 # Currently these are supported: 'sqlite' and 'mysql'
-WHICHDBASE = 'mysql'
+WHICHDBASE = 'sqlite'
+
 # Set the default milestone for the mail tickets script 
 MILESTONE = 'BT2.2'
 
@@ -70,8 +71,11 @@ CORESOUNDSDIR = os.path.join(ACTIVITYDATADIR, 'SPData', 'base', 'sounds')
 
 # Users sp dir
 HOME_DIR_NAME = '.schoolsplay.rc'
-# Name of the SQLite dbase
-DBASE = 'sen_sp.db'
+# Name of the SQLite users dbase
+USERSDBASE = 'sp_users.db'
+# name of the SQLite content dbase
+CONTENTDBASE = 'sp_content.db'
+
 
 # language
 LANG = 'en'
@@ -98,7 +102,7 @@ else:
             print info
             HOMEDIR = os.path.abspath(sys.path[0])
 PSYCOPATH = os.path.join(HOMEDIR, 'schoolsplay_psyco.log')
-DBASEPATH = os.path.join(HOMEDIR, DBASE)
+DBASEPATH = os.path.join(HOMEDIR, USERSDBASE)
 
 TEMPDIR = os.path.join(HOMEDIR, 'tmp')
 if os.path.exists(TEMPDIR):
@@ -134,4 +138,7 @@ SPLC_TIMESTAMP = time.strftime("%y-%m-%d_%H-%M-%S", time.localtime())
 IMAGE_EXT_PATTERN = ['*.jpg','*.JPG','*.jpeg','*.png', '.*tiff', '*.gif', '*.bmp']
 IMAGE_EXT = ['.jpg','.JPG','.jpeg','.png', '.tiff', '.gif', '.bmp']
 
+XML_FILES_WE_MUST_HAVE = ["SP_menu.xml","dailytraining_default.xml","dailytraining_SPUser.xml",\
+                          "dailytraining_demo.xml","dailytraining.xml"]
 
+BUTTON_FEEDBACK_TIME = 200

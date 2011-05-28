@@ -36,7 +36,7 @@ type2table = {'history':'game_quizhistory', 'pic':'game_quizpic', \
             'royal':'game_quiztext', 'sayings':'game_quiztext', \
             'melody':'game_quiztext' }
 
-# ORMs for the btp_content dbase
+# ORMs for the content dbase
 # These MUST start with 'game_'
 class game_quiztext(object): pass
 class game_quizhistory(object): pass

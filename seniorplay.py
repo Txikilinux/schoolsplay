@@ -81,12 +81,14 @@ for name in SUPPORTEDTHEMES:
     p = os.path.join(HOMEDIR, name)
     if not os.path.exists(p):
         os.makedirs(p)
-        files = glob.glob(os.path.join(THEMESPATH, name, '*.xml'))
-        dest = os.path.join(HOMEDIR, name)
-        if files:
-            for f in files:
-                shutil.copy(f, dest)
-
+    orgxmlfiles = glob.glob(os.path.join(THEMESPATH, name, '*.xml'))
+    if not orgxmlfiles:
+        continue
+    existingxmlfiles = os.listdir(p)
+    for f in  XML_FILES_WE_MUST_HAVE:
+        if f not in existingxmlfiles and os.path.exists(os.path.join(THEMESPATH, name, f)):
+            shutil.copy(os.path.join(THEMESPATH, name, f), p)
+                        
 import pygame
 ## set a bigger buffer, seems that on win XP in conjuction with certain hardware
 ## the playback of sound is scrambled with the "normal" 1024 buffer.
