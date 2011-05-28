@@ -58,8 +58,9 @@ class game_quotes(object): pass
 # Which attributes must be set depends if you want the ORM to be used to write
 # to the table, for every column you want to write to you must set attributes.
 class users(object):
-    def __init__(self, login_name='', title='', first_name='', last_name='', birthdate='', \
-                    group='', profile='', passwrd='', activities='', audio=50):
+    def __init__(self, login_name='', title='', first_name='', last_name='',\
+                  birthdate=datetime.datetime(1,1,1), \
+                    group='', profile='', passwrd='', activities='', audio=75):
         self.login_name = login_name
         self.title = title
         self.first_name = first_name

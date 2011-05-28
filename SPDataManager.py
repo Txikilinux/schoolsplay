@@ -24,7 +24,7 @@ import logging
 module_logger = logging.getLogger("schoolsplay.SPDataManager")
 
 import atexit, os, sys, datetime
-
+import datetime
 # Don't do from 'sqlalchemy import *' as SQA has also 'logging' and 'types'
 # modules. This is very bad coding practice but they claim to have good reasons
 # for it. Those reasons suck of course but I don't have the time to discuss it
@@ -197,6 +197,8 @@ class DataManager:
             neworm.login_name = 'Demo'
             neworm.audio = 75
             neworm.group = 0
+            dt = datetime.datetime(1,1,1)
+            neworm.birtdate = dt
             session.add(neworm)
         session.commit()
         session.close()
@@ -254,7 +256,7 @@ class DataManager:
             self.logger.debug("found existing username: %s" % result.login_name)
         else:
             # insert just user_name, NULL for others, the user_id will be generated
-            session.add(orm(login_name=username, first_name=username, group='SPusers'))
+            session.add(orm(login_name=username, first_name=username, group=0))
             self.logger.debug("inserted %s" % username)
             session.commit()
             query = session.query(orm)
@@ -267,7 +269,7 @@ class DataManager:
             if not rows:
                 # we set a first group
                 neworm = orm()
-                neworm.group_name = 'SP Group'
+                neworm.group_name = 'SPusers'
                 session.add(neworm)
                 session.commit()
             session.close()
