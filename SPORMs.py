@@ -59,7 +59,7 @@ class game_quotes(object): pass
 # to the table, for every column you want to write to you must set attributes.
 class users(object):
     def __init__(self, login_name='', title='', first_name='', last_name='',\
-                  birthdate=datetime.datetime(1,1,1), \
+                  birthdate=datetime.datetime(1900,1,1), \
                     group='', profile='', passwrd='', activities='', audio=75):
         self.login_name = login_name
         self.title = title
