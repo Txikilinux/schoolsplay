@@ -37,9 +37,9 @@ import sqlalchemy.orm as sqlorm
 import SPORMs as ORMS
 
 def create_contentdb_orms(metadata):
+    print dir(metadata)
     tables = {}
     for name in [k for k in ORMS.__dict__.keys() if k.startswith('game_')]:
-        print "+++++++++++", name
         t = Table(name, metadata, autoload=True)
         orm = getattr(ORMS, name)
         orm._name = name

@@ -23,7 +23,7 @@
 import logging
 module_logger = logging.getLogger("schoolsplay.SPDataManager")
 
-import atexit, os, csv, shutil, sys, datetime
+import atexit, os, sys, datetime
 
 # Don't do from 'sqlalchemy import *' as SQA has also 'logging' and 'types'
 # modules. This is very bad coding practice but they claim to have good reasons
@@ -33,7 +33,7 @@ import atexit, os, csv, shutil, sys, datetime
 # The braindead part of it all is that SQA use 'from sqlalchemy import *' in their
 # docs and tutorials :-(
 # None the less, SQA is a very good lib.
-from SPConstants import DBASEPATH, ACTIVITYDATADIR, DBASE, HOMEDIR, WHICHDBASE
+from SPConstants import ACTIVITYDATADIR
 import SPHelpText
 from utils import MyError, StopmeException
 try:
