@@ -88,7 +88,12 @@ for name in SUPPORTEDTHEMES:
     for f in  XML_FILES_WE_MUST_HAVE:
         if f not in existingxmlfiles and os.path.exists(os.path.join(THEMESPATH, name, f)):
             shutil.copy(os.path.join(THEMESPATH, name, f), p)
-                        
+            
+# if we want to use an sqlite content dbase we must make sure the default one is in the proper location.
+#p = os.path.join(HOMEDIR, CMD_Options.theme, CONTENTDBASE)
+#if not os.path.exists(p):
+#    shutil.copy('btp_content.db', p)    
+#                       
 import pygame
 ## set a bigger buffer, seems that on win XP in conjuction with certain hardware
 ## the playback of sound is scrambled with the "normal" 1024 buffer.

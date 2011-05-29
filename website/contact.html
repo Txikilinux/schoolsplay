@@ -5,7 +5,7 @@
 <!--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />--> 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1 "> 
 <title>Childsplay</title> 
-<link href="css/childsplay.css" rel="stylesheet" type="text/css" /> 
+<link href="css/childsplay_chp.css" rel="stylesheet" type="text/css" /> 
 
 	<!-- JavaScript codes --> 
     <!--[if lte IE 6]>
@@ -27,14 +27,19 @@
 <div id="container"> 
 <div id="center"> 
  
-	<div id="menu_holder"> 
-    	<div id="menu"><a href="index.html">Home</a></div> 
+ 
+ 	<div id="menu_holder"> 
+ 		<div id="menu"><a href="index.html">Home</a></div> 
         <div id="divider"><img src="images/clear.gif" width="1" height="1" /></div> 
+        <!-- 
         <div id="menu"><a href="childsplay.html">Childsplay</a></div> 
         <div id="divider"><img src="images/clear.gif" width="1" height="1" /></div> 
         <div id="menu"><a href="schoolsplay.html">Schoolsplay</a></div> 
         <div id="divider"><img src="images/clear.gif" width="1" height="1" /></div> 
         <div id="menu"><a href="seniorplay.html">Seniorplay</a></div> 
+        <div id="divider"><img src="images/clear.gif" width="1" height="1" /></div> 
+        -->
+        <div id="menu"><a href="screenshots.html">Screenshots</a></div> 
         <div id="divider"><img src="images/clear.gif" width="1" height="1" /></div> 
         <div id="menu"><a href="translations.html">Translations</a></div> 
         <div id="divider"><img src="images/clear.gif" width="1" height="1" /></div> 
@@ -42,39 +47,59 @@
         <div id="divider"><img src="images/clear.gif" width="1" height="1" /></div> 
         <div id="menu"><a href="thanks.html">Thanks</a></div> 
         <div id="divider"><img src="images/clear.gif" width="1" height="1" /></div> 
-        <div id="menu">Contact</div> 
-    </div>    
-    <div id="languages_txt"><a href="#">AR</a> | <a href="#">CA</a> | <a href="#">DE</a> | <a href="#">EL</a> | <a href="#">EN</a> | <a href="#">ES</a> | <a href="#">FR</a> | <a href="#">IT</a> | <a href="#">NB</a></div>
-    <div id="header"><img src="images/header.png" width="940" height="250" border="0" usemap="#Map"/>
-      <map name="Map" id="Map">
-        <area shape="rect" coords="245,43,430,246" href="#" alt="Childsplay" />
-        <area shape="rect" coords="441,44,628,246" href="#" alt="Schoolsplay" />
-        <area shape="rect" coords="638,43,822,245" href="#" alt="Seniorplay" />
-      </map>
+        <div id="menu"><a href="contact.html">Contact</a></div> 
     </div> 
+	
+<!--    <div id="languages_txt"><a href="#">AR</a> | <a href="#">CA</a> | <a href="#">DE</a> | <a href="#">EL</a> | <a href="#">EN</a> | <a href="#">ES</a> | <a href="#">FR</a> | <a href="#">IT</a> | <a href="#">NB</a></div>-->
+    <div id="header"><img src="images/header_childsplay.png" width="940" height="250" border="0"/></div> 
     <div id="button_download_play">
     
-    <div><img src="images/box_childsplay.png" width="215" height="200" /><div id="download_txt"><a href="#"><img src="images/logo_apple.png" width="60" height="60" border="0" /></a><a href="#"><img src="images/logo_linux.png" width="60" height="60" border="0" /></a><a href="#"><img src="images/logo_windows.png" width="60" height="60" border="0" /></a></div></div>
-    
-    <div><img src="images/box_schoolsplay.png" width="215" height="200" /><div id="download_txt"><a href="#"><img src="images/logo_apple.png" width="60" height="60" border="0" /></a><a href="#"><img src="images/logo_linux.png" width="60" height="60" border="0" /></a><a href="#"><img src="images/logo_windows.png" width="60" height="60" border="0" /></a></div></div>
-    
-    <div><img src="images/box_seniorplay.png" width="215" height="200" /><div id="download_txt"><a href="#"><img src="images/logo_apple.png" width="60" height="60" border="0" /></a><a href="#"><img src="images/logo_linux.png" width="60" height="60" border="0" /></a><a href="#"><img src="images/logo_windows.png" width="60" height="60" border="0" /></a></div></div>
+	<div><img src="images/box_childsplay.png" width="215" height="200" /><div id="download_txt">
+    	<a href="osx.html"><img src="images/logo_apple.png" width="60" height="60" border="0" /></a>
+    	<a href="http://sourceforge.net/projects/schoolsplay/files/childsplay_sp/"><img src="images/logo_linux.png" width="60" height="60" border="0" /></a>
+    	<a href="http://sourceforge.net/projects/schoolsplay/files/childsplay_sp-win32""><img src="images/logo_windows.png" width="60" height="60" border="0" /></a>
+    	</div></div>
     
     </div>
-    
-     
 
-    <div id="breadcrumb">Home |</div> 
-    <div id="button_inschrijven"><a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_flow&amp;SESSION=xIxe52upbG_BiP17bXdEbttBo6CEntN4LK4jrpekEntQZHRFuIiz3AxgzHO&amp;dispatch=5885d80a13c0db1f8e263663d3faee8df1d2b5c147af55b8d54f2944c97d2a2a" target="_blank"><img src="images/btn_donateCC_LG.gif" alt="Donate" width="134" height="47" border="0" /></a> 
+    <div id="breadcrumb">Contact |</div> 
+    <div id="button_inschrijven">
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+		<input type="hidden" name="cmd" value="_s-xclick">
+		<input type="hidden" name="hosted_button_id" value="10843336">
+		<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+		<img alt="" border="0" src="https://www.paypal.com/nl_NL/i/scr/pixel.gif" width="1" height="1"></form>
+    
     	<div id="txt_inschrijven">Support is voluntary, after all the Schoolsplay project is completely free-software!<br />
-   	    If you want to support us, <a href="#">please make a donation with PayPal.</a></div> 
+   	    If you want to support us, please make a donation with PayPal.</div> 
     </div> 
     <div id="content"> 
     	<div id="txt"> 
         <h1>Contact</h1> 
-      <p>Contact ...</p>
       </div> 
+    <p>You can contact the developers of Schoolsplay in various ways:
+    <ul>
+    <li>Subscribe to the <a href="https://lists.sourceforge.net/lists/listinfo/schoolsplay-devel">mailinglist</a> (This will get you usually the fastest reply!)</li>
+    <li>Send a mail to the developers: stas.zytkiewicz@gmail.com or<br>chris.van.bael@gmail.com</li>
+    <li>If you want to report a bug, you can do so at the <a href="http://sourceforge.net/tracker2/?func=browse&group_id=181294&atid=896620">Schoolsplay bugtracker</a></li>
+    <li>If you want to request a feature, please submit it via<br>the <a href="http://sourceforge.net/tracker2/?group_id=181294&atid=896623">Schoolsplay feature requests</a></li>
+    </ul></p>
+    <p>
+    <b>If you contact us for a problem you encountered, please fill in following template:</b>
+    </p>
+	<p>
+	Platform: (Windows, Linux, OSX)<br>
+	Application: (Childsplay, Schoolsplay, Cognitionplay)<br>
+	Version:<br>
+	Activity:<br>
+	Language:<br>
+	Description of problem:<br>
+	</p>
+	<p>
+	This will save us time and will give you a faster response!
+    </p>
     
+    </p>
          
     </div> 
  
@@ -82,7 +107,7 @@
 	<div id="push"></div> 
 </div> 
 <div id="footer" align="center"><img src="images/liner.png" width="561" height="12" /><br />
-  Footer</div> 
+  Schoolsplay.org 2011</div> 
 
     <script type="text/javascript" src="js/PieNG.js" /></script> 
 </body> 
