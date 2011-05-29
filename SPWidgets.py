@@ -1782,7 +1782,6 @@ class VolumeAdjust:
         
         self.volupbut = TransImgButton(imgup, imgup_ro, (px, py))
         self.volupbut.connect_callback(self._cbf, MOUSEBUTTONDOWN, 5)
-        print "volume in constructor", type(self.volume), self.volume
         if self.volume == 0:
             self.volumetoggle.toggle()
             self.volumetoggle.display_sprite()

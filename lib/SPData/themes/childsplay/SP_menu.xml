@@ -1,5 +1,6 @@
-<?xml version="1.0" ?><rootmenu defaultsubmenu="quiz.png">
+<?xml version="1.0" ?><rootmenu defaultsubmenu="games.png">
   <submenu file="games.png" hoverfile="games_active.png">
+    <position>10,540</position>
     <menuitem enable="True" file="memory_sp.icon.png" hoverfile="memory_sp_ro.icon.png">
       <activity>memory_sp</activity>
     </menuitem>
@@ -14,6 +15,7 @@
     </menuitem>
   </submenu>
   <submenu file="quiz.png" hoverfile="quiz_active.png">
+  <position>210,540</position>
     <menuitem enable="True" file="quiz_text.icon.png" hoverfile="quiz_text_ro.icon.png">
       <activity>quiz_general</activity>
     </menuitem>
@@ -37,6 +39,7 @@
     </menuitem>
   </submenu>
   <submenu file="puzzles.png" hoverfile="puzzles_active.png">
+  <position>410,540</position>
     <menuitem enable="True" file="puzzle.icon.png" hoverfile="puzzle_ro.icon.png">
       <activity>puzzle</activity>
     </menuitem>
@@ -51,6 +54,7 @@
     </menuitem>
   </submenu>
   <submenu file="training.png" hoverfile="training_active.png">
+  <position>610,540</position>
     <menuitem enable="True" file="fishtank.icon.png" hoverfile="fishtank_ro.icon.png">
       <activity>fishtank</activity>
     </menuitem>

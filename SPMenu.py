@@ -52,6 +52,7 @@ module_logger = logging.getLogger("schoolsplay.SPMenu")
 class ParseMenu:
     def __init__(self, xml, complete=False):
         self.logger = logging.getLogger("schoolsplay.SPMenu.ParseMenu")
+        self.logger.debug("starting to parse %s" % xml)
         self.tree = ElementTree()
         self.tree.parse(xml)
         root = self.tree.getroot()
@@ -64,11 +65,13 @@ class ParseMenu:
             menlist = []
             subicon = sub.get('file')
             subhicon = sub.get('hoverfile')
+            print sub.find('position')
             # when theres no position we assume the images together will be 800 width.
             # and we add postions based on the width of the images.
             try:
                 subpos = tuple([int(x) for x in sub.find('position').text.split(',')])
-            except AttributeError:
+            except AttributeError,info:
+                print"=============",info
                 # we will calculate the position based on image size
                 subpos = (-1, -1)
             for item in sub.findall('menuitem'):
