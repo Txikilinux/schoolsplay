@@ -13,6 +13,21 @@
     <menuitem enable="True" file="ichanger.icon.png" hoverfile="ichanger_ro.icon.png">
       <activity>ichanger</activity>
     </menuitem>
+	<menuitem enable="True" file="billiard.icon.png" hoverfile="billiard_ro.icon.png">
+      <activity>billiard</activity>
+    </menuitem>
+<menuitem enable="True" file="fallingletters.icon.png" hoverfile="fallingletters_ro.icon.png">
+      <activity>fallingletters</activity>
+	</menuitem>
+<menuitem enable="True" file="findsound.icon.png" hoverfile="findsound_ro.icon.png">
+      <activity>findsound</activity>
+    </menuitem>
+<menuitem enable="True" file="packid.icon.png" hoverfile="packid_ro.icon.png">
+      <activity>packid</activity>
+    </menuitem>
+<menuitem enable="True" file="pong.icon.png" hoverfile="pong_ro.icon.png">
+      <activity>pong</activity>
+    </menuitem>
   </submenu>
   <submenu file="quiz.png" hoverfile="quiz_active.png">
   <position>210,540</position>
