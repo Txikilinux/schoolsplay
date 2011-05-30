@@ -265,7 +265,7 @@ class NoneSound:
         pass
     def get_volume(self):
         return None
-    def set_volume(sefl, sound_value):
+    def set_volume(self, sound_value):
         pass
     def __eq__(self, other):
         if other == 'NoneSound': return True
@@ -481,7 +481,10 @@ def char2surf(char, fsize, fcol=None, ttf='arial', bold=False, antialias=True, s
         return items
     else:
         return items[0]
-    
+
+def font2surf(word, fsize, fcol=None, ttf=None, sizel=None, bold=False, antialias=True):
+    return text2surf(word, fsize, fcol, ttf, sizel, bold, antialias)
+   
 def text2surf(word, fsize, fcol=None, ttf=None, sizel=None, bold=False, antialias=True):
     """Renders a text in a surface and returns a surface,size list of the items
     sizelist is a list like this [(7,17),(10,17)] tuples are x,y size of the character."""

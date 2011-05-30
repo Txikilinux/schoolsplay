@@ -82,7 +82,7 @@
     <menuitem enable="True" file="wipe.icon.png" hoverfile="wipe_ro.icon.png">
       <activity>wipe</activity>
     </menuitem>
-    <menuitem enable="True" file="test_act.icon.png" hoverfile="">
+    <menuitem enable="False" file="test_act.icon.png" hoverfile="">
       <activity>test_act</activity>
     </menuitem>
   </submenu>
