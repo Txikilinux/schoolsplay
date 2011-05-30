@@ -310,7 +310,7 @@ class Activity:
 
     def get_helptitle(self):
         """Mandatory method"""
-        return _("Seniorplay")
+        return _("Childsplay")
     
     def get_name(self):
         """Mandatory method, returnt string must be in lowercase."""
