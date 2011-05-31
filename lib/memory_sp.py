@@ -383,7 +383,7 @@ class Activity:
         # start display cards waiting loop 
         self.cards_list = self.actives.get_sprites()
         self.actives.empty()
-        self.startbutton = SPWidgets.SimpleButtonRound(_("Start"), (690, y+430), fsize=24, data='start')
+        self.startbutton = SPWidgets.SimpleButtonDynamic(_("Start"), (690, y+430), fsize=24, data='start')
         self.startbutton.set_use_current_background(True)
         self.startbutton.display_sprite()
         self.actives.add(self.startbutton)
@@ -475,7 +475,7 @@ class Activity:
         """Mandatory method.
         This is the main eventloop called by the core 30 times a minute."""
         for event in events:
-            if event.type in (MOUSEBUTTONDOWN, MOUSEMOTION):
+            if event.type in (MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION):
                 result = self.actives.update(event)
                 # were in prelevel loop
                 if self.pre_level_flag:

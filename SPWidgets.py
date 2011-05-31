@@ -67,7 +67,7 @@ def Init(theme):
     d['theme'] = theme
     d['themepath'] = os.path.dirname(rc)
     d['defaultpath'] = os.path.join( GUITHEMESPATH,'default')
-            
+    module_logger.debug("rc file contents: %s" % [d])     
     THEME = d
     volume_level = 50
     try:
@@ -97,6 +97,12 @@ class Widget(SPSprite):
         self._oldimage = None
         self._IamWidget = True #special property, used in the SPSprite class update method
         self._CanHaveInputFocus = False
+        self.MinimalDragTreshold = 20
+        self._DragEnabled = False
+        self._DropEnabled = False
+        self.mouse_hover_leave_action = False
+        # related to drag and drop
+        self._prev_mouse_pos = None
         
     def enable(self, enable):
         """Set wetter the sprite can react to events. 
@@ -136,8 +142,21 @@ class Widget(SPSprite):
             self.display_sprite()
             self._amienabled = True
             
+    def set_drag_enabled(self, enabled):
+        self._DragEnabled = enabled
+    def set_drop_enabled(self, enabled):
+        self._DropEnabled = enabled
     def get_actives(self):
         return self
+    
+    # These methods should be overridden in your derived class
+    def start_drag_event(self, widget, mouseposition):
+        self.logger.debug("start_drag_event: widget %s, position %s" % (widget,mouseposition))
+    def end_drag_event(self, widget, mouseposition):    
+         self.logger.debug("end_drag_event: widget %s, position %s" % (widget,mouseposition))
+    def drop_event(self, widget, mouseposition):
+        self.logger.debug("end_drag_event: widget %s, position %s" % (widget,mouseposition))
+    
 
 class RadioButton(Widget):
     """Radiobuttons are buttons that has two states, selected or not selected.
@@ -153,6 +172,7 @@ class RadioButton(Widget):
         name - string to indicate this object
         kwargs - bgcol, fgcol
         """
+        
         self.name = name
         self.selected_image = utils.load_image(os.path.join(THEME['defaultpath'], 'radiobut_selected.png'))
         self.lbl = Label(text, pos, fsize)
@@ -173,7 +193,7 @@ class RadioButton(Widget):
         self.box = box.convert()
         Widget.__init__(self, box, name=name)
         self.moveto(pos)
-        self.connect_callback(self._cbf_on_select, MOUSEBUTTONDOWN)
+        self.connect_callback(self._cbf_on_select, MOUSEBUTTONUP)
         
     def set_as_default(self, default):
         self._rb_default = default
@@ -205,7 +225,6 @@ class Button(Widget):
         name - string to indicate this object
         kwargs - bgcol, fgcol
         """
-        
         if kwargs.has_key('fgcol'):
             fgcol = kwargs['fgcol']
         else:
@@ -224,6 +243,8 @@ class Button(Widget):
             r = s.get_rect()
             r.w += padding*2
             r.h += padding*2
+        if kwargs.has_key('maxlength') and r.w > kwargs['maxlength']:
+            r.w = kwargs['maxlength']
         self.pos = pos
         self.padding = padding
         self.name = name
@@ -275,11 +296,12 @@ class Button(Widget):
         self.erase_sprite()
         self.image = self._but
         self.display_sprite()
+        
     def get_button_rect(self):
         return self.rect
     
 class ImgButton(Button):
-    def __init__(self, path, pos=(0, 0),padding=4, name=''):
+    def __init__(self, path, pos=(0, 0),padding=4, name='', **kwargs):
         """Button which shows an image.
         path - must be the path to the image file or a pygame surface
         pos - position to display the box
@@ -295,7 +317,7 @@ class ImgButton(Button):
 
 class ImgTextButton(ImgButton):
     def __init__(self, path, text, pos=(0, 0), textpos=2, padding=4, fsize=24,\
-                  fgcol=BLACK, name=''):
+                  fgcol=BLACK, name='', **kwargs):
         """Button which shows an image.
         path - must be the path to the image file or a pygame surface
         pos - position to display the box
@@ -337,7 +359,7 @@ class ImgTextButton(ImgButton):
 
 
 class TransImgButton(ImgButton):
-    def __init__(self, path, hpath, pos=(0, 0), padding=4,text='',fsize=24, fcol=BLACK, name=''):
+    def __init__(self, path, hpath, pos=(0, 0), padding=4,text='',fsize=24, fcol=BLACK, name='', **kwargs):
         """Button which shows an image but has a fully transparent background.
         When a hover event occurs the image is changed.
         path - must be the path to the image file or a pygame surface
@@ -389,7 +411,7 @@ class TransImgButton(ImgButton):
 
 class TransImgTextButton(TransImgButton):
     def __init__(self, path, hpath, text, pos=(0, 0), textpos=2, padding=4, fsize=24,\
-                  fgcol=BLACK, name=''):
+                  fgcol=BLACK, name='', **kwargs):
         """Button which shows an image.
         path - must be the path to the image file.
         hpath - 'rollover' image path.
@@ -432,7 +454,7 @@ class TransImgTextButton(TransImgButton):
             surf.blit(textsurf, (0, text_y))
             surf.blit(image, (textsurf.get_width() + padding, image_y))
             hsurf.blit(textsurf_h, (0, text_y))
-            hsurf.blit(imageh, (textsurfh.get_width() + padding, image_y))
+            hsurf.blit(imageh, (textsurf_h.get_width() + padding, image_y))
         else:
             surf.blit(image, (0, image_y))
             surf.blit(textsurf, (image.get_width() + padding, text_y))
@@ -442,15 +464,18 @@ class TransImgTextButton(TransImgButton):
         TransImgButton.__init__(self, surf, hsurf, pos=pos, padding=padding, \
                                     fsize=fsize, fcol=fgcol, name=name)
 
-class ButtonRound(Button):
+class ButtonDynamic(Button):
     def __init__(self, txt, pos=(0, 0), fsize=18, padding=4, name='', \
-                 length=None, colorname='blue', sizename='medium', **kwargs):
+                 length=None, colorname='blue', sizename='54px', **kwargs):
         """Button which shows a text on a background with round corners.
         txt - string to display
         pos - position to display the box
         fsize - Font size
         padding - space in pixels around the text
+        sizename - name for the kind of image set to use.
+            supported size names are: '36px','54px','81px'.
         name - string to indicate this object
+        kwargs - bgcol, fgcol
         """
         self.colorname = colorname
         self.sizename = sizename
@@ -480,27 +505,28 @@ class ButtonRound(Button):
         SPSprite.__init__(self, self.image, name=self.name)
         self.rect.move_ip(self.pos)
 
-class ImgButtonRound(ButtonRound):
-    def __init__(self, path, pos=(0, 0),padding=4, name='', hoverimg=None, \
-                 length=None, colorname='blue', sizename='medium'):
+class ImgButtonDynamic(ButtonDynamic):
+    def __init__(self, path, pos=(0, 0),padding=4, name='', \
+                 length=None, colorname='blue', sizename='54px', **kwargs):
         """Button which shows an image on a background with round corners.
         path - must be the path to the image file or a pygame surface
         pos - position to display the box
         rect - Rect indicating the size of the box
         padding - space in pixels around the text
+        sizename - name for the kind of image set to use.
+            supported size names are: '36px','54px','81px'.
         name - string to indicate this object
-        hoverimg - Image to use as the 'hover' image iso the button hover background.
         """
         if type(path) in types.StringTypes:
             image = utils.load_image(path)
         else:
             image = path
-        ButtonRound.__init__(self, image, pos, None, padding=padding, name=name, \
+        ButtonDynamic.__init__(self, image, pos, None, padding=padding, name=name, \
                              length=length, colorname=colorname, sizename=sizename)
 
 class SimpleButton(Button):
     """Button which shows a text and returns the value given by 'data'
-        when a MOUSEBUTTONDOWN event occurs.
+        when a MOUSEBUTTONUP event occurs.
         This differs from a normal Button which should be connect a 
         function."""
     def __init__(self, txt, pos=(0, 0), fsize=18, padding=4, data=True, **kwargs):
@@ -512,35 +538,36 @@ class SimpleButton(Button):
         data - Optional data to pass to the caller, defaults to True.        
         """
         Button.__init__(self, txt, pos, fsize, padding)
-        self.connect_callback(self._cbf, MOUSEBUTTONDOWN)
+        self.connect_callback(self._cbf, MOUSEBUTTONUP)
         self.data = data
         
     def _cbf(self, *args):
         return (self.data, )
         
-class SimpleButtonRound(ButtonRound):
-    """Button which extends ButtonRound and returns the value given by 'data'
-        when a MOUSEBUTTONDOWN event occurs.
-        This differs from a normal ButtonRound which should be connect a 
+class SimpleButtonDynamic(ButtonDynamic):
+    """Button which extends ButtonDynamic and returns the value given by 'data'
+        when a MOUSEBUTTONUP event occurs.
+        This differs from a normal ButtonDynamic which should be connect a 
         function."""
     def __init__(self, txt, pos=(0, 0), fsize=18, padding=4, data=True, \
-                 length=None, colorname='blue', sizename='54px'):
+                 length=None, colorname='blue', sizename='54px', **kwargs):
         fgcol = THEME['simplebuttonround_fg_color']
-        ButtonRound.__init__(self, txt, pos, fsize, padding, fgcol=fgcol, \
+        ButtonDynamic.__init__(self, txt, pos, fsize, padding, fgcol=fgcol, \
                              length=length, colorname=colorname, sizename=sizename)
-        self.connect_callback(self._cbf, MOUSEBUTTONDOWN)
+        self.connect_callback(self._cbf, MOUSEBUTTONUP)
         self.data = data
     def _cbf(self, *args):
         return (self.data, )
 
 class SimpleTransImgButton(TransImgButton):
     """Button which extends TransImgButton and returns the value given by 'data'
-        when a MOUSEBUTTONDOWN event occurs.
+        when a MOUSEBUTTONUP event occurs.
         This differs from a normal TransImgButton which should be connect a 
         function."""
-    def __init__(self, path, hpath, pos=(0, 0), padding=4,text='',fsize=24, fcol=BLACK, data=True):
+    def __init__(self, path, hpath, pos=(0, 0), padding=4,text='',fsize=24, fcol=BLACK,\
+                  data=True, **kwargs):
         TransImgButton.__init__(self, path, hpath, pos, padding,text,fsize, fcol)
-        self.connect_callback(self._cbf, MOUSEBUTTONDOWN)
+        self.connect_callback(self._cbf, MOUSEBUTTONUP)
         self.data = data
     def _cbf(self, *args):
         return (self.data, )    
@@ -987,16 +1014,19 @@ class Dialog(Widget):
         self.actives = SPGroup(self.screen, self.backgr)
         self.actives.set_onematch(True)
         for buttxt in self.buttons:
-            b = Button(buttxt, (380, 250), butfsize, padding=12, name=buttxt, \
-                       fgcol=THEME['dialog_but_fg_color'], \
-                       bgcol=THEME['dialog_but_bg_color'])
-            b.connect_callback(self.cbf, MOUSEBUTTONDOWN, buttxt)
+#            b = Button(buttxt, (380, 250), butfsize, padding=12, name=buttxt, \
+#                       fgcol=THEME['dialog_but_fg_color'], \
+#                       bgcol=THEME['dialog_but_bg_color'])
+            b = ButtonDynamic(buttxt, (380,250), butfsize, padding=12, name=buttxt, fgcol=WHITE)
+            b.set_use_current_background(True)
+            b.connect_callback(self.cbf, MOUSEBUTTONUP, buttxt)
             self.actives.add(b)
             self.buttons_list.append(b)# keep the users order for showing (see below)
             self.butspace += b.rect.w
+        self.ImShowed = False
         self._setup()
         
-    def _setup(self):    
+    def _setup(self):
         # get all the surfaces
         title = utils.char2surf(self.title, 16, ttf=P_TTF, fcol=THEME['dialog_title_fg_color'])
         
@@ -1034,11 +1064,11 @@ class Dialog(Widget):
         y = titlesurf.get_rect().h
         x = r.w - 8
         dlgsurf.blit(tv.image, (self.padding, self.padding+titlesurf.get_rect().h))
-        
+        action_area_y = self.pos[1] + y
         y = y + tv.rect.h + self.padding
         x = r.w - 8
         pygame.draw.line(dlgsurf, (0, 0, 0), (8,y), (x, y))
-        action_area_y = self.pos[1] + y
+        
         barsurf = pygame.Surface((r.w-3, b.rect.h+self.padding-2))
         barsurf.fill(THEME['dialog_bar_color'])
         br = barsurf.get_rect()
@@ -1076,15 +1106,25 @@ class Dialog(Widget):
         
     def get_result(self):
         return self.result
+    
     def get_action_area(self):
         return self.action_area_rect
-    def run(self, guests=None):
+    
+    def show(self, guests=None):
         if guests:
             self.actives.add(guests)
-        result = None
         self.display_sprite()
         for b in self.actives:
             b.display_sprite()
+        self.ImShowed = True
+    
+    def run(self, guests=None):
+        if not self.ImShowed:
+            if guests:
+                self.actives.add(guests)
+            self.display_sprite()
+            for b in self.actives:
+                b.display_sprite()
         clock = pygame.time.Clock()
         while self.runloop:
             clock.tick(30)
@@ -1101,6 +1141,49 @@ class Dialog(Widget):
         self.backgr.blit(self.orgbackgr, (0, 0))
         self.dim.undim()
         self.screen.set_clip(self.scrclip)
+
+class DialogWindow(Dialog):
+    """Modal dialog which displays sprites and has one or two buttons of it's own.
+    The dialog has it's own eventloop.
+    This differs from a standard dialog which can only display a surface. 
+    
+    This dialog can display and handle sprite objects which will be placed relativly
+    to the dialogs' position.
+    So if the dialog is displayed at 100,100 all sprites will be moved by 100,100.
+    You must layout the sprites properly and make sure the dialog is big enough.
+    The dialog will move all sprites by the dialogs display offset.
+    
+    The dialog calls the update method on all sprites in the eventloop.
+    You can connect your sprites to callback functions to collect data or whatever.
+    When the dialog quits all the sprite objects still exists so you can query them
+    for data or states.
+     
+    Usage: TODO
+    """
+    def __init__(self, back, sprites, pos=None, butfsize=20,\
+                  buttons=['OK'], title='', name=''):
+        """screen - current pygame screen surface
+        back - A SPSprite object with a image as large as needed to hold all the sprites.
+        sprites - a list with all the sprites to display on the 'back' surface.
+                The sprites must have the name attribute set.
+        pos - is a tuple with x,y grid numbers. If not set the dialog is centered.
+        buttons - a list with strings for the buttons (max two)
+        name - to identify this object (optional) 
+        """
+        Dialog.__init__(self, back, pos=pos, fsize=12, butfsize=butfsize, buttons=buttons,\
+                         title=title, dialogwidth=back.get_sprite_width(), dialogheight=0,\
+                         name=name, fbold=True)
+        self.show()
+        x, y = self.get_action_area().topleft
+        for s in sprites:
+            s.set_use_current_background(True)
+            sx, sy = s.get_sprite_pos()
+            s.moveto((sx + x,sy + y))
+            s.display_sprite()
+        self._back = back
+        self.sprites = sprites 
+        self.actives.add(sprites)
+        
 
 class StarButtonsDialog(Widget):
     """Special dialog with a level indicator used by the braintrainer version.
@@ -1125,7 +1208,7 @@ class StarButtonsDialog(Widget):
         for i in range(self.maxlevels):
             b = SPSprite(self.imgstar0)
             b.moveto((x, y), hide=True)
-            b.connect_callback(self.cbf, MOUSEBUTTONDOWN, i+1)
+            b.connect_callback(self.cbf, MOUSEBUTTONUP, i+1)
             self.starlist.append(b)
             x += self.imgstar0.get_width()
         # set first star to active
@@ -1138,7 +1221,7 @@ class StarButtonsDialog(Widget):
         
         for buttxt in [_("Cancel"), _("OK")]:
             b = Button(buttxt, (x, y), fsize=THEME['starbuttonsdialog_fsize'], name=buttxt)
-            b.connect_callback(self.but_cbf, MOUSEBUTTONDOWN, buttxt)
+            b.connect_callback(self.but_cbf, MOUSEBUTTONUP, buttxt)
             self.actives.add(b)
             self.buttons_list.append(b)# keep the users order for showing (see below)
             x += 300
@@ -1214,7 +1297,7 @@ class PrevNextButton:
         self.nextimg = temp._but.convert_alpha()
         self.nextimg_hover = temp._but_hover.convert_alpha()
         self.rect = self.nextimg.get_rect()
-        self.but.connect_callback(self._cbf, MOUSEBUTTONDOWN, 'prev')
+        self.but.connect_callback(self._cbf, MOUSEBUTTONUP, 'prev')
     
     def get_actives(self):
         return self.but
@@ -1226,13 +1309,13 @@ class PrevNextButton:
             self.but._but = self.nextimg
             self.but._but_hover = self.nextimg_hover
             self.state = 'next'
-            self.but.connect_callback(self._cbf, MOUSEBUTTONDOWN, 'next')
+            self.but.connect_callback(self._cbf, MOUSEBUTTONUP, 'next')
         else:
             self.current = self.previmg
             self.but._but = self.previmg
             self.but._but_hover = self.previmg_hover
             self.state = 'prev'
-            self.but.connect_callback(self._cbf, MOUSEBUTTONDOWN, 'prev')
+            self.but.connect_callback(self._cbf, MOUSEBUTTONUP, 'prev')
         self.but.mouse_hover_leave()
 
     def get_state(self):
@@ -1279,7 +1362,7 @@ class TransPrevNextButton(PrevNextButton):
         self.nextimg = temp._but.convert_alpha()
         self.nextimg_hover = temp._but_hover.convert_alpha()
         self.rect = self.nextimg.get_rect()
-        self.but.connect_callback(self._cbf, MOUSEBUTTONDOWN, 'prev')
+        self.but.connect_callback(self._cbf, MOUSEBUTTONUP, 'prev')
         
 
 class ChartButton(ImgButton):
@@ -1289,7 +1372,7 @@ class ChartButton(ImgButton):
         if not os.path.exists(p):
             p = os.path.join(DEFAULTTHEMESPATH, bname)
         ImgButton.__init__(self, p, pos, name='Chart')
-        self.connect_callback(cbf, MOUSEBUTTONDOWN, 'Chart')
+        self.connect_callback(cbf, MOUSEBUTTONUP, 'Chart')
     
 class DiceButtons:
     def __init__(self, pos, actives, cbf, usebutton=True):
@@ -1318,7 +1401,7 @@ class DiceButtons:
             dicelist.sort()
             for diceimg in dicelist:
                 but = ImgButton(diceimg, pos, name='Dice')
-                but.connect_callback(cbf, MOUSEBUTTONDOWN, count)
+                but.connect_callback(cbf, MOUSEBUTTONUP, count)
                 self._butdict[count] = but
                 count += 1
         except StandardError, info:
@@ -1388,7 +1471,6 @@ class StarButton(DiceButtons):
     This uses a special dialog, SPWidgets.StarButtonsDialog.
     It derived the DiceButtons class so that the changes to the core are minimal."""
     def __init__(self, pos, actives, cbf, lock, usebutton=True, theme='seniorplay'):
-        
         self.maxlevels = 6
         self.cbf = cbf
         self._current_but = None
@@ -1449,7 +1531,7 @@ class StarButton(DiceButtons):
             x += self.rectstar.w
         self._current_but = TransImgButton(self.image, None, self.pos, name='Star')
         if self._isenabled:
-            self._current_but.connect_callback(self._start_dlg, MOUSEBUTTONDOWN, level)
+            self._current_but.connect_callback(self._start_dlg, MOUSEBUTTONUP, level)
             self.actives.add(self._current_but)
         self.show()
         
@@ -1469,7 +1551,8 @@ class MenuBar:
             self.infobutton = TransImgButton(p, hp,pos, name='Info')
         else:
             self.infobutton = ImgButton(p, pos, name='Info')
-        self.infobutton.connect_callback(cbf, MOUSEBUTTONDOWN, 'Info')
+        self.infobutton.mouse_hover_leave_action = True
+        self.infobutton.connect_callback(cbf, MOUSEBUTTONUP, 'Info')
         
         bname = 'core_quit_button.png'
         hbname = 'core_quit_button_ro.png'
@@ -1484,7 +1567,8 @@ class MenuBar:
             self.quitbutton = TransImgButton(p, hp,pos, name='Quit')
         else:
             self.quitbutton = ImgButton(p, pos, name='Quit')
-        self.quitbutton.connect_callback(cbf, MOUSEBUTTONDOWN, 'Quit')
+        self.quitbutton.mouse_hover_leave_action = True
+        self.quitbutton.connect_callback(cbf, MOUSEBUTTONUP, 'Quit')
         
         if volume_level == 0:
             bname = 'core_volmute_button.png'
@@ -1503,10 +1587,12 @@ class MenuBar:
             self.volumebutton = TransImgButton(p, hp,pos, name='Volume')
         else:
             self.volumebutton = ImgButton(p, pos, name='Volume')
-        self.volumebutton.connect_callback(cbf, MOUSEBUTTONDOWN, 'Volume')
+        self.volumebutton.mouse_hover_leave_action = True
+        self.volumebutton.connect_callback(cbf, MOUSEBUTTONUP, 'Volume')
         
         if usegraph:
             self.chartbutton = ChartButton((CORE_BUTTONS_XCOORDS[5], rect.top+8), cbf)
+            self.chartbutton.mouse_hover_leave_action = True
         else:
             self.chartbutton = None
         if usestar:
@@ -1699,7 +1785,7 @@ class ScoreDisplay(Label):
         # TODO: set fgcol and bgcol kwargs ?
         Label.__init__(self, self.scorestr, pos, fsize=20, padding=9, border=1)
         if cbf:
-            self.connect_callback(cbf, MOUSEBUTTONDOWN, 'scoredisplay')
+            self.connect_callback(cbf, MOUSEBUTTONUP, 'scoredisplay')
             # We disguise our selfs into a graphbutton
             self.name = 'Chart'
         else:
@@ -1771,17 +1857,18 @@ class VolumeAdjust:
         self.volumetoggle = TransPrevNextButton((px, py), self._cbf_toggle_volume, \
                                   prev, prev_ro,\
                                   next, next_ro)
-        
         px += self.volumetoggle.rect.w + 20
         self.voldownbut = TransImgButton(imgdown, imgdown_ro, (px, py))
-        self.voldownbut.connect_callback(self._cbf, MOUSEBUTTONDOWN, -5)
+        self.voldownbut.mouse_hover_leave_action = True
+        self.voldownbut.connect_callback(self._cbf, MOUSEBUTTONUP, -5)
         
         px += self.voldownbut.rect.w
         self.lbl.moveto((px , py+4))
         px += self.lbl.rect.w
         
         self.volupbut = TransImgButton(imgup, imgup_ro, (px, py))
-        self.volupbut.connect_callback(self._cbf, MOUSEBUTTONDOWN, 5)
+        self.volupbut.mouse_hover_leave_action = True
+        self.volupbut.connect_callback(self._cbf, MOUSEBUTTONUP, 5)
         if self.volume == 0:
             self.volumetoggle.toggle()
             self.volumetoggle.display_sprite()
@@ -1923,21 +2010,21 @@ class ScrollWindow(Widget):
             self.upbut = Button("up", (self.rect.right+4, self.rect.centery))
             self.downbut = Button("down", (self.rect.right+4, self.rect.centery))
         self.downbut.moveto((self.rect.right+4, self.rect.bottom - self.downbut.get_sprite_height()))
-        self.upbut.connect_callback(self._cbf, MOUSEBUTTONDOWN, 'up')
+        self.upbut.connect_callback(self._cbf, MOUSEBUTTONUP, 'up')
         self.upbut.display_sprite()
-        self.downbut.connect_callback(self._cbf, MOUSEBUTTONDOWN, 'down')
+        self.downbut.connect_callback(self._cbf, MOUSEBUTTONUP, 'down')
         self.downbut.display_sprite()  
         #self.display_sprite(pos)
         self.display_children()
     
     def _cbf(self, event, widget, data):
         if data[0] == 'down':
-           if not self.rect.contains(self._lastchild.rect):
-            if self.scrollstep < 0:
-                pass
-            else:
-                self.scrollstep = -self.scrollstep
-            self._scroll_children()
+            if not self.rect.contains(self._lastchild.rect):
+                if self.scrollstep < 0:
+                    pass
+                else:
+                    self.scrollstep = -self.scrollstep
+                self._scroll_children()
         else:
             if not self.rect.contains(self._firstchild.rect):
                 self.scrollstep = abs(self.scrollstep)
@@ -1957,7 +2044,6 @@ class ScrollWindow(Widget):
         oldclip = self.screen.get_clip()
         self.screen.set_clip(self.visiblerect)
         for obj in self._objects:
-            pos = obj.get_sprite_pos()
             if obj._scroll_focus:# displayed object
                 obj.erase_sprite()
                 obj.rect.move_ip((0, self.scrollstep))
@@ -1990,7 +2076,7 @@ def make_button_bg_dynamic(width, sizename, colorname, colorname_ro='black'):
         hright = utils.load_image(os.path.join(THEME['themepath'], "%s_%s_%s.png" % (sizename, 'right', colorname_ro)))
         hcenter = utils.load_image(os.path.join(THEME['themepath'], "%s_%s_%s.png" % (sizename, 'center', colorname_ro)))
     except IOError, info:
-        raise MakeButtonException, info
+        raise Exception, info
     offset = left.get_rect().w 
     hight = left.get_rect().h
     x = width
@@ -2126,8 +2212,6 @@ def render_textrect(string, fsize, family, rect, text_color, background_color,\
         else:
             final_lines.append(requested_line)
 
-    
-        
     accumulated_height = 0
     for line in final_lines:
 #        if accumulated_height + font.size(line)[1] >= rect.height:
@@ -2174,7 +2258,20 @@ if __name__ == '__main__':
         print 'cb called with sprite %s, event %s and data %s' % (sprite, event, data)
         print 'sprite name: %s' % sprite.get_name()
         print 'data is %s' % data
-    
+        
+    def cbf_but(sprite, event, data=''):
+               
+        surf = pygame.Surface((300,300))
+        surf.fill(GREEN)
+        back = SPSprite(surf, (0,0))
+        
+        but = Button('Dialog Button', (10, 10), padding=6)
+        but.connect_callback(cbf, MOUSEBUTTONUP, 'Dialog Button')
+        objects =[but]
+        
+        dlg = DialogWindow(back,objects,title='Title text')
+        dlg.run()
+        
     scr = pygame.display.set_mode((800, 600))
     scr.fill(GREY90)
     pygame.display.flip()
@@ -2183,8 +2280,10 @@ if __name__ == '__main__':
     
     Init('braintrainer')
     
-#    but = Button('Button', (10, 80), padding=6)
-#    but.connect_callback(cbf, MOUSEBUTTONDOWN, 'Button')
+    but = Button('Button', (10, 10), padding=6)
+    but.connect_callback(cbf_but, MOUSEBUTTONUP, 'Button')
+    but.display_sprite()
+    actives.add(but)
 #    lbl = Label('Hit escape key to continue', (10, 130))
 #    r = pygame.Rect(0, 0, 500, 240)
 #    txt = "This program is free software; you can redistribute it and/or modify it under the terms of version 3 of the GNU General Public License as published by the Free Software Foundation.  A copy of this license should be included in the file GPL-3."
@@ -2217,7 +2316,7 @@ if __name__ == '__main__':
 #    for i in range(30):
 #        t = "Label %s" % i
 #        lbl = Label(t, (0, 0))
-#        lbl.connect_callback(cbf, MOUSEBUTTONDOWN, t)
+#        lbl.connect_callback(cbf, MOUSEBUTTONUP, t)
 #        actives.add(lbl)
 #        objects.append(lbl)
 #    
@@ -2225,13 +2324,13 @@ if __name__ == '__main__':
 #    actives.add(sw)
 #    actives.add(sw.get_actives())
 
-    rb = RadioButton(None, "test radiobutton", (100, 100), name='rb')
-    rb.display_sprite()
-    actives.add(rb)
-    
-    rb0 = RadioButton(rb, "test radiobutton", (100, 130), name='rb0')
-    rb0.display_sprite()
-    actives.add(rb0)
+#    rb = RadioButton(None, "test radiobutton", (100, 100), name='rb')
+#    rb.display_sprite()
+#    actives.add(rb)
+#    
+#    rb0 = RadioButton(rb, "test radiobutton", (100, 130), name='rb0')
+#    rb0.display_sprite()
+#    actives.add(rb0)
     runloop = 1 
     while runloop:
         pygame.time.wait(100)

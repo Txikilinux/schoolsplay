@@ -462,9 +462,11 @@ class Activity:
         pygame.display.update()
         img = utils.load_image(os.path.join(self.my_datadir,'ball1.png'))
         imgsize = (img.get_width(), img.get_height())
-        x,y = (random.randrange(8,791-imgsize[0],1),random.randrange(8,491 - self.blit_pos[1] -imgsize[1],1))
+        x,y = (random.randrange(8,791-imgsize[0],1),\
+               random.randrange(self.blit_pos[1],491 - self.blit_pos[1] -imgsize[1],1))
         while self.tooclose((x,y,imgsize), objects):
-            x,y = (random.randrange(8,791-imgsize[0],1),random.randrange(self.blit_pos[1],491- self.blit_pos[1] -imgsize[1],1))
+            x,y = (random.randrange(8,791-imgsize[0],1),\
+                   random.randrange(self.blit_pos[1],491- self.blit_pos[1] -imgsize[1],1))
         objects.append([(x,y),imgsize])
         self.ball1 = Ball(img, (x,y),'blue')# the extra argument can be 'blue' or 'red'. this way we know what kind of ball it is.
         # use this if you just want to display a sprite

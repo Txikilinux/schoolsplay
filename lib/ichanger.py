@@ -311,9 +311,9 @@ class Activity:
     def start(self):
         """Mandatory method."""
         self.SPG.tellcore_set_dice_minimal_level(3)
-        self.startbut = SPWidgets.SimpleButtonRound(_('Start'), self.but_pos[0], fsize=24)
+        self.startbut = SPWidgets.SimpleButtonDynamic(_('Start'), self.but_pos[0], fsize=24)
         self.startbut.set_use_current_background(True)
-        self.cheatbut = SPWidgets.SimpleButtonRound(_('Cheat'), self.but_pos[0], fsize=24)
+        self.cheatbut = SPWidgets.SimpleButtonDynamic(_('Cheat'), self.but_pos[0], fsize=24)
         self.cheatbut.set_use_current_background(True)
         self.startbut.connect_callback(self._startbutton_cbf, MOUSEBUTTONDOWN)
         self.cheatbut.connect_callback(self._cheatbutton_cbf, MOUSEBUTTONDOWN)

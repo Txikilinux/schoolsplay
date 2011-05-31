@@ -58,7 +58,7 @@ class birthday:
         self.screen = screen
         self.back = back
         self.actives = SPSpriteUtils.SPInit(self.screen, self.back)
-        but = SPWidgets.SimpleButtonRound(_("Close"), (350, 500), fsize=24, data='close')
+        but = SPWidgets.SimpleButtonDynamic(_("Close"), (350, 500), fsize=24, data='close')
         but.set_use_current_background(True)
         but.display_sprite()
         self.actives.add(but)
