@@ -241,17 +241,6 @@ def map_keys(key_map, key):
             module_logger.error("No key: %s found" % key)
             return key
 
-def replace_rcfile():
-    """This is only used when we want to replace an existing configfile."""
-    #pass #enable this and comment out the rest when not replacing
-    src = os.path.join(RCDIR, CHILDSPLAYRC)
-    dst = os.path.join(HOMEDIR, 'ConfigData', CHILDSPLAYRC)
-    if os.path.exists(src) and os.path.exists(dst):
-        shutil.move(dst, dst + '.old')
-        module_logger.info("Backup made from your old config file called %s." % dst + '.old')
-        module_logger.info("Replace childsplayrc file:\n %s\n->%s" % (src, dst))
-        shutil.copyfile(src, dst)
-
 class NoneSound:
     """Used by the load_sound and load_music functions to provide
      a bogus sound object.
@@ -1187,9 +1176,3 @@ else:
 rc_hash = read_rcfile(dbp)
 WEAREPRODUCTION = int(rc_hash['default']['production'])
 
-if __name__ == '__main__':
-    import SPLogging
-    SPLogging.set_level(CMD_Options.loglevel)
-    SPLogging.start()
-    
-    

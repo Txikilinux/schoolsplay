@@ -38,7 +38,6 @@ import SPHelpText
 from utils import MyError, StopmeException
 try:
     import sqlalchemy as sqla
-    import sqlalchemy.exceptions as sqlae
     import sqlalchemy.orm as sqlorm
 except ImportError:
     module_logger.exception("No sqlalchemy package found")
@@ -49,7 +48,10 @@ else:
         module_logger.error("Your version of sqlalchemy is to old, please upgrade to version >= 0.4")
         raise MyError
     module_logger.debug("using sqlalchemy %s" % sqla.__version__)
-
+try:
+    import sqlalchemy.exceptions as sqlae
+except ImportError:
+    from sqlalchemy import exc as sqlae
 # attempt to prevent sqlalchemy trhowing recursion limit error
 sys.setrecursionlimit(2000) # 1000 is the default
 

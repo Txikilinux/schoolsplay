@@ -73,7 +73,7 @@
     <menuitem enable="True" file="fishtank.icon.png" hoverfile="fishtank_ro.icon.png">
       <activity>fishtank</activity>
     </menuitem>
-    <menuitem enable="True" file="photoalbum.icon.png" hoverfile="photoalbum_ro.icon.png">
+    <menuitem enable="False" file="photoalbum.icon.png" hoverfile="photoalbum_ro.icon.png">
       <activity>photoalbum</activity>
     </menuitem>
     <menuitem enable="True" file="dltr.icon.png" hoverfile="dltr_ro.icon.png">
