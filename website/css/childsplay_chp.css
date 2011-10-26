@@ -125,6 +125,7 @@ a:active {color:#f44d07; text-decoration:underline;}
 }
 
 #content {
+width:500px;
 	padding-top:290px;
 	padding-left:223px;
 }
