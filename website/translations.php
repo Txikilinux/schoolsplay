@@ -55,7 +55,7 @@
 
 <!-- InstanceBeginEditable name="content" -->
 <h1>Translations</h1> 
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec posuere nulla vel lacus fermentum vulputate rutrum elit luctus. Integer volutpat dui vel mi tincidunt eget rhoncus lacus auctor. Integer nec purus lectus, sed dictum libero. Sed tristique pulvinar tellus, fringilla interdum ante rutrum quis. Nunc ornare, diam ut scelerisque pulvinar, sem lorem dapibus dui, nec porttitor augue tellus a massa. Phasellus consectetur faucibus mi, posuere bibendum elit ultrices ac. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Cras dapibus purus mi. Aliquam erat volutpat. Ut vulputate vehicula vehicula. </p><!-- InstanceEndEditable --></div>
+      <p>Nothing yet </p><!-- InstanceEndEditable --></div>
 <div id="donate">
     <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
     <input type="hidden" name="cmd" value="_s-xclick">
