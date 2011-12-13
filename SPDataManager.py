@@ -200,7 +200,7 @@ class DataManager:
             neworm.first_name = 'Demo'
             neworm.last_name = ''
             neworm.login_name = 'Demo'
-            neworm.audio = 75
+            neworm.audio = 50
             neworm.group = 0
             neworm.dt_target = 'demo'
             session.add(neworm)

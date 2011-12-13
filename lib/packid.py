@@ -281,11 +281,11 @@ class Word:
 
     def _render(self):
         #print self.index
-        high_letter,lettersize = utils.font2surf(self.chars[self.index],self.fontsize,self.hfcol,self.ttf,1, bold=True)
+        high_letter,lettersize = utils.text2surf(self.chars[self.index],self.fontsize,self.hfcol,self.ttf,1, bold=True)
 
         if self.index == 0: # Highlight first letter
             split = self.chars[1:]
-            word,wordsize = utils.font2surf(split,self.fontsize,self.fcol,self.ttf,1, bold=True)
+            word,wordsize = utils.text2surf(split,self.fontsize,self.fcol,self.ttf,1, bold=True)
             surfsize = (lettersize[0]+wordsize[0],lettersize[1])
             surf = pygame.Surface(surfsize).convert()
             if self.cpg.get_localesetting()[1]: # RTL
@@ -297,7 +297,7 @@ class Word:
 
         elif self.index == len(self.chars)-1: # Highlight last letter
             split = self.chars[:-1]
-            word,wordsize = utils.font2surf(split,self.fontsize,self.fcol,self.ttf,1, bold=True)
+            word,wordsize = utils.text2surf(split,self.fontsize,self.fcol,self.ttf,1, bold=True)
             surfsize = (lettersize[0]+wordsize[0],lettersize[1])
             surf = pygame.Surface(surfsize).convert()
             if self.cpg.get_localesetting()[1]: # RTL
@@ -308,9 +308,9 @@ class Word:
                 surf.blit(high_letter,(wordsize[0],0))
 
         else: # Letter inside the word, the word must be split in two parts
-            word,wordsize = utils.font2surf(self.chars[:self.index],self.fontsize,\
+            word,wordsize = utils.text2surf(self.chars[:self.index],self.fontsize,\
                             self.fcol,self.ttf,1, bold=True)
-            word1,word1size = utils.font2surf(self.chars[self.index+1:],self.fontsize,\
+            word1,word1size = utils.text2surf(self.chars[self.index+1:],self.fontsize,\
                               self.fcol,self.ttf,1, bold=True)
             surfsize = (lettersize[0]+wordsize[0]+word1size[0],lettersize[1])
             surf = pygame.Surface(surfsize).convert()
@@ -368,7 +368,7 @@ class SidePanel:
         self.surf.blit(levelimg,pos)
                              
     def set_word(self,word):
-        wordimg, size = utils.font2surf(word,self.fsize-2,self.fcol,self.ttf,sizel=True,\
+        wordimg, size = utils.text2surf(word,self.fsize-2,self.fcol,self.ttf,sizel=True,\
                                    antialias=True, bold=True)
         self.y += size[1]
         self.surf.blit(wordimg,(self.x,self.y))
@@ -724,15 +724,15 @@ class Activity:
         ### TODO fix RTL issues here
         if self.level != 4:
             if self.SPG.get_localesetting()[1]:
-                surf,spam = utils.font2surf(line1,12,(183,255,50),self.ttf,1, bold=True)
+                surf,spam = utils.text2surf(line1,12,(183,255,50),self.ttf,1, bold=True)
                 pygame.display.update(self.screen.blit(surf,(780-spam[0],0+self.gamearea.top)))
-                surf,self.surfword_offset = utils.font2surf(line2,12,(183,255,50),self.ttf,1, bold=True)
+                surf,self.surfword_offset = utils.text2surf(line2,12,(183,255,50),self.ttf,1, bold=True)
                 pygame.display.update(self.screen.blit(surf,(780-self.surfword_offset[0],24+self.gamearea.top)))
                 word = random.choice(self.words)
             else:
-                surf,spam = utils.font2surf(line1,12,(183,255,50),self.ttf,1, bold=True)
+                surf,spam = utils.text2surf(line1,12,(183,255,50),self.ttf,1, bold=True)
                 pygame.display.update(self.screen.blit(surf,(28,4+self.gamearea.top)))
-                surf,self.surfword_offset = utils.font2surf(line2,12,(183,255,50),self.ttf,1, bold=True)
+                surf,self.surfword_offset = utils.text2surf(line2,12,(183,255,50),self.ttf,1, bold=True)
                 pygame.display.update(self.screen.blit(surf,(8,30+self.gamearea.top)))
                 word = random.choice(self.words)
         

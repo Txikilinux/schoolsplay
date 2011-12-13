@@ -188,7 +188,7 @@ class Stick(SPSpriteUtils.SPSprite):
     
 class MovingSign(SPSpriteUtils.SPSprite):
     def __init__(self, txt, size, start, stop, step, fcol, scr, bck, era):
-        self.image,self.size = utils.font2surf(txt, size, fcol, bold=True)
+        self.image,self.size = utils.text2surf(txt, size, fcol, bold=True)
         SPSpriteUtils.SPSprite.__init__(self,self.image)
         self.rect = self.image.get_rect()
         self.set_movement(start, stop, step, 1, 0)
@@ -569,7 +569,7 @@ class Activity:
             self.maxpoints += self.pointstoadd
             self.points += s
             self.tries += 1
-            txt,sz = utils.font2surf(str(self.points)+'  '+_("points"), 48, (8, 0, 120), bold=True)
+            txt,sz = utils.text2surf(str(self.points)+'  '+_("points"), 48, (8, 0, 120), bold=True)
             self.screen.blit(txt, (200,200))
             pygame.display.update()
             pygame.time.wait(2000)
@@ -582,7 +582,7 @@ class Activity:
                     Misc.score = self.points
                     self.screen.blit(self.backgr, (0,0))
                     MovingSign(_("You won!!"), 80, (100,100), (100,300), 1, (8,0,120), self.screen, self.backgr, 0)
-                    txt,sz = utils.font2surf(str(self.points)+'  '+_("points"), 48, (8, 0, 120), bold=True)
+                    txt,sz = utils.text2surf(str(self.points)+'  '+_("points"), 48, (8, 0, 120), bold=True)
                     self.screen.blit(txt, (200,200))
                     pygame.display.update()
                     for i in range(0,3):
