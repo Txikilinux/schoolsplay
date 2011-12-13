@@ -145,6 +145,7 @@ class OParser(OptionParser):
 
     def parse_themerc(self):
         config = ConfigParser.ConfigParser()
+        print config
         rc = os.path.join(ACTIVITYDATADIR, 'SPData', 'themes', self.options.theme, 'theme.rc')
         print("DEBUG: parsing rc file %s" % rc)
         config.read(rc)

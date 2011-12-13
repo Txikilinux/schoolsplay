@@ -295,7 +295,7 @@ class MainCoreGui:
         orm, session = self.dm.get_orm('users', 'user')
         row = session.query(orm).filter_by(user_id = user_id).first()
         self.statshash['user_id'] = user_id
-        
+        self.statshash['datetime'] = datetime.datetime.now()# we override it when something is loaded
         # we now have user data so we check to see if we should set some custom stuff 
         # Set volume level
         if not row:
