@@ -28,7 +28,11 @@ import SPVirtkeyboardMap as VKM
 
 KEYCOL = 45, 83, 152 
 
-class Key(SPWidgets.ImgButton):
+class SuperKey(SPWidgets.ImgButton):
+    def __init__(self, s, pos, pad, value):
+        SPWidgets.ImgButton.__init__(self, s, pos, pad, value)
+    
+class Key(SuperKey):
     def __init__(self, value, pos, obs, fsize=28, butsize=(48, 48)):
         ci = utils.char2surf(value,fsize, WHITE, ttf=TTFBOLD)
         s = pygame.Surface(butsize)
@@ -38,19 +42,19 @@ class Key(SPWidgets.ImgButton):
         cir.center = s.get_rect().center
         s.blit(ci, cir)
         
-        SPWidgets.ImgButton.__init__(self, s, pos, 4, value)
-        self.connect_callback(obs, MOUSEBUTTONDOWN, value)
+        SuperKey.__init__(self, s, pos, 4, value)
+        self.connect_callback(obs, MOUSEBUTTONUP, value)
 
-class SpaceKey(SPWidgets.ImgButton):
-    def __init__(self, pos, obs, butsize=(156, 48)):
+class SpaceKey(SuperKey):
+    def __init__(self, pos, obs, butsize=(100, 48)):
         s = pygame.Surface(butsize)
         s.fill(KEYCOL)
         pygame.draw.rect(s, WHITE, s.get_rect(), 1)
         
-        SPWidgets.ImgButton.__init__(self, s, pos, 4, 'space')
-        self.connect_callback(obs, MOUSEBUTTONDOWN, 'space')
+        SuperKey.__init__(self, s, pos, 4, 'space')
+        self.connect_callback(obs, MOUSEBUTTONUP, 'space')
 
-class BackspaceKey(SPWidgets.ImgButton):
+class BackspaceKey(SuperKey):
     def __init__(self, pos, obs, butsize=(100, 50)):
         s = pygame.Surface(butsize)
         s.fill(KEYCOL)
@@ -60,10 +64,10 @@ class BackspaceKey(SPWidgets.ImgButton):
         pygame.draw.line(s, WHITE, (15,31), (20,26),2)
         pygame.draw.line(s, WHITE, (15,32), (20,37),2)
         
-        SPWidgets.ImgButton.__init__(self, s, pos, 4, 'backspace')
-        self.connect_callback(obs, MOUSEBUTTONDOWN, 'backspace')
+        SuperKey.__init__(self, s, pos, 4, 'backspace')
+        self.connect_callback(obs, MOUSEBUTTONUP, 'backspace')
 
-class EnterKey(SPWidgets.ImgButton):
+class EnterKey(SuperKey):
     def __init__(self, pos, obs, fsize=28, butsize=(100, 104)):
         text = utils.char2surf("Enter", fsize, WHITE, ttf=TTFBOLD)
         textpos = text.get_rect()
@@ -82,8 +86,23 @@ class EnterKey(SPWidgets.ImgButton):
         pygame.draw.line(s, WHITE, (25,81), (30,76),2)
         pygame.draw.line(s, WHITE, (25,82), (30,87),2)
         
-        SPWidgets.ImgButton.__init__(self, s, pos, 4, 'enter')
-        self.connect_callback(obs, MOUSEBUTTONDOWN, 'enter')
+        SuperKey.__init__(self, s, pos, 4, 'enter')
+        self.connect_callback(obs, MOUSEBUTTONUP, 'enter')
+
+
+class ShiftKey(SuperKey):
+    def __init__(self, pos, obs, fsize=28, butsize=(48, 48)):
+        s = pygame.Surface(butsize)
+        s.fill(KEYCOL)
+        sr = s.get_rect()
+        
+        pygame.draw.rect(s, WHITE, s.get_rect(), 1)
+        pygame.draw.line(s, WHITE, (22, 10), (22,36),2)
+        pygame.draw.line(s, WHITE, (22, 10), (16,16),2)
+        pygame.draw.line(s, WHITE, (22, 10), (28,16),2)
+        
+        SuperKey.__init__(self, s, pos, 4, 'shift')
+        self.connect_callback(obs, MOUSEBUTTONUP, 'shift')
 
 class KeyBoard(SPWidgets.Widget):
     """Class which provides a virtual on screen keyboard for use on touchscreens or
@@ -128,7 +147,10 @@ class KeyBoard(SPWidgets.Widget):
         self.display_position = display_position
         self.actives = actives
         self.display = display
-        self.set_keymap(keyboard_mode)
+        self._ShiftActive = False
+        self._KeepDisplay = False
+        self.keyboard_mode = keyboard_mode
+        self.set_keymap()
         # wordcompleter related stuff.
         if threshold == 0:
             self.WC = None
@@ -138,8 +160,9 @@ class KeyBoard(SPWidgets.Widget):
         self.text = ''# we also keep text in TI but local is faster (for wordcompletion)
         self.maxanswers = maxanswers
         self._IamShowed = False
-        
-    def set_keymap(self, kbmap):
+                
+    def set_keymap(self):
+        kbmap = self.keyboard_mode
         if kbmap == 'qwerty':
             map = VKM.Qwerty()
         elif kbmap == 'abc':
@@ -150,6 +173,10 @@ class KeyBoard(SPWidgets.Widget):
             map = VKM.QwertySquare()
         elif kbmap == 'abc_square':
             map = VKM.AbcSquare()
+        elif kbmap == 'abc_minus':
+            map = VKM.AbcMinus()
+        elif kbmap == 'qwerty_minus':
+            map = VKM.QwertyMinus()
         but_x,  but_y = 56, 56
                 # setup keys
         x = self.position[0]
@@ -158,6 +185,10 @@ class KeyBoard(SPWidgets.Widget):
         self.keys = []
         for line in map.getlines():
             for k in line:
+                if self._ShiftActive:
+                    k = k.upper()
+                else:
+                    k = k.lower()
                 k = Key(k,(x, y), self.observer)
                 self.keys.append(k)
                 x += but_x
@@ -175,12 +206,16 @@ class KeyBoard(SPWidgets.Widget):
         # space
         if map != 'numbers':
             ks = SpaceKey(extrakeys_pos[3], self.observer)
-            self.keys.append(ks)
-
+            ksh = ShiftKey((extrakeys_pos[3][0] + ks.rect.w, extrakeys_pos[3][1]),\
+                                            self.observer)
+            self.keys += [ks, ksh]
+            
         correction = 8
         if self.display_length == 0:
             self.display_length = extrakeys_pos[0][0] - x + kb.get_sprite_width() - correction    
         # setup the text display
+        if self._KeepDisplay:
+            return
         if self.display:
             self.TI = SPWidgets.TextEntry(pos=self.display_position, \
                             length=self.display_length, maxlen=self.maxlen, \
@@ -189,6 +224,7 @@ class KeyBoard(SPWidgets.Widget):
             self.actives.set_input_focus(self.TI)
         else:
             self.TI = self.actives.who_has_input_focus()
+            self._KeepDisplay = True
 
     def _set_firstletter(self, c, snd):
         # special attributes set in TextEntry, only used by various Argos acts.
@@ -202,17 +238,22 @@ class KeyBoard(SPWidgets.Widget):
         if self._IamShowed:
             return
         else:
-            self.actives.add([self.keys, self.TI])
+            self.actives.add(self.keys)
+            if not self._KeepDisplay:
+                self.actives.add(self.TI)
             self._IamShowed = True
         
     def hide(self):
         for b in self.keys:
             b.erase_sprite()
-        self.TI.erase_sprite()
+        if  not self._KeepDisplay:
+            self.TI.erase_sprite()
         if not self._IamShowed:
             return
         else:
-            self.actives.remove([self.keys, self.TI])
+            self.actives.remove(self.keys)
+            if not self._KeepDisplay:
+                self.actives.remove(self.TI)
             self._IamShowed = False
     
     def visible(self):
@@ -241,8 +282,27 @@ class KeyBoard(SPWidgets.Widget):
                 self.cbf(self, ans)
         elif c == 'enter':
             # notify our parent observer
-            self.cbf(self, self.get_text())
+            result = self.cbf(self, self.get_text())
+            if result:
+                self.hide()
+        elif c == 'shift':
+            self._KeepDisplay = True
+            if self._ShiftActive:
+                self._ShiftActive = False
+                self.hide()
+                self.set_keymap()
+                self.show()
+            else:
+                self._ShiftActive = True
+                self.hide()
+                self.set_keymap()
+                self.show()
         else:
+            if self._ShiftActive:
+                self._ShiftActive = False
+                self.hide()
+                self.set_keymap()
+                self.show()
             self.TI.add(c)
             text = self.TI.get_text().lower()
             if self.WC and len(text) >= self.threshold:
@@ -254,7 +314,7 @@ class KeyBoard(SPWidgets.Widget):
         
     def toggle_numbers(self, value):
         pass
-
+        
         
 class WordCompleter:
     """Class which provides word completion.

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010-2011 Stas Zytkiewicz stas.zytkiewicz@gmail.com
 #
 #           ichanger.py
 # This program is free software; you can redistribute it and/or
@@ -97,7 +97,7 @@ class Card(SPSpriteUtils.SPSprite):
     def callback(self,sprite,event,*args):
         if self.IMchanged:
             #print "correct"
-            pygame.draw.rect(self.image, SPRING_GREEN,self.image.get_rect(), 12)
+            pygame.draw.rect(self.image,ROSYBROWN,self.image.get_rect(), 12)
             self.display_sprite()
             self.observer(True)
         else:
@@ -175,8 +175,10 @@ class Activity:
         if not os.path.exists(imgdir):
             imgdir = os.path.join(self.my_datadir, 'images','childsplay')
         
-        self.imagepaths = [f for f in glob.glob(os.path.join(imgdir, '*'))\
+        self.imagepaths_org = [f for f in glob.glob(os.path.join(imgdir, '*'))\
                             if os.path.basename(f) not in ('cardfront.png', 'cardback.png')]
+        self.imagepaths = self.imagepaths_org[:]
+        random.shuffle(self.imagepaths)
         self.opencard = utils.load_image(os.path.join(imgdir,'cardfront.png'))
         self.closedcard = utils.load_image(os.path.join(imgdir,'cardback.png'))
         
@@ -207,9 +209,9 @@ class Activity:
             self.actives.empty()
             self.EndExerciseFlag = True
             self.exercises -= 1
-            self.displayedscore += 10
+            self.displayedscore += 10 * 15
             self.levelupcount += 1
-            self.scoredisplay.set_score(self.displayedscore*15)
+            self.scoredisplay.set_score(self.displayedscore)
             self.good_sound.play()
             self.good_image.display_sprite()
             pygame.time.wait(1500)
@@ -217,11 +219,11 @@ class Activity:
             self.dbscore -= 2
             if self.dbscore < 0:
                 self.dbscore = 0
-            self.displayedscore -= 10
+            self.displayedscore -= 10 * 50
             if self.displayedscore <= 0:
                 self.displayedscore = 0
             self.levelupcount -= 1
-            self.scoredisplay.set_score(self.displayedscore*50)
+            self.scoredisplay.set_score(self.displayedscore)
             self.wrong_sound.play()
             pygame.time.wait(1500)
             
@@ -255,6 +257,7 @@ class Activity:
         self.WEcheat = True
         self.actives.remove(sprite)
         self.cheatbut.erase_sprite()
+        self.actives.empty()
         for c in self.cardlist:
             c.close()
             c.reset()
@@ -269,6 +272,10 @@ class Activity:
         self.screen.blit(self.orgscreen,self.blit_pos)
         self.backgr.blit(self.orgscreen,self.blit_pos)
         pygame.display.update()
+
+    def get_moviepath(self):
+        movie = os.path.join(self.my_datadir,'help.avi')
+        return movie
 
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
@@ -311,9 +318,9 @@ class Activity:
     def start(self):
         """Mandatory method."""
         self.SPG.tellcore_set_dice_minimal_level(3)
-        self.startbut = SPWidgets.SimpleButtonDynamic(_('Start'), self.but_pos[0], fsize=24)
+        self.startbut = SPWidgets.SimpleButtonDynamic(_('Start'), self.but_pos[0], fsize=24, colorname='green')
         self.startbut.set_use_current_background(True)
-        self.cheatbut = SPWidgets.SimpleButtonDynamic(_('Cheat'), self.but_pos[0], fsize=24)
+        self.cheatbut = SPWidgets.SimpleButtonDynamic(_('Cheat'), self.but_pos[0], fsize=24, colorname='green')
         self.cheatbut.set_use_current_background(True)
         self.startbut.connect_callback(self._startbutton_cbf, MOUSEBUTTONDOWN)
         self.cheatbut.connect_callback(self._cheatbutton_cbf, MOUSEBUTTONDOWN)
@@ -335,7 +342,6 @@ class Activity:
         self.next_level(level, dbmapper)
         return True
         
-
     def pre_level(self, level):
         """Mandatory method"""
         pass
@@ -370,15 +376,18 @@ class Activity:
         if self.level in (1, 2):
             if self.level == 2:
                 self.changepositions = True
-            i = 3
+            num = 3
         else:
             if self.level == 4:
                 self.changepositions = True
-            i = 4
-        files = random.sample(self.imagepaths, i+1)
+            num = 4
+        if len(self.imagepaths) < num+1:
+            self.imagepaths = self.imagepaths_org[:]
+            random.shuffle(self.imagepaths)
         self.cardlist = []
         i = 0
-        for f in files[:-1]:
+        for i in range(num):
+            f = self.imagepaths.pop()
             img = utils.load_image(f)
             c = self.opencard.convert_alpha()
             ix, iy = img.get_size()
@@ -390,7 +399,7 @@ class Activity:
             card.display_sprite()
             self.cardlist.append(card)
             i += 1
-        img = utils.load_image(files[-1])
+        img = utils.load_image(self.imagepaths.pop())
         c = self.opencard
         ix, iy = img.get_size()
         cx, cy = c.get_size()
@@ -467,7 +476,7 @@ class Activity:
                         self.SPG.tellcore_level_end(level=self.level)
                     else:
                         self.SPG.tellcore_level_end(store_db=True, \
-                                            level=min(4, self.level + levelup), \
+                                            level=min(4, self.level), \
                                             levelup=levelup)
         return 
         

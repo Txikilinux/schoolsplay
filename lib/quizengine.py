@@ -36,8 +36,8 @@ from pygame.constants import *
 import types
 import datetime
 from SPConstants import *
-        
-from utils import load_image, char2surf, get_locale_local
+
+from utils import load_image, char2surf, get_locale_local, MyError, load_music
 from utils import current_time, read_rcfile, sleep
 from SPSpriteUtils import SPSprite, SPInit
 from SPWidgets import TransPrevNextButton, TransImgButton
@@ -47,6 +47,10 @@ from SPORMs import type2table
 class ParserError(Exception):
     pass
 
+
+# special gamethemes for regional and personal quizzes which aren't part of the server_content table
+REGIONAL_GAME_THEME = -2
+PERSONAL_GAME_THEME = -1
 
 class ContentFeeder:
     """Extracts content from the SQL tables."""
@@ -67,6 +71,7 @@ class ContentFeeder:
         self.served_dict = {}
         self.served = []
         self.wrongexercises = []
+        self._not_serve_all_content = False
         self.current_user_id = self.SPG.get_current_user_id()
         self.served_content_orm, self.served_content_session = self.SPG.get_served_content_orm()
         self.rowlist = []
@@ -89,6 +94,15 @@ class ContentFeeder:
             self.filename_template[row.tableName[5:]] = row.fileNameFormat
         session.flush()
         session.close()
+        if tp == 'regional':
+            self.whatarewe = 'regional'
+        elif tp == 'personal':
+            self.whatarewe = 'personal'
+        else:
+            self.whatarewe = 'regular'
+    
+    def _get_kind(self):
+        return self.whatarewe
     
     def __del__(self):
         try:
@@ -96,6 +110,12 @@ class ContentFeeder:
         except:
             pass
 
+    def serve_all_content(self, value):
+        """When set to True we serve all content, False will serve only content which
+        has audio"""
+        self._not_serve_all_content = value
+        self.rowlist = []# will force get_exercise to get new rows
+        
     def _get_rows(self, tp, difficulty, year=None):
         self.logger.debug("_get_rows types:%s, difficulty:%s year:%s" % (tp, difficulty, year))
         lang = self.lang
@@ -103,29 +123,42 @@ class ContentFeeder:
             lang = [1] # math is the same for all languages.
         orm, session = self.SPG.get_orm('game_released_content', 'content')
         query = session.query(orm)
-        query = query.filter_by(module = 'quiz_'+tp)
-        query = query.filter(orm.language.in_(lang))
-        gt_list = [gt.game_theme for gt in query.all()]
+        if tp == 'picture':
+            query = query.filter_by(module = 'quiz_pic')
+            query = query.filter(orm.language.in_(lang))
+            gt_list = [gt.game_theme for gt in query.all()]
+        elif tp == 'regional':
+            gt_list = [REGIONAL_GAME_THEME]
+        elif tp == 'personal':
+            gt_list= [PERSONAL_GAME_THEME]
+        else:
+            query = query.filter_by(module = 'quiz_'+tp)
+            query = query.filter(orm.language.in_(lang))
+            gt_list = [gt.game_theme for gt in query.all()]
+        
         session.close()
         if year or self.year:
             if self.year:# needed when the questions list is empty and get_exercise queries for ids
                 year = self.year
             orm, session = self.SPG.get_orm(type2table[tp], 'content')
             query = session.query(orm)
-            # we dump all difficulties in on pile as we don't have enough content. 
-            #query = query.filter_by(difficulty = difficulty)
             query = query.filter(orm.language.in_(lang))
             query = query.filter(orm.year > year).filter(orm.year < year + 10)
             query = query.filter(orm.content_checked > 0)
             rows = [result for result in query.all()]
             all_ids = [row.CID for row in rows]
+            if not all_ids or len(all_ids) < 10:
+                self.logger.info("Too little questions found, serving all years")
+                query = query.filter_by(difficulty = difficulty)
+                rows = [result for result in query.all()]
+                all_ids = [row.CID for row in rows]
             random.shuffle(rows)
             self.num_questions = len(rows)
             l = self.SPG.check_served_content(rows, \
                             int(self.rchash[self.rchash['theme']]['questions']), \
                             gt_list, all_ids)
             self.year = year
-            #print "list of rows",len(rows),  l
+            #print "list of rows",len(rows),l
             session.close()
         else:
             # and now we get the contents from game_quiz* with game_theme(s),
@@ -136,8 +169,15 @@ class ContentFeeder:
             query = query.filter(orm.game_theme.in_(gt_list))
             query = query.filter(orm.difficulty == difficulty)
             query = query.filter(orm.content_checked > 0)
-            query = query.filter(orm.audiofiles == 5)
+            if tp == 'melody' or self._not_serve_all_content:
+                self.logger.debug("Serving only questions with audio")
+                query = query.filter(orm.audiofiles == 5)
+            else:
+                self.logger.debug("Serving all questions")
+            if tp == 'personal':
+                query = query.filter(orm.user_id == self.current_user_id)
             rows_with_audio = [result for result in query.all()]
+            self.logger.debug("found %s exercises with audio" % len(rows_with_audio))
             if len(rows_with_audio) < 10:
                 orm, session = self.SPG.get_orm(type2table[tp], 'content')
                 query = session.query(orm)
@@ -145,16 +185,18 @@ class ContentFeeder:
                 query = query.filter(orm.game_theme.in_(gt_list))
                 query = query.filter(orm.difficulty == difficulty)
                 query = query.filter(orm.content_checked > 0)
+                if tp == 'personal':
+                    query = query.filter(orm.user_id == self.current_user_id)
                 rows_without_audio = [result for result in query.all()]
-                session.close()
                 rows = rows_without_audio
             else:
                 rows = rows_with_audio
-                session.close()
+            
+            session.close()
             all_ids = [row.CID for row in rows]
             random.shuffle(rows)
             self.num_questions = len(rows)
-            #print ">>>>>>>>>>>>>>", len(rows)
+            self.logger.debug("total rows: %s" % len(rows))
             l = self.SPG.check_served_content(rows, \
                             int(self.rchash[self.rchash['theme']]['questions']), \
                             gt_list, all_ids)
@@ -165,10 +207,10 @@ class ContentFeeder:
     def set_difficulty(self, difficulty, AreWeDT, year=None):
         self.logger.debug("set_difficulty: %s, year: %s" % (difficulty, year))
         self.AreWeDT = AreWeDT
+        self.rowlist = []
         if self.difficulty != difficulty:
             self.logger.debug("difficulty change, remove wrong exercises")
             self.wrongexercises = []
-            self.rowlist = []
         else:
             self.wrongexercises = self.have_wrong_exercise()
         if not self.rowlist or len(self.rowlist) < int(self.rchash[self.rchash['theme']]['questions']):
@@ -178,6 +220,7 @@ class ContentFeeder:
             self.UseWrongExercises = True
         else:
             self.UseWrongExercises = False
+        self.difficulty = difficulty
         self.logger.debug("UseWrongExercises set to %s" % self.UseWrongExercises)
 
     def get_exercise(self):
@@ -204,8 +247,6 @@ class ContentFeeder:
 #        row = query.filter_by(CID = 2752).first()
 #        session.close()
         ###################################################
-        tb = self.tp        
-        
         i = row.CID
         bad = ('\t', '\r', '\n')
         rq = ''.join(c for c in row.question if c not in bad).strip()
@@ -225,8 +266,13 @@ class ContentFeeder:
             a = (ra, '')
             p = [(rw1, ''), (rw2, ''), (rw3, '')] 
         # data is an image or movie.
-        if self.tp == 'pic':
-            dt = self.filename_template['quizpic'] % row.ID
+        if hasattr(row, 'file') and row.file:
+            if self.tp == 'picture':
+                dt = self.filename_template['quizpic'] % row.ID
+            elif self.tp == 'regional':
+                dt = self.filename_template['quizregional'] % row.ID
+            elif self.tp == 'personal':
+                dt = self.filename_template['quizpersonal'] % row.ID
         else:
             dt = ''
         d = {'question':q, 'answer':a, 'possibles':p, 'data':dt, 'speakerID':str(row.speakerID)}
@@ -242,7 +288,12 @@ class ContentFeeder:
         self.served_dict[i] = (d, 0)# used for the wrong answered exercises
 
         self.current_question_id = i
-        # TODO: hoe to get the module name ?? XXX
+        if not len(self.served) == 2:
+            self.served.append(i)
+        else:
+            self.served[0] = self.served[1]
+            self.served[1] = i
+        # TODO: how to get the module name ?? XXX
         
         svc = self.served_content_orm(user_id=self.current_user_id, CID=i,\
                        game_theme_id=row.game_theme, \
@@ -282,6 +333,7 @@ class ContentFeeder:
         return self.num_questions
     def get_current_id(self):
         return self.current_question_id
+    
 
 class AudioPlayer:
     def __init__(self, audio, ad_audio, ss):
@@ -335,7 +387,7 @@ class Answer(SPSprite):
     def __init__(self, image, alt_image, result_img, sound, pos, cbf, state):
         SPSprite.__init__(self, image)
         self.logger = logging.getLogger("schoolsplay.quizengine.Answer")
-        self.connect_callback(self._cbf, MOUSEBUTTONDOWN, state)
+        self.connect_callback(self._cbf, MOUSEBUTTONUP, state)
         self.moveto(pos, hide=True)
         self.alt_image = alt_image
         self.alt_image.blit(result_img, (0, 0))
@@ -385,7 +437,7 @@ class Engine:
         self.parent_observers = observers
         if rchash:
             rchash['lang'] = self.lang
-        
+
         self.screen = self.SPG.get_screen()
         self.screenclip = self.SPG.get_screenclip()
         self.blit_pos = self.screenclip.left, self.screenclip.top
@@ -400,13 +452,16 @@ class Engine:
         # Location of the CPData dir which holds some stuff used by multiple activities
         self.CPdatadir = os.path.join(self.SPG.get_libdir_path(),'CPData')
         self.my_rcfile = read_rcfile(os.path.join(self.my_datadir,'quizengine.rc'))
-                
         self.quizpause = int(self.my_rcfile[self.theme]['pause'])
         self.quizpause_good = int(self.my_rcfile[self.theme]['pause_good'])
         self.screenclip = self.SPG.get_screenclip()
         self.blit_pos = self.screenclip.left, self.screenclip.top
         self.content_imgpath = os.path.join(self.SPG.get_libdir_path(),'CPData','DbaseAssets','Images')
         self.content_sndpath = os.path.join(self.SPG.get_libdir_path(),'CPData','DbaseAssets', 'Sounds')
+        self.local_content_imgpath = os.path.join(HOMEDIR, self.theme, 'LocalAssets')
+        
+        # will we have local sound content ??
+        #self.local_content_sndpath = os.path.join(self.SPG.get_libdir_path(),'CPData','DbaseAssets', 'Sounds')
         self.ttfpath = TTF
         
         dbpath = os.path.join(HOMEDIR, 'quizcontent.db')
@@ -415,11 +470,15 @@ class Engine:
             self.CF = ContentFeeder(dbpath, 1, quiz, rchash, spgoodies)
         except Exception, info:
             self.logger.exception("Failed to start contentfeeder: %s" % info)
+            raise MyError
+        self.whatarewe = self.CF._get_kind()
         self.retry = 2# default values
         self.totalretry = 1
         self.answers_list = []
         self.currentscreen = None
         self.correct_answer = None
+        self.unmute_exer_audio = self.SPG._mute_quiz_voice
+        self.CF.serve_all_content(self.unmute_exer_audio)
         p = os.path.join(self.CPdatadir,'good_%s.png' % self.lang)
         if not os.path.exists(p):
             p = os.path.join(self.CPdatadir,'thumbs.png')
@@ -442,7 +501,7 @@ class Engine:
         self.prev_pos = (580, 410 + y)
         self.previous_screen_path = os.path.join(TEMPDIR, 'previous_screenshot.jpeg')
         self.data_display_center = (600, 200 + y)
-        if self.quiz == 'pic':
+        if self.quiz == 'picture':
             y = 0
         self.good_image.moveto((229, 280 + y))
         self.good_image.set_use_current_background(True)
@@ -485,26 +544,29 @@ class Engine:
         self.snd_button = TransImgButton(os.path.join(self.my_datadir, 'speaker.png'), \
                                          os.path.join(self.my_datadir, 'speaker_ro.png'),\
                                          self.snd_pos)
-        self.snd_button.connect_callback(self._cbf_snd_button, MOUSEBUTTONDOWN)
-                    
+        self.snd_button.connect_callback(self._cbf_snd_button, MOUSEBUTTONUP)
+                            
         self.good_sound=os.path.join(self.CPdatadir,'good.ogg')
         self.wrong_sound=os.path.join(self.CPdatadir,'wrong.ogg')
-        
+        if self.quiz == 'picture':
+            name = 'picture'
+        else:
+            name = self.quiz
         if self.lang == 'en':
             p = os.path.join(self.SPG.get_libdir_path(),'SPData', 'themes',\
                                         self.theme,'menuicons', \
-                                    'quiz_%s.icon.png' % self.quiz)
+                                    'quiz_%s.icon.png' % name)
         else:
             p = os.path.join(self.SPG.get_libdir_path(),'SPData', 'themes',\
                                         self.theme,'menuicons', self.lang, \
-                                    'quiz_%s.icon.png' % self.quiz)
+                                    'quiz_%s.icon.png' % name)
         self.logger.debug("loading logo %s" % p)
         try:
             self.logo_sprite = SPSprite(load_image(p))
         except Exception, info:
             self.logger.debug("No logo found for %s" % self.quiz)
             self.logo_sprite = None
-        if self.quiz == 'pic':
+        if self.quiz == 'picture':
             self.logo_sprite = None
         self.actives.add(self.prevnext_button.get_actives())
         self.current_question_id = -1
@@ -553,8 +615,9 @@ class Engine:
             #self.snd_button.enable(True)
             self.snd_button.display_sprite()
         try:
-            self.current_question_id = self.CF.served[-1]
-        except IndexError:
+            self.current_question_id = self.CF.served[1]
+        except IndexError, info:
+            self.logger.error(info)
             # this shouldn't happen
             self.current_question_id = -1
           
@@ -575,8 +638,9 @@ class Engine:
             #self.snd_button.enable(False)
             self.snd_button.erase_sprite()
         try:
-            self.current_question_id = self.CF.served[-2]
-        except IndexError:
+            self.current_question_id = self.CF.served[0]
+        except IndexError, info:
+            self.logger.error(info)
             self.current_question_id = -1
     
     def stop_sound(self):
@@ -600,6 +664,7 @@ class Engine:
                 self.good_image.erase_sprite()
             else:
                 self.maxresult = 0
+                self.totalwrongs += 1
                 sleep(self.quizpause)
             self._notify_obs(self.maxresult)
             return
@@ -609,6 +674,7 @@ class Engine:
             self.good_image.erase_sprite()
             self._notify_obs(self.maxresult)
             return
+        self.totalwrongs += 1
         self.maxresult -= result
         self.retry -= 1
         if self.retry == 0 and result:
@@ -623,10 +689,7 @@ class Engine:
         self.tryagain_image.set_use_current_background(True)
         self.tryagain_image.display_sprite()
         self.erase_tryagain = True
-        #sleep(self.quizpause)
-        
         pygame.event.clear()
-        #self.tryagain_image.erase_sprite()
         
     def _notify_obs(self, result):
         """Notify the callers observers and restart the next question
@@ -650,7 +713,10 @@ class Engine:
             # the core knows if we run under the general. 
             pygame.image.save(self.previous_screen, self.previous_screen_path)
             self.next_question()
-        
+        elif result == -1:
+            self.logger.debug("_notify_obs level ended, doing nothing yet")
+                
+                
     def _blit_on_me(self, surf, ls, x=10, y=5):
         for s in ls:
             surf.blit(s, (x, y))
@@ -674,7 +740,15 @@ class Engine:
         if self.logo_sprite:
             self.logo_sprite.erase_sprite()
         if os.path.splitext(data)[1] in ('.png', '.jpg', 'gif'):
-            s = load_image(os.path.join(self.content_imgpath, data))
+            if self.whatarewe == 'regular':
+                s = load_image(os.path.join(self.content_imgpath, data))
+            elif self.whatarewe == 'regional':
+                s = load_image(os.path.join(self.local_content_imgpath, 'Regional',data))
+            elif self.whatarewe == 'personal':
+                s = load_image(os.path.join(self.local_content_imgpath, 'Personal', \
+                                            str(self.SPG.get_current_user_id()),data))
+            else:
+                s = load_image(os.path.join(self.content_imgpath, data))
             pygame.draw.rect(s, ROYALBLUE, s.get_rect(), 4)
             self.picture_sprite = SPSprite(s)
             self.picture_sprite.rect.center = self.data_display_center
@@ -705,6 +779,7 @@ class Engine:
         maxtimes - the number of questions we show, 0 means until we ran out of questions
         difficulty - level of difficulty.
         """
+        self.totalwrongs = 0
         if not difficulty:
             difficulty = 1
         self.logger.debug("init_exercises: answers %s, maxtimes %s, difficulty %s, DT %s year %s" % \
@@ -713,7 +788,7 @@ class Engine:
         # The first time were called by the caller quiz, then _next_question is called.
         # After that next_question is called in the _notify_obs method which is in turn called by the answer object.
         self.AreWeDT = AreWeDT
-        self.difficulty = difficulty
+        
         self.CF.set_difficulty(difficulty, AreWeDT, year)
         if self.CF.get_num_questions() < 10:
             self.logger.error("To little questions found in %s for locale '%s', found %s questions should be at least 10" % (self.quiz, self.lang, self.CF.get_num_questions()))
@@ -737,7 +812,10 @@ class Engine:
                 ad_audiohash[fp[0]].append(f)
             self.audiohash[i] = ad_audiohash
         #self.prevnext_button.enable(False)
-                    
+        
+    def get_totalwrongs(self):
+        return self.totalwrongs    
+                
     def next_question(self):
         self.logger.debug("next_question called")
 #        print self.numOfQuestions,self.maxtimes
@@ -750,7 +828,7 @@ class Engine:
         else:
             self.maxresult = -1# notify observer level end
             self._notify_obs(self.maxresult)
-            
+    
     def _next_question(self):
         # This uses pygame font rendering iso pango like the rest of this app.
         # The bigger pango fonts are not so nice.
@@ -805,6 +883,13 @@ class Engine:
         qs = self.question_surf.convert_alpha()
         text_blit_x = 50
         txt, audio = exer['question']
+        self.logger.debug("We have audio :%s" % (audio != ''))
+        if not self.unmute_exer_audio:
+            self.logger.debug("quizvoice is disabled by user")
+            if not self.quiz == 'melody':
+                audio = ''
+        # we will alter the audiohash in case we are melodyquiz AND voice is disabled
+        # We will play the question but no answers
         audiohash['question'] = os.path.join(self.content_sndpath, audio)
         speakerID = exer['speakerID']
         if self.audiohash.has_key(speakerID):
@@ -918,7 +1003,12 @@ class Engine:
         else:
             self.prevnext_button.enable(False)
             self.prevnext_button.erase_sprite()
-        self.audioplayer = AudioPlayer(audiohash, ad_audiohash, self.SS)
+        if self.quiz == 'melody' and not self.unmute_exer_audio:
+            # voice disabled but we are melody so  we want to play the question
+            self.logger.debug("Altered audiosequence as we are melody and voice is disabled")
+            self.audioplayer  = load_music(audiohash['question'])
+        else:    
+            self.audioplayer = AudioPlayer(audiohash, ad_audiohash, self.SS)
         self.audioplayer.play()
         if self.wehaveaudio:
             self.snd_button.display_sprite()
@@ -927,7 +1017,7 @@ class Engine:
 
     def loop(self, events):
         for event in events:
-            if event.type in (MOUSEBUTTONDOWN, MOUSEMOTION):
+            if event.type in (MOUSEBUTTONUP, MOUSEBUTTONDOWN, MOUSEMOTION):
                 result = self.actives.update(event)
         return self.maxresult == -1
     

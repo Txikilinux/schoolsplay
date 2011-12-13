@@ -177,8 +177,8 @@ class Activity:
         self.orgscreen.blit(self.screen, (0, 0), self.screenclip)
         self.backgr = self.SPG.get_background()
         # The location of the activities Data dir
-        self.MyDatadir = os.path.join(self.SPG.get_libdir_path(),'CPData','Findit_spData')
-        self.rchash = utils.read_rcfile(os.path.join(self.MyDatadir, 'findit.rc'))
+        self.my_datadir = os.path.join(self.SPG.get_libdir_path(),'CPData','Findit_spData')
+        self.rchash = utils.read_rcfile(os.path.join(self.my_datadir, 'findit.rc'))
         self.rchash['theme'] = self.theme
         self.logger.debug("found rc: %s" % self.rchash)
         # Location of the CPData dir which holds some stuff used by multiple activities
@@ -197,6 +197,10 @@ class Activity:
         pygame.display.update()
         for s in self.actives:
             s.display_sprite()
+
+    def get_moviepath(self):
+        movie = os.path.join(self.my_datadir,'help.avi')
+        return movie
 
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
@@ -248,23 +252,23 @@ class Activity:
             p = os.path.join(self.CPdatadir,'thumbs.png')
         self.ThumbsUp = SPSpriteUtils.MySprite(utils.load_image(p))
 
-        i = utils.load_image(os.path.join(self.MyDatadir, 'hint.png'))
-        i_ro = utils.load_image(os.path.join(self.MyDatadir, 'hint_ro.png'))
+        i = utils.load_image(os.path.join(self.my_datadir, 'hint.png'))
+        i_ro = utils.load_image(os.path.join(self.my_datadir, 'hint_ro.png'))
         self.HintBut = SimpleTransImgButton(i,i_ro, (370, 200))
         if int(self.rchash[self.theme]['show_errors']):
-            self.wrongImg = SPSpriteUtils.MySprite(utils.load_image(os.path.join(self.MyDatadir, 'incorrect.png')))
+            self.wrongImg = SPSpriteUtils.MySprite(utils.load_image(os.path.join(self.my_datadir, 'incorrect.png')))
         else:
             self.wrongImg = None
-        prev = os.path.join(self.MyDatadir, 'findit_prev.png')
-        prev_ro = os.path.join(self.MyDatadir, 'findit_prev_ro.png')
-        next = os.path.join(self.MyDatadir, 'findit_next.png')
-        next_ro = os.path.join(self.MyDatadir, 'findit_next_ro.png')
-        self.prevnextBut = TransPrevNextButton((370, 260), \
+        prev = os.path.join(self.my_datadir, 'findit_prev.png')
+        prev_ro = os.path.join(self.my_datadir, 'findit_prev_ro.png')
+        next = os.path.join(self.my_datadir, 'findit_next.png')
+        next_ro = os.path.join(self.my_datadir, 'findit_next_ro.png')
+        self.prevnextBut = TransPrevNextButton((370, 460), \
                                               self._cbf_prevnext_button, \
                                               prev, prev_ro, next, next_ro)
-        self.imgdir = os.path.join(self.MyDatadir, 'images', self.theme)
+        self.imgdir = os.path.join(self.my_datadir, 'images', self.theme)
         if not os.path.exists(self.imgdir):
-            self.imgdir = os.path.join(self.MyDatadir, 'images','default')                                      
+            self.imgdir = os.path.join(self.my_datadir, 'images','default')                                      
         self.score = 0
         self.AreWeDT = False
         # get language code
@@ -358,7 +362,6 @@ class Activity:
         time = min(F1 / ((S / (M * 2)) ** C), F1)
         self.logger.info("@scoredata@ %s level %s M %s P %s S %s points %s time %s" %\
                           (self.get_name(),self.level, M, P, S, points, time))
-        score = points + time
         result = points + time
         return result
     
@@ -375,7 +378,7 @@ class Activity:
         """Mandatory method.
         This is the main eventloop called by the core 30 times a minute."""
         for event in events:
-            if event.type in (MOUSEBUTTONDOWN, MOUSEMOTION):
+            if event.type in (MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION):
                 if self.actives.update(event):
                     self.end_exercise()
                     pygame.event.clear()
@@ -453,7 +456,7 @@ class Activity:
         self.logger.debug("got score from ImgA, points: %s, wrongs: %s" % (result[0], result[1]))
         self.totalwrongs += result[1]
         self.dbscore = (result[0] - result[1]) * self.level
-        self.score = self.dbscore * 10
+        self.score += self.dbscore * 10
         self.scoredisplay.set_score(self.score)
         # TODO: we have hardcoded a check for the amount of wrongs iso rc file values.
         if self.totalwrongs < 4:
@@ -480,7 +483,7 @@ class Activity:
                 self.SPG.tellcore_level_end(level=self.level)
             else:
                 self.SPG.tellcore_level_end(store_db=True, \
-                                    level=min(6, self.level + levelup), \
+                                    level=min(6, self.level), \
                                     levelup=levelup)
         else:
             self.start_exercise()
@@ -509,14 +512,14 @@ class Activity:
         ImgA.register_observer(ImgB.observer)
         ImgB.register_observer(ImgA.observer)
         self.currentlist = [ImgA, ImgB]
-        self.HintBut.connect_callback(ImgA.show_hint, MOUSEBUTTONDOWN, self)
+        self.HintBut.connect_callback(ImgA.show_hint, MOUSEBUTTONUP, self)
         self.HintBut.display_sprite()
         #self.prevnextBut.enable(False)
         self.actives.add(self.HintBut)
         self.actives.add([ImgA, ImgB])
         if self.previous_screen and not self.AreWeDT:
-           self.actives.add(self.prevnextBut.get_actives())
-           self.prevnextBut.enable(True)
+            self.actives.add(self.prevnextBut.get_actives())
+            self.prevnextBut.enable(True)
         self.actives.redraw()
         self.ImgA, self.ImgB = ImgA, ImgB
         self.done += 1

@@ -37,9 +37,15 @@ import datetime
 import types
 import ConfigParser
 import math
+from pwd import getpwnam  
 from collections import MutableMapping
 from pygame.constants import *
+from pygame import surfarray
 import textwrap
+#from facedetect.facedetect import CAMFOUND
+CAMFOUND = None
+if CAMFOUND:
+    import opencv.adaptors as adaptors
 module_logger = logging.getLogger("schoolsplay.utils")
 
 if NoGtk:
@@ -53,7 +59,7 @@ class StopGameException(Exception):
     pass
 
 class MyError(Exception):
-    def __init__(self, str, line=''):
+    def __init__(self, str='', line=''):
         self.line = line
         self.str = str
     def __str__(self): return "%s" % self.str
@@ -87,6 +93,11 @@ class TextRectException(Exception):
 #    f.write('\n\n')
 #    f.close()
 #####################################################
+
+def get_gid(groupname):
+    return getpwnam(groupname)[2]
+def get_uid(username):
+    return getpwnam(username)[1]
 
 def calcdist(v1, v2):
     """Calculate the distance between two vectors where a vector is a tuple (x,y)"""
@@ -180,7 +191,11 @@ def read_rcfile(path):
     if not os.path.exists(path):
         module_logger.info("No rc file found at: %s" % path)
         return {}
-    config.read(path)
+    try:
+        config.read(path)
+    except Exception, info:
+        module_logger.error("Failed to parse rc file: %s" % info)
+        return {}
     hash = {}
     for section in config.sections():
         hash[section] = dict(config.items(section))
@@ -240,6 +255,17 @@ def map_keys(key_map, key):
         else:
             module_logger.error("No key: %s found" % key)
             return key
+
+def replace_rcfile():
+    """This is only used when we want to replace an existing configfile."""
+    #pass #enable this and comment out the rest when not replacing
+    src = os.path.join(RCDIR, CHILDSPLAYRC)
+    dst = os.path.join(HOMEDIR, 'ConfigData', CHILDSPLAYRC)
+    if os.path.exists(src) and os.path.exists(dst):
+        shutil.move(dst, dst + '.old')
+        module_logger.info("Backup made from your old config file called %s." % dst + '.old')
+        module_logger.info("Replace childsplayrc file:\n %s\n->%s" % (src, dst))
+        shutil.copyfile(src, dst)
 
 class NoneSound:
     """Used by the load_sound and load_music functions to provide
@@ -470,10 +496,7 @@ def char2surf(char, fsize, fcol=None, ttf='arial', bold=False, antialias=True, s
         return items
     else:
         return items[0]
-
-def font2surf(word, fsize, fcol=None, ttf=None, sizel=None, bold=False, antialias=True):
-    return text2surf(word, fsize, fcol, ttf, sizel, bold, antialias)
-   
+    
 def text2surf(word, fsize, fcol=None, ttf=None, sizel=None, bold=False, antialias=True):
     """Renders a text in a surface and returns a surface,size list of the items
     sizelist is a list like this [(7,17),(10,17)] tuples are x,y size of the character."""
@@ -504,6 +527,23 @@ def text2surf(word, fsize, fcol=None, ttf=None, sizel=None, bold=False, antialia
     else:
         sizelist = map(font.size, word)
     return s, sizelist
+
+def Ipl2NumPy(img):
+    """ Converts an openCV cvArray to a pygame surface.
+     Parameters:   IplImage img - image"""
+    array = adaptors.Ipl2NumPy(img)
+    surf = pygame.surfarray.make_surface(array)
+    surf = pygame.transform.rotate(surf, -90)
+    surf = pygame.transform.flip(surf, 1, 0)
+    return surf
+
+def NumPy2Ipl(surf):
+    """Converts a pygame surface to an openCV cvArray.
+    Parameters:   pygame.Surface surf - pygame Surface
+    """
+    py_image = surfarray.pixels3d(surf)
+    cv_image = adaptors.NumPy2Ipl(py_image.transpose(1,0,2))
+    return cv_image
 
 def find_files(directory, patternlist):
     """Generator function to search files that match a certain pattern.
@@ -672,12 +712,28 @@ def import_module(filename, globals=None, locals=None, fromlist=None):
     
 def txtfmt(text, split):
     """ Formats a list of strings in a list of strings of 'split' length.
-       returns a new list of strings. This depends on utils.__string_split().
+       returns a new list of strings.
        text = list of strings
        split = integer
        """
     return textwrap.wrap('\n'.join(text), split)
-    
+
+def txtfmtlines(text, split):
+    """Formats a list of strings of 'split' length.
+    Returns a list of strings with single linebreaks preserved.
+    This differs from txtfmt which removed single line linebreaks
+    """
+    wrapper = textwrap.TextWrapper()
+    wrapper.width = split
+    wrapper.drop_whitespace = False
+    lines = []
+    for line in text:
+        if not line.split('\n'):
+            lines += line
+        else:
+            lines += wrapper.wrap(line)
+    return lines
+
 class ScaleImages:
     def __init__(self, imgObjects, TargetSize, stdCardObj=None):
         """ ImgObjects = sequence of SDL objects, can also be a dictionairy but in that
@@ -880,74 +936,7 @@ class GfxCursor:
         """
         self.old_pos = event.pos
 
-class ProgressBar:
-    """Class which provides a surface with a progressbar.(400x100)
-    """
-    ## TODO: the progress bar is full after 95 steps, not 100.
-    ## The reason is that it's not possible to split pixels. :-)
-    def __init__(self, start=0, end=100, step=1, header='', ttf=None):
-        """@start is the start value, defaults to 0
-        @end is the end value, defaults to 100
-        @step is the step by which the bar is updated, defaults to 1
-        @header is the text to display above the bar, defaults to ''
-        @ttf is the path to a ttf, defaults to pygame standard font.
-        """
-        self.start = start
-        self.end = end
-        self.step = step
-        self.header = header
-        self.ttf = ttf
-        self.backcol = (0, 0, 0)
-        self.barfcol = (15, 206, 14)
-        self.barbcol = (20, 20, 20)
-        self.headercol = (200, 200, 200)
-        self.s = pygame.Surface((400, 100))
-        self.barpartsurf = pygame.Surface((4, 38))
-        self.barpartsurf.fill(self.barfcol)
-        self.barrect = pygame.Rect(10, 50, 380, 40)# relative to self.s
-        self.barsurf = pygame.Surface((self.barrect[2]-2, self.barrect[3]-2))
-        self._initbar()
-                
-    def _initbar(self):
-        self.x, self.progress = self.start, 0 # used in update
-        r = (0, 0) + self.s.get_size()
-        pygame.draw.rect(self.s, self.headercol, r, 1)
-        if self.header:
-            hs = char2surf(self.header, 24, self.headercol, self.ttf)
-            self.s.blit(hs, (4 + (400-hs.get_width()) / 2, 6))
-        pygame.draw.rect(self.s, self.headercol, self.barrect, 1)
-        self.barsurf.fill(self.barbcol)
-        self.s.blit(self.barsurf, (self.barrect[0] + 1, self.barrect[1] + 1))
-    
-    def update(self):
-        """Update the progressbar with step.
-        Returns the number of steps passed.
-        """
-        if self.progress >= self.end:
-            return self.end
-        for i in range(self.step):
-            self.barsurf.blit(self.barpartsurf, (self.x, 0))
-            self.x += self.barpartsurf.get_width()
-            self.progress += 1
-        self.s.blit(self.barsurf, (self.barrect[0] + 1, self.barrect[1] + 1))
-        return self.progress
-    
-    def reset_bar(self, header=''):
-        """This will set the bar to 0.
-        If you use a new header you MUST call clearbar first."""
-        if header:
-            self.header = header
-        self._initbar()
-        
-    def clearbar(self, screen, backgr):
-        """Remove the bar from the screen.
-        @ backgr is blitted over @screen.
-        This calls pygame.display.update"""
-        brect = self.s.get_rect().move(200, 200)
-        pygame.display.update(screen.blit(backgr, brect, brect))
-    
-    def get_bar(self):
-        return self.s
+
         
 def current_time():
     """Maincore uses this to get the current time to set the 'time_start'
@@ -1174,5 +1163,14 @@ if os.path.exists('db.conf'):
 else:
     dbp = 'db.dev'
 rc_hash = read_rcfile(dbp)
-WEAREPRODUCTION = int(rc_hash['default']['production'])
+try:
+    WEAREPRODUCTION = int(rc_hash['default']['production'])
+except KeyError:
+    WEAREPRODUCTION = '0'
 
+if __name__ == '__main__':
+    import SPLogging
+    SPLogging.set_level(CMD_Options.loglevel)
+    SPLogging.start()
+    
+    

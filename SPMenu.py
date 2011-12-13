@@ -49,10 +49,10 @@ import Version
 module_logger = logging.getLogger("schoolsplay.SPMenu")
 
 
+
 class ParseMenu:
     def __init__(self, xml, complete=False):
         self.logger = logging.getLogger("schoolsplay.SPMenu.ParseMenu")
-        self.logger.debug("starting to parse %s" % xml)
         self.tree = ElementTree()
         self.tree.parse(xml)
         root = self.tree.getroot()
@@ -65,13 +65,11 @@ class ParseMenu:
             menlist = []
             subicon = sub.get('file')
             subhicon = sub.get('hoverfile')
-            print sub.find('position')
             # when theres no position we assume the images together will be 800 width.
             # and we add postions based on the width of the images.
             try:
                 subpos = tuple([int(x) for x in sub.find('position').text.split(',')])
-            except AttributeError,info:
-                print"=============",info
+            except AttributeError:
                 # we will calculate the position based on image size
                 subpos = (-1, -1)
             for item in sub.findall('menuitem'):
@@ -112,7 +110,7 @@ class ParseMenu:
         return self.menuroot
       
 class Menu:
-    def __init__(self, iconpath, menu, cbf, theme, lang, default):
+    def __init__(self, iconpath, menu, cbf, theme, lang, default, removeables=None):
         self.logger = logging.getLogger("schoolsplay.SPMenu.Menu")
         lang = lang[:2]
         buttons = utils.OrderedDict()
@@ -120,6 +118,7 @@ class Menu:
         self.buttonslist = []
         self.defaultbuttonslist = []
         default_iconpath = iconpath
+        self.removeables = removeables# list of button names that should be removed
         # menu = {(<submenu icon name>,<subicon pos>): [(<act icon>, <act pos>, <act name>)]}
         # the hash key 'rootmenu' is removed from menu
         # here we construct the menu buttons
@@ -135,9 +134,11 @@ class Menu:
         max_x = 790
         x_padding =50
         for k, v in menu.items():
-            self.logger.debug("building menu item: %s,%s" % (k, v))
-            x, y = 10, 110 # start coords when theres no position given for the menu buts  
+            #self.logger.debug("building menu item: %s,%s" % (k, v))
+            x, y = 50, 110 # start coords when theres no position given for the menu buts  
             for t in v:
+                if os.path.splitext(t[0])[0].rstrip('.icon') in self.removeables:
+                    continue
                 p = os.path.join(iconpath, t[0])
                 if not os.path.exists(p):
                     p = os.path.join(default_iconpath, t[0])
@@ -151,6 +152,7 @@ class Menu:
                     pos = (x, y)
                 else:
                     pos = t[2]
+                print t
                 if t[4]:
                     try:
                         txt = getattr(acttext, t[3])
@@ -158,17 +160,19 @@ class Menu:
                         self.logger.warning("No text attribute found in SPHelpText for %s" % t[3])
                         b = ImgButton(p, pos, name=t[3])
                     else:
-                        b = ImgTextButton(p, _(txt) ,pos, padding=6, fsize=14)
+                        b = ImgTextButton(p, _(txt) ,pos, padding=6, fsize=14, name=t[3])
                 else:    
                     if theme['menubuttons'] == 'transparent':
                         b = TransImgButton(p, hp, pos, name=t[3])
                     else:
                         b = ImgButton(p, pos, name=t[3])
-                b.connect_callback(cbf, MOUSEBUTTONDOWN, t[3])
+                b.connect_callback(cbf, MOUSEBUTTONUP, t[3])
+                # we set the name of the activity to be used to identify the button later
+                b.name = os.path.splitext(t[0])[0].rstrip('.icon')
                 x += b.get_sprite_width() + x_padding
                 if x > max_x - b.get_sprite_width():
-                    x = 10
-                    y += 150
+                    x = 50
+                    y += 140
                 if buttons.has_key(k):
                     buttons[k].append(b)
                 else:
@@ -183,14 +187,14 @@ class Menu:
                 pos = (x, y)
             else:
                 pos = k[1]
-            b = TransImgButton(p0, p1, pos, padding=0, name=v)
+            b = TransImgButton(p0, p1, pos, padding=0, values=v, name=os.path.splitext(k[0][0])[0])
             if k[1][0] == -1:
                 x += b.get_sprite_width()
             if k[0][0] == default:
                 self.defaultbuttonslist = v
                 self.defaultbutton = b
             b.set_use_current_background(True)
-            b.connect_callback(cbf, MOUSEBUTTONDOWN, v)
+            b.connect_callback(cbf, MOUSEBUTTONUP, v)
             self.buttonslist.append(b)
             
     def _set_default_buttons(self, blist):
@@ -199,13 +203,13 @@ class Menu:
         return (self.defaultbutton, self.defaultbuttonslist)
     def get_buttons(self):
         return self.buttonslist
-
+    
 class Activity:
     """  This provides the activity menu internally used by MainCore.
     
     It's much like an 'regular' activity but it is called differently
     """
-    def __init__(self, copmode=False):
+    def __init__(self, copmode=False, showpersonalquiz=False, showlocalquiz=False):
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         This SPGoodies differs from the regular SPGoodies the activities get."""
@@ -215,6 +219,11 @@ class Activity:
         self.displayed_bottom_buttons = []
         self.selected_button = None
         self.COPmode = copmode
+        self.removeables = []
+        if not showpersonalquiz:
+            self.removeables.append('quiz_personal')
+        if not showlocalquiz:
+            self.removeables.append('quiz_regional')   
     
     def _setup(self, SPGoodies, dm, bottombar):
         self.SPG = SPGoodies
@@ -238,7 +247,6 @@ class Activity:
         else:
             self.bottom_bar.moveto((0, 534))
         
-        
     def _parse_menu(self, theme_dir, xmlname):
         p = os.path.join(theme_dir, xmlname)
         try:
@@ -252,11 +260,12 @@ class Activity:
     def _build_menu(self, theme_dir, theme_rc, lang):
         p = os.path.join(theme_dir, 'menuicons')
         try:
-            self.Mn = Menu(p, self.menu, self.menu_callback, theme_rc, lang, self.menudefault)
+            self.Mn = Menu(p, self.menu, self.menu_callback, theme_rc, lang, self.menudefault, \
+                           removeables=self.removeables)
         except Exception, info:
             self.logger.exception("Error while constructing the menu buttons")
             raise utils.MyError, info
-    
+        
     def _remove_buttons(self, buttons):
         #self.logger.debug("_remove_buttons called with:%s" % buttons)
         if not self.actives:
@@ -310,7 +319,7 @@ class Activity:
 
     def get_helptitle(self):
         """Mandatory method"""
-        return _("Childsplay")
+        return "BrainTrainerPlus"
     
     def get_name(self):
         """Mandatory method, returnt string must be in lowercase."""

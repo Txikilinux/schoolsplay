@@ -24,7 +24,7 @@ import logging
 module_logger = logging.getLogger("schoolsplay.SPDataManager")
 
 import atexit, os, sys, datetime
-import datetime
+
 # Don't do from 'sqlalchemy import *' as SQA has also 'logging' and 'types'
 # modules. This is very bad coding practice but they claim to have good reasons
 # for it. Those reasons suck of course but I don't have the time to discuss it
@@ -42,12 +42,6 @@ try:
 except ImportError:
     module_logger.exception("No sqlalchemy package found")
     raise MyError
-else:
-    if sqla.__version__ < '0.5':
-        module_logger.error("Found sqlalchemy version %s" % sqla.__version__)
-        module_logger.error("Your version of sqlalchemy is to old, please upgrade to version >= 0.4")
-        raise MyError
-    module_logger.debug("using sqlalchemy %s" % sqla.__version__)
 try:
     import sqlalchemy.exceptions as sqlae
 except ImportError:
@@ -62,23 +56,54 @@ from utils import set_locale
 from SPDataManagerCreateDbase import DbaseMaker
 DEBUG = False
 
+DEMO_DT = [{'fortune': 0, 'target': 'demo', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_picture', 'order': 0}, \
+           {'fortune': 0, 'target': 'demo', 'level': 2, 'group': 'Puzzels', 'cycles': 1,'act_name': 'electro_sp', 'order': 1}, \
+           {'fortune': 0, 'target': 'demo', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_melody', 'order': 2},\
+           ]
+DEFAULT_DT = [{'fortune': 0, 'target': 'default', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_picture', 'order': 0},\
+           {'fortune': 0, 'target': 'default', 'level': 2, 'group': 'Puzzels', 'cycles': 2,'act_name': 'electro_sp', 'order': 1}, \
+           {'fortune': 0, 'target': 'default', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_math', 'order': 2},\
+           {'fortune': 0, 'target': 'default', 'level': 2, 'group': 'Puzzels', 'cycles': 2,'act_name': 'numbers_sp', 'order': 3},\
+           {'fortune': 0, 'target': 'default', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_sayings', 'order': 4},\
+           {'fortune': 0, 'target': 'default', 'level': 2, 'group': 'Korte termijn', 'cycles': 2,'act_name': 'memory_sp', 'order': 5},\
+           {'fortune': 0, 'target': 'default', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_picture', 'order': 6}, \
+           {'fortune': 0, 'target': 'default', 'level': 2, 'group': 'Puzzels', 'cycles': 2,'act_name': 'findit_sp', 'order': 7}, \
+           {'fortune': 0, 'target': 'default', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_melody', 'order': 8}
+              ]
+EASY_DT = [{'fortune': 0, 'target': 'Easy', 'level': 2, 'group': 'Lange termijn', 'cycles': 1, 'act_name': 'quiz_picture', 'order': 0},\
+           {'fortune': 0, 'target': 'Easy', 'level': 2, 'group': 'Puzzels', 'cycles': 3, 'act_name': 'electro_sp', 'order': 1},\
+           {'fortune': 0, 'target': 'Easy', 'level': 2, 'group': 'Lange termijn', 'cycles': 1, 'act_name': 'quiz_sayings', 'order': 2},\
+           {'fortune': 0, 'target': 'Easy', 'level': 2, 'group': 'Puzzels', 'cycles': 3, 'act_name': 'puzzle', 'order': 3},\
+           {'fortune': 0, 'target': 'Easy', 'level': 2, 'group': 'Lange termijn', 'cycles': 1, 'act_name': 'quiz_math', 'order': 4},\
+           {'fortune': 0, 'target': 'Easy', 'level': 2, 'group': 'Lange termijn', 'cycles': 1, 'act_name': 'quiz_melody', 'order': 5},\
+           ]
+
+HARD_DT = [{'fortune': 0, 'target': 'Hard', 'level': 2, 'group': 'Lange termijn', 'cycles': 1, 'act_name': 'quiz_picture', 'order': 0},\
+         {'fortune': 0, 'target': 'Hard', 'level': 3, 'group': 'Puzzels', 'cycles': 3, 'act_name': 'electro_sp', 'order': 1},\
+         {'fortune': 0, 'target': 'Hard', 'level': 2, 'group': 'Lange termijn', 'cycles': 1, 'act_name': 'quiz_sayings', 'order': 2},\
+         {'fortune': 0, 'target': 'Hard', 'level': 3, 'group': 'Korte termijn', 'cycles': 3,'act_name': 'memory_sp', 'order': 3}, \
+         {'fortune': 0, 'target': 'Hard', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_history', 'order': 4}, \
+         {'fortune': 0, 'target': 'Hard', 'level': 2, 'group': 'Korte termijn', 'cycles': 3, 'act_name': 'soundmemory', 'order': 5},\
+         {'fortune': 0, 'target': 'Hard', 'level': 2, 'group': 'Lange termijn', 'cycles': 1, 'act_name': 'quiz_math', 'order': 6},\
+         {'fortune': 0, 'target': 'Hard', 'level': 2, 'group': 'Puzzels', 'cycles': 3, 'act_name': 'numbers_sp', 'order': 7},\
+         {'fortune': 0, 'target': 'Hard', 'level': 3, 'group': 'Lange termijn', 'cycles': 1, 'act_name': 'quiz_math', 'order': 8},\
+         {'fortune': 0, 'target': 'Hard', 'level': 2, 'group': 'Puzzels', 'cycles': 3, 'act_name': 'fourrow', 'order': 9},\
+         {'fortune': 0, 'target': 'Hard', 'level': 2, 'group': 'Lange termijn', 'cycles': 1, 'act_name': 'quiz_melody', 'order': 10}\
+         ]
+
 class DataManager:
     """Class that handles all users data related stuff except the collecting that
     should be done by the activity."""
-    def __init__(self, spgoodies):
+    def __init__(self, spgoodies, dbm):
         self.logger = logging.getLogger("schoolsplay.SPDataManager.DataManager")
         self.logger.debug("Starting")
-        self.spg = spgoodies
-        self.cmd_options = self.spg._cmd_options
+        self.SPG = spgoodies
+        self.cmd_options = self.SPG._cmd_options
         self.current_user = self.cmd_options.user
         self.current_user_id = None
         self.COPxml = None# controlpanel stuff
         atexit.register(self._cleanup)
-        try:
-            dbm = DbaseMaker(self.cmd_options.theme, debug_sql=DEBUG)            
-        except (AttributeError, sqlae.SQLAlchemyError, MyError), info:
-            self.logger.exception("Failed to start the DBase, %s" % info)
-            raise MyError, info
+
         self.content_engine, self.user_engine = dbm.get_engines()
         self.metadata_contentdb, self.metadata_usersdb = dbm.get_metadatas()
         self.all_orms = dbm.get_all_orms()
@@ -108,7 +133,7 @@ class DataManager:
                 language = self.cmd_options.default_language
             language = set_locale(language)    
         self.language = language
-        self.spg.localesetting = language
+        self.SPG.localesetting = language
         self._check_tables_uptodate()
         # query to get all availabe cids, used to check served_content
         orm, session = self.get_orm('game_available_content', 'content')
@@ -122,7 +147,7 @@ class DataManager:
         elif self.cmd_options.user:
             self.current_user = self.cmd_options.user
             self._start_gdm_greeter()
-        elif self.spg.get_theme() == 'braintrainer':
+        elif self.SPG.get_theme() == 'braintrainer':
             self.WeAreBTP = True
             self._start_btp_screen()
         else:
@@ -162,48 +187,64 @@ class DataManager:
                 session.add(orm(m))
         session.commit()
         session.close()
-        orm, session = self.get_orm('change_pass', 'user')
-        for us in ('operator', 'admin'):
-            result = session.query(orm).filter_by(user = us).first()
-            if not result:
-                # passwrd 'secret' generated with sha224 
-                session.add(orm(user=us, passwrd='95c7fbca92ac5083afda62a564a3d014fc3b72c9140e3cb99ea6bf12'))
-        session.commit()
-        session.close()
-        orm, session = self.get_orm('zorgenquete', 'user')
-        for us in ('zorgenquete', 'familytree'):
-            result = session.query(orm).filter_by(item = us).first()
-            if not result:
-                session.add(orm(item=us, state='on', network='local'))
-        session.commit()
-        session.close()
+                                        
         orm, session = self.get_orm('group_names', 'user')
-        # we must set two groups, see file SPHelpText
-        # we first remove the two groups if they exists to make sure we always have proper 
-        # localized mandatory groups
-        session.query(orm).filter_by(group_id = 1).delete()
-        session.query(orm).filter_by(group_id = 2).delete()
-        session.query(orm).filter_by(group_name = SPHelpText.DataManager.default_group_1).delete()
-        session.query(orm).filter_by(group_name = SPHelpText.DataManager.default_group_2).delete()
-        # now we make two new ones, localized and with id 1 and 2.
-        session.add(orm(group_id=1, group_name=SPHelpText.DataManager.default_group_1))
-        session.add(orm(group_id=2, group_name=SPHelpText.DataManager.default_group_2)) 
-        session.commit()
-        session.close()
+        
+        # make user demo    
         orm, session = self.get_orm('users', 'user')
         result = session.query(orm).filter_by(login_name = 'Demo').first()
         if not result:
+            session.query(orm).filter_by(user_id = 1).delete()
             neworm = orm()
+            neworm.user_id = 1
             neworm.first_name = 'Demo'
             neworm.last_name = ''
             neworm.login_name = 'Demo'
             neworm.audio = 75
             neworm.group = 0
-            dt = datetime.datetime(1,1,1)
-            neworm.birtdate = dt
+            neworm.dt_target = 'demo'
             session.add(neworm)
         session.commit()
         session.close()
+        # check for mandatory DT sequences
+        orm, session = self.get_orm('dt_sequence', 'user')
+        query = session.query(orm).filter_by(target = 'demo').all()
+        if len(query) != len(DEMO_DT):
+            self.logger.info("demo dt target differs from hardcoded sequence, replacing it")
+            session.query(orm).filter(orm.target == 'demo').delete()
+            session.commit()
+            for row in DEMO_DT:
+                session.add(orm(**row))
+        query = session.query(orm).filter_by(target = 'default').all()
+        if not query:
+            self.logger.info("default dt target missing, adding a hardcoded sequence.")
+            session.query(orm).filter(orm.target == 'default').delete()
+            session.commit()
+            for row in DEFAULT_DT:
+                session.add(orm(**row))
+        session.commit()
+        session.close()
+        val = self._get_rcrow('SPDatamanager', 'set_extra_dt_sequences')
+        if not val or val != 'yes':
+            # we also set two DT sequences once, user can remove them
+            orm, session = self.get_orm('dt_sequence', 'user')
+            query = session.query(orm).filter_by(target = 'Easy').all()
+            if not query:
+                self.logger.info("First time Easy dt target missing, adding a hardcoded sequence.")
+                session.query(orm).filter(orm.target == 'Easy').delete()
+                session.commit()
+                for row in EASY_DT:
+                    session.add(orm(**row))
+            query = session.query(orm).filter_by(target = 'Hard').all()
+            if not query:
+                self.logger.info("First time Hard dt target missing, adding a hardcoded sequence.")
+                session.query(orm).filter(orm.target == 'Hard').delete()
+                session.commit()
+                for row in HARD_DT:
+                    session.add(orm(**row))
+            session.commit()
+            session.close()
+            self._set_rcrow('SPDatamanager', 'set_extra_dt_sequences', 'yes', 'flag to check if we already have set the extra dt sequences')
         
     def _cleanup(self):
         """atexit function"""
@@ -216,9 +257,9 @@ class DataManager:
         control panel is a proprietary piece of code and it's not included
         in the free versions."""
         sys.path.insert(0, './controlpanel_lgpl')
-        import Start_screen as Ss
-        self.spg.dm = self
-        ss = Ss.Controller(self.spg, fullscr=self.cmd_options.fullscreen)
+        import Start_screen as Ss #@UnresolvedImport
+        self.SPG.dm = self
+        ss = Ss.Controller(self.SPG, fullscr=self.cmd_options.fullscreen)
         result = ss.get_result()
         if result[0] == 'user':
             self.current_user = result[1]
@@ -233,10 +274,11 @@ class DataManager:
         
     def _start_gdm_greeter(self):
         """Will start login screen and stores the login name in the db"""
+        self.current_user = 'Demo'
         if not self.current_user:
             g = SPgdm.SPGreeter(self.cmd_options, \
                 theme=self.cmd_options.theme, \
-                vtkb=self.spg.get_virtual_keyboard(), \
+                vtkb=self.SPG.get_virtual_keyboard(), \
                 fullscr=self.cmd_options.fullscreen)# returns when user hits login button
             username = g.get_loginname()
         else:
@@ -258,7 +300,7 @@ class DataManager:
             self.logger.debug("found existing username: %s" % result.login_name)
         else:
             # insert just user_name, NULL for others, the user_id will be generated
-            session.add(orm(login_name=username, first_name=username, group=0))
+            session.add(orm(login_name=username, first_name=username, group='SPusers'))
             self.logger.debug("inserted %s" % username)
             session.commit()
             query = session.query(orm)
@@ -271,7 +313,7 @@ class DataManager:
             if not rows:
                 # we set a first group
                 neworm = orm()
-                neworm.group_name = 'SPusers'
+                neworm.group_name = 'SP Group'
                 session.add(neworm)
                 session.commit()
             session.close()
@@ -292,16 +334,27 @@ class DataManager:
     def get_user_id_by_loginname(self, username):
         """Returns the user_id.
         @username must be the users login name"""
-        orm = self.orms_userdb['users']
-        session = self.Session_userdb()
+        orm, session = self.get_orm('users', 'user')
         query = session.query(orm)
         query = query.filter_by(login_name = username)
         result = query.first()
         if not result:
-            self.logger.warning("Not found user %s, expect more trouble :-(" % username)
-            return 
+            self.logger.warning("No user %s found, expect more trouble :-(" % username)
         else:
             return result.user_id
+            
+    def get_user_dbrow_by_loginname(self, username):
+        """Returns the user_id.
+        @username must be the users login name"""
+        orm, session = self.get_orm('users', 'user')
+        query = session.query(orm)
+        query = query.filter_by(login_name = username)
+        result = query.first()
+        if not result:
+            self.logger.warning("No user %s found, expect more trouble :-(" % username)
+            return 
+        else:
+            return result
     
     def get_table_names(self):
         """Returns a list with the names (strings) of the SQL tables currently in use."""
@@ -313,6 +366,7 @@ class DataManager:
             t = self.all_orms[tablename]
         except KeyError:
             self.logger.warning("get_orm No such table: %s" % tablename)
+            return None,None
         else:
             if dbase == 'user':
                 self.user_engine.dispose()
@@ -322,6 +376,7 @@ class DataManager:
                 return (t, self.ContentSession())
             else:
                 self.logger.warning("no such dbase: %s" % t)
+                return None, None
             
     def get_served_content_orm(self):
         return self.get_orm('served_content', 'user')
@@ -403,19 +458,32 @@ class DataManager:
 
     def _set_rcrow(self, actname, key, value, comment):
         orm, session = self.get_orm('spconf', 'user')
-        query = session.query(orm).filter_by(activity_name = actname)
-        query = query.filter_by(key = key)
-        query.update({orm.activity_name: actname, key:key, value:value, comment:comment}, synchronize_session=False)
+        query = session.query(orm).filter_by(activity_name = actname).filter_by(key = key).all()
+        for row in query:
+            session.delete(row)
+        row = orm(activity_name=actname, key=key, value=value, comment=comment)
+        session.add(row)
         session.commit()
         session.close()
 
     def _get_rcrow(self, actname, key):
+        val = None
         orm, session = self.get_orm('spconf', 'user')
-        query = session.query(orm).filter_by(activity_name = actname)
-        val = query.filter_by(key = key).first().value
+        query = session.query(orm).filter_by(activity_name = actname).filter_by(key = key).first()
+        if query:
+            val = query.value
         session.commit()
         session.close()
         return val
+     
+    def _update_rcrow(self, actname, key, val):
+        orm, session = self.get_orm('spconf', 'user')
+        query = session.query(orm).filter_by(activity_name = actname).filter_by(key = key).first()
+        if query:
+            comm = query.comment
+        session.commit()
+        session.close()
+        self._set_rcrow(actname, key, val, comm)
         
 class RowMapper:
     """DB object used by the core and activity to store data in the dbase

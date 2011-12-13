@@ -156,8 +156,9 @@ class Activity:
     def get_help(self):
         """Mandatory methods"""
         text = [_("The aim of this activity:"),
-                " ",
-        _("At the top of the screen, you will see a general knowledge question."),
+                _("Answer the quiz questions."), 
+        " ",
+        _("At the top of the screen, you will see a question about general knowledge."),
         _("Below it are a choice of possible answers.\nTouch the correct answer."), 
         " "]
         return text 

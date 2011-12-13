@@ -21,12 +21,11 @@ import os
 
 import logging
 module_logger = logging.getLogger("schoolsplay.SPDataManagerCreateDbase")
-from SPConstants import ACTIVITYDATADIR, USERSDBASE, HOMEDIR, WHICHDBASE, CONTENTDBASE
+from SPConstants import ACTIVITYDATADIR, DBASE, HOMEDIR, WHICHDBASE, CONTENTDBASE
 
 from utils import MyError, read_rcfile
 try:
     import sqlalchemy as sqla
-    import sqlalchemy.exceptions as sqlae
     import sqlalchemy.orm as sqlorm
 except ImportError:
     module_logger.exception("No sqlalchemy package found")
@@ -37,7 +36,10 @@ else:
         module_logger.error("Your version of sqlalchemy is to old, please upgrade to version >= 0.4")
         raise MyError
     module_logger.debug("using sqlalchemy %s" % sqla.__version__)
-
+try:
+    import sqlalchemy.exceptions as sqlae
+except ImportError:
+    from sqlalchemy import exc as sqlae
 import SQLTables
 import SPORMs
 
@@ -76,7 +78,7 @@ class DbaseMaker:
     def __init__(self, theme, debug_sql=False):
         self.logger = logging.getLogger("schoolsplay.SPDataManagerCreateDbase.DbaseMaker")
         self.logger.debug("Starting")
-        self.usersdbasepath= os.path.join(HOMEDIR, theme, USERSDBASE)
+        self.usersdbasepath= os.path.join(HOMEDIR, theme, DBASE)
         self.contentdbasepath = os.path.join(HOMEDIR, theme, CONTENTDBASE)
         # We could also use a mysql dbase, local or remote
         try:
@@ -85,21 +87,21 @@ class DbaseMaker:
                 self.logger.debug("Starting SQLite users dbase, %s" % self.usersdbasepath)
                 engine = sqla.create_engine('sqlite:///%s' % self.usersdbasepath)
             elif USEMYSQL:
-                self.logger.info("Starting mySQL dbase, %s" % rc_hash['default']['dbasename_users'])
+                self.logger.info("Starting mySQL dbase, %s" % rc_hash['sp_users']['dbasename'])
                 import MySQLdb, _mysql_exceptions
                 self.logger.info("Using conffile %s" % rc_hash['path'])
-                db=MySQLdb.connect(host=rc_hash['default']['host_users'], \
-                                   user=rc_hash['default']['user_sp_users'], \
-                                   passwd=rc_hash['default']['user_sp_users_pass'])
+                db=MySQLdb.connect(host=rc_hash['sp_users']['host'], \
+                                   user=rc_hash['sp_users']['user'], \
+                                   passwd=rc_hash['sp_users']['user_pass'])
                 c = db.cursor()
-                c.execute('''CREATE DATABASE IF NOT EXISTS %s''' % rc_hash['default']['dbasename_users'])
+                c.execute('''CREATE DATABASE IF NOT EXISTS %s''' % rc_hash['sp_users']['dbasename'])
                 
                 db.close()
                 url = 'mysql://%s:%s@%s/%s' %\
-                                    (rc_hash['default']['user_sp_users'], \
-                                    rc_hash['default']['user_sp_users_pass'], \
-                                    rc_hash['default']['host_users'], \
-                                    rc_hash['default']['dbasename_users'])
+                                    (rc_hash['sp_users']['user'], \
+                                    rc_hash['sp_users']['user_pass'], \
+                                    rc_hash['sp_users']['host'], \
+                                    rc_hash['sp_users']['dbasename'])
                 engine = sqla.create_engine(url)
             else:
                 self.logger.error("I'm confused about which dbase to use, please check your settings in SPConstants and make sure you have all the dependencies installed")
@@ -107,10 +109,11 @@ class DbaseMaker:
             # The rest is the same for all dbases thanks to sqlalchemy  
             self.metadata_usersdb = sqla.MetaData(engine)
             self.metadata_usersdb.bind.echo = debug_sql
-            sqltb = SQLTables.SqlTables(self.metadata_usersdb)
+            self.sqltb = SQLTables.SqlTables(self.metadata_usersdb)
             # returns lookup table to get table objects by name and creates tables
-            self.orms_userdb = sqltb._create_userdb_tables(self.metadata_usersdb)
+            self.orms_userdb = self.sqltb._create_userdb_tables(self.metadata_usersdb)
             self.user_engine = engine
+            self.tables = self.sqltb.tableslist
             #self._check_tables_uptodate()
             #### end userdb stuff#####
             #### start contentdb stuff #####
@@ -119,10 +122,10 @@ class DbaseMaker:
                 engine = sqla.create_engine('sqlite:///%s' % self.contentdbasepath)
             elif USEMYSQL:
                 engine = sqla.create_engine('mysql://%s:%s@%s/%s' %\
-                                        (rc_hash['default']['user_btp_content'], \
-                                        rc_hash['default']['user_btp_content_pass'], \
-                                        rc_hash['default']['host_content'], \
-                                        rc_hash['default']['dbasename_content']))
+                                        (rc_hash['btp_content']['user'], \
+                                        rc_hash['btp_content']['user_pass'], \
+                                        rc_hash['btp_content']['host'], \
+                                        rc_hash['btp_content']['dbasename']))
                 
             self.metadata_contentdb = sqla.MetaData(engine)
             self.metadata_contentdb.bind.echo = debug_sql
@@ -144,7 +147,7 @@ class DbaseMaker:
         return (self.orms_content_db, self.orms_userdb)
     def get_metadatas(self):
         return (self.metadata_contentdb, self.metadata_usersdb)
-        
-        
+    def _get_sqltables(self):    
+        return self.sqltb
         
             

@@ -59,7 +59,7 @@ class Card(SPSpriteUtils.SPSprite):
         # The image passed to SPSprite will become self.image
         SPSpriteUtils.SPSprite.__init__(self,opencard)# embed it in this class
         self.name = name
-        self.closedimage = closedcard
+        self.closedimage = closedcard.copy()
         self.openimage = opencard# image of a open card
         # connect to the MOUSEBUTTONDOWN event, no need for passing data
         self.connect_callback(self.callback,MOUSEBUTTONDOWN)
@@ -69,6 +69,13 @@ class Card(SPSpriteUtils.SPSprite):
     def close_card(self):
         self.image = self.closedimage
         self.display_sprite()
+
+    def set_number(self,i, fs):
+        s = utils.char2surf(str(i), fsize=fs, fcol=WHITE)
+        sr = s.get_rect()
+        sr.center = self.rect.center
+        self.closedimage.blit(s, sr.topleft)
+
 
     def callback(self,sprite,event,*args):
         """ we will show the openimage when the user hits us""" 
@@ -163,11 +170,17 @@ class Activity:
         self.Sound = Snd()
         for file in files:
             setattr(self.Sound, file[:-4], utils.load_sound(os.path.join(self.CPdatadir, file)))
+        
+        self.beamer_set = 'on'
     
     def clear_screen(self):
         self.screen.blit(self.orgscreen,self.blit_pos)
         self.backgr.blit(self.orgscreen,self.blit_pos)
         pygame.display.update()
+
+    def get_moviepath(self):
+        movie = os.path.join(self.my_datadir,'help.avi')
+        return movie
 
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
@@ -201,7 +214,6 @@ class Activity:
         #                     Language, Alphabet, Fun, Miscellaneous
         return _("Memory")
     
-    
     def get_helplevels(self):
         """Mandatory method, must return a string with the number of levels
         in the follwing format:
@@ -211,7 +223,7 @@ class Activity:
     def dailytraining_pre_level(self, level):
         """Mandatory method"""
         # TODO: it's hardcoded, for 2.2 we must have it in the rcfile
-        self.tile = 'tileset_2'
+        self.tile = 'tileset_1'
 
     def dailytraining_next_level(self, level, dbmapper):
         """Mandatory method.
@@ -223,6 +235,7 @@ class Activity:
 
     def start(self):
         """Mandatory method."""
+        self.tile = 'tileset_1'
         self.displaydscore = 0
         self.SPG.tellcore_set_dice_minimal_level(1)
         self.pre_level_flag = False
@@ -233,7 +246,8 @@ class Activity:
         # (4,2) means 4 collomns of 2 rows 
         self.level_layout = [(3,2),(4,2),(4,3),(4,4),(5,4),(6,4)]
         self.AreWeDT = False
-        
+        self.filepaths = []
+                 
     def pre_level(self, level):
         """Mandatory method
         Return True if you want the core to enter the eventloop after this call."""
@@ -256,7 +270,7 @@ class Activity:
         files = glob.glob(os.path.join(self.my_datadir,'tileset_*.png'))
         files.sort()
         lbl = SPWidgets.Label(_("Please, choose a set of cards."),\
-                                (80, y),fsize=24, transparent=True)
+                                (30, y),fsize=24, transparent=True)
         lbl.display_sprite()
         y += lbl.get_sprite_height()
         for line in textwrap.wrap(_("The difficulty of the set increases from left to right."), 40):
@@ -264,13 +278,20 @@ class Activity:
             lbl.display_sprite()
             y += lbl.get_sprite_height()
         y += 50
+        tmp_img = utils.load_image(files[0])
+        count = 1
+        total_width = ((len(files) / 2) * (tmp_img.get_width())) + (((len(files) / 2) - 1)  * 20)
+        first_x = (self.screen.get_width() / 2) - (total_width / 2)
         for tilepath in files:
+            x = first_x + (count-1)*tmp_img.get_width() + (count-1)*20
             img = utils.load_image(tilepath)
             data = os.path.splitext(os.path.split(tilepath)[1])[0]
-            b = SPWidgets.SimpleButton(img, (x, y), data=data)
-            b.display_sprite()
-            self.actives.add(b)
-            x += 150
+            if not data[-2:] == 'ro':
+                img_ro = utils.load_image(os.path.join(self.my_datadir, '%s_ro.png' % data))
+                b = SPWidgets.SimpleTransImgButton(img, img_ro, (x, y), data=data)
+                b.display_sprite()
+                self.actives.add(b)
+                count += 1
         return True
         
     def start_exercise(self):
@@ -287,14 +308,20 @@ class Activity:
             else:
                 cardfront = self.rchash['childsplay']['cardfront']
                 cardback = self.rchash['childsplay']['cardback']
+            if self.beamer_set == 'on':
+                cardback = "%s_beamer.png" % cardback.split('.png')[0]
             cardback = utils.load_image(os.path.join(imgdir,cardback))
             # the rest of the images are turn into sprites in the start method
             emptycard = utils.load_image(os.path.join(imgdir,cardfront))
             items = ('cardback.png','cardfront.png', \
-                            'CP_cardback.png', 'CP_cardfront.png')
-            rawfiles = [f for f in glob.glob(os.path.join(imgdir,'*')) \
-                                        if os.path.basename(f) not in items]
-            files = random.sample(rawfiles, self.num_of_cards/2)
+                            'CP_cardback.png', 'CP_cardfront.png',\
+                            'cardback_beamer.png')
+            if len(self.filepaths) < self.num_of_cards/2:
+                self.filepaths = [f for f in glob.glob(os.path.join(imgdir,'*')) \
+                                            if os.path.basename(f) not in items]
+                random.shuffle(self.filepaths)
+            files = self.filepaths[0:self.num_of_cards/2]
+            self.filepaths = self.filepaths[self.num_of_cards/2:]
             self.logger.debug("Starting to load %s files" % len(files))
             for imgfile in files:
                 # load and put the images in a list together with their file name
@@ -369,6 +396,8 @@ class Activity:
         # used to record how many times the same card is shown.
         # we store it into a class namespace to make it globally available.
         Global.selected_cards = {}
+        i = 1
+        size = 67 - (self.level * 3)
         for yy in range(cy):
             for x in range(cx):
                 try:
@@ -377,13 +406,19 @@ class Activity:
                     #in case of a level with lesser cards on the last line, like level 6
                     break
                 Global.selected_cards[sprite] = 0
+                if self.beamer_set == 'on':
+                    sprite.set_number(i, size)
+                    i += 1
                 sprite.display_sprite((start_x+(x*step),start_y+(yy*step)))
                 self.actives.add(sprite)
         pygame.display.update()
         # start display cards waiting loop 
         self.cards_list = self.actives.get_sprites()
         self.actives.empty()
-        self.startbutton = SPWidgets.SimpleButtonDynamic(_("Start"), (690, y+430), fsize=24, data='start')
+#        self.startbutton = SPWidgets.SimpleButtonDynamic(_("Start"), (690, y+430), fsize=24, data='start')
+        self.startbutton = SPWidgets.SimpleButtonDynamic(_("Start"), (0,0), fsize=24, data='start')
+        x = 790 - self.startbutton.get_sprite_width()
+        self.startbutton.moveto((x, y+430))
         self.startbutton.set_use_current_background(True)
         self.startbutton.display_sprite()
         self.actives.add(self.startbutton)
@@ -475,7 +510,7 @@ class Activity:
         """Mandatory method.
         This is the main eventloop called by the core 30 times a minute."""
         for event in events:
-            if event.type in (MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION):
+            if event.type in (MOUSEBUTTONUP, MOUSEBUTTONDOWN, MOUSEMOTION):
                 result = self.actives.update(event)
                 # were in prelevel loop
                 if self.pre_level_flag:
@@ -520,7 +555,7 @@ class Activity:
                         self.SPG.tellcore_level_end(level=self.level)
                     else:
                         self.SPG.tellcore_level_end(store_db=True, \
-                                            level=min(6, self.level + levelup), \
+                                            level=min(6, self.level), \
                                             levelup=levelup)
         return 
                 

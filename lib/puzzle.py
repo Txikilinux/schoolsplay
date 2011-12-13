@@ -73,6 +73,7 @@ class Misc:
 class Piece(SPSpriteUtils.SPSprite):
     """ A piece of a puzzle """
     Selected = None
+    Brothers = []
     def __init__(self,image, correct_position, obs, name):
         self.org_image = image.convert()
         shadow = pygame.Surface(image.get_rect().size)
@@ -86,7 +87,9 @@ class Piece(SPSpriteUtils.SPSprite):
         self.logger = logging.getLogger("schoolsplay.puzzle.Piece")
         self.ImSelected = False
         self.obs = obs
-
+        Piece.Brothers.append(self) 
+        self.temp = 140
+        
     def _activated_cbf(self, sprite, event, data):
         #self.logger.debug("_activated_cbf called")
         if Piece.Selected and self.name == Piece.Selected.name:
@@ -108,6 +111,8 @@ class Piece(SPSpriteUtils.SPSprite):
         self.erase_sprite()
         self.shadow.moveto((x+24, y+20))
         self.moveto((x+12, y+12))
+        for s in Piece.Brothers:
+            s.do_fade()
         self.shadow.display_sprite()
         self.display_sprite()
         
@@ -120,7 +125,9 @@ class Piece(SPSpriteUtils.SPSprite):
         Piece.Selected.shadow.erase_sprite()
         Piece.Selected = None
         for s in self.group_owner:
+            s.image.set_alpha(255)
             s.display_sprite()
+        
         
     def _do_check(self):
         #self.logger.debug("_do_check called")
@@ -133,10 +140,19 @@ class Piece(SPSpriteUtils.SPSprite):
             Piece.Selected.shadow.erase_sprite()
             Piece.Selected = None
             for s in self.group_owner:
+                s.image.set_alpha(255)
                 s.display_sprite()
             self.obs(1)
         else:
             self.obs(-1)
+   
+    def do_fade(self):
+        """make the image a bit more transparent to let the selected piece standout more"""
+        if self.ImSelected or self.name == 'target':
+            return
+        self.erase_sprite()
+        self.image.set_alpha(80)
+        self.display_sprite()
             
 class Activity:
     """  Base class mandatory for any SP activty.
@@ -206,6 +222,10 @@ class Activity:
         self.backgr.blit(self.orgscreen,self.blit_pos)
         pygame.display.update()
 
+    def get_moviepath(self):
+        movie = os.path.join(self.my_datadir,'help.avi')
+        return movie
+
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
         and the possibility exists that your sprites are affected by it."""
@@ -249,6 +269,7 @@ class Activity:
     def start(self):
         """Mandatory method."""
         # Your top blit position, this depends on the menubar position 
+        self.tile = 'tileset_1'
         if self.blit_pos[1] == 0:
             self.blit_pos_y = 10
         else:
@@ -284,7 +305,6 @@ class Activity:
             return
         self.pre_level_flag = True
         y = self.blit_pos_y
-        x = 100
         
         imgdir = os.path.join(self.my_datadir, self.theme)
         if not os.path.exists(imgdir):
@@ -301,13 +321,20 @@ class Activity:
             lbl.display_sprite()
             y += lbl.get_sprite_height()
         y += 50
+        tmp_img = utils.load_image(files[0])
+        count = 1
+        total_width = ((len(files) / 2) * (tmp_img.get_width())) + (((len(files) / 2) - 1)  * 20)
+        first_x = (self.screen.get_width() / 2) - (total_width / 2)
         for tilepath in files:
+            x = first_x + (count-1)*tmp_img.get_width() + (count-1)*20
             img = utils.load_image(tilepath)
             data = os.path.splitext(os.path.split(tilepath)[1])[0]
-            b = SPWidgets.SimpleButton(img, (x, y), data=data)
-            b.display_sprite()
-            self.actives.add(b)
-            x += 150
+            if not data[-2:] == 'ro':
+                img_ro = utils.load_image(os.path.join(imgdir, '%s_ro.png' % data))
+                b = SPWidgets.SimpleTransImgButton(img, img_ro, (x, y), data=data)
+                b.display_sprite()
+                self.actives.add(b)
+                count += 1
         return True
   
     def next_level(self,level,dbmapper):
@@ -319,8 +346,13 @@ class Activity:
         self.level = level
         self.levelupcount = 1
         self.dbscore = 0
+        Piece.Brothers = []
         # number of exercises in one level
-        self.exercises = int(self.rchash[self.theme]['exercises'])
+        if self.AreWeDT:
+            self.exercises = 1
+        else:
+            self.exercises = int(self.rchash[self.theme]['exercises'])
+        
         self.totalexercises = self.exercises
         self.xoffset = 420 # space between the two puzzle areas left borders
         self.db_mapper = dbmapper
@@ -368,17 +400,16 @@ class Activity:
                 filter(orm.tileset == self.tile.split('_')[1])
         rows = [row for row in query.all()]
         all_ids = [row.CID for row in rows]
-        rows = self.SPG.check_served_content(rows,\
-                                                        self.exercises, \
-                                                        self.gt_list, \
-                                                        all_ids)
+        rows = self.SPG.check_served_content(rows,self.exercises, \
+                                                  self.gt_list, \
+                                                  all_ids)
         session.close()
         return rows
     
     def dailytraining_pre_level(self, level):
         """Mandatory method"""
         # TODO: it's hardcoded, for 2.2 we must have it in the rcfile
-        self.tile = 'tileset_2'
+        self.tile = 'tileset_1'
 
     def dailytraining_next_level(self, level, dbmapper):
         """Mandatory method.
@@ -451,7 +482,7 @@ class Activity:
         """Mandatory method.
         This is the main eventloop called by the core 30 times a minute."""
         for event in events:
-            if event.type in (MOUSEBUTTONDOWN, MOUSEMOTION):
+            if event.type in (MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEMOTION):
                 result = self.actives.update(event)
                 if self.pre_level_flag:
                     if result:
@@ -462,10 +493,10 @@ class Activity:
                         break
                 if not self.actives:
                     self.scoredisplay.set_score(self.score*3)
-                    pygame.time.wait(1000)
+                    pygame.time.wait(int(self.rchash[self.theme]['wait_value']))
                     self.clear_screen()
                     self.ThumbsUp.display_sprite((229, 296))
-                    pygame.time.wait(2000)
+                    pygame.time.wait(1000)
                     self.ThumbsUp.erase_sprite()
                     if self.next_exercise():
                         self.logger.debug("%s" % self.level)
@@ -477,7 +508,7 @@ class Activity:
                             self.SPG.tellcore_level_end(level=self.level)
                         else:
                             self.SPG.tellcore_level_end(store_db=True, \
-                                                level=min(6, self.level + levelup), \
+                                                level=min(6, self.level), \
                                                 levelup=levelup)
         return 
      
@@ -485,7 +516,7 @@ class Activity:
         self.logger.debug("next_exercise called, exercises = %s" % (self.exercises))
         # we commit the previous cid
         self.served_content_mapper.commit()
-        self.actives.empty()# remove sprites from pre_level
+        self.actives.purge()# remove sprites from previous exercise and erase them
         if not self.exercises:
             return True
         else:
@@ -507,7 +538,7 @@ class Activity:
         img = utils.aspect_scale(image.convert(),(140,140))
         self.puzzlethumb = SPSpriteUtils.MySprite(img)
         positions=[] 
-        pieceslist = []
+        self.pieceslist = []
                 
         # Split the surfaces in pieces
         sc = 324 / (self.npieces/2)
@@ -526,7 +557,7 @@ class Activity:
                 except ValueError:
                     self.logger.debug("Failed to get a subsurface, image has wrong size %s" % imgpath)
                 piece=Piece(piece, position,self.score_observer, name='piece')
-                pieceslist.append(piece)
+                self.pieceslist.append(piece)
                 s = pygame.Surface((r.w, r.h))
                 s.fill(WHITE)
                 s.blit(target_image, ((r.w - target_image.get_rect().w) / 2, \
@@ -543,9 +574,9 @@ class Activity:
         while positions == self.org_positions:
             random.shuffle(positions)
             
-        for s in pieceslist:
+        for s in self.pieceslist:
             s.moveto(positions.pop(0))
-        self.actives.add(pieceslist)
+        self.actives.add(self.pieceslist)
         
         return
 

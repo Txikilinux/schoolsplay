@@ -54,13 +54,18 @@ class SndBut(SPSpriteUtils.SPSprite):
         self.snd = snd
         self.img = img
         self.img_high = img_high
-        self.image = self.img.convert_alpha()
+        self.image = self.img
         SPSpriteUtils.SPSprite.__init__(self,self.image, name=name)
         self.rect = self.image.get_rect().move(pos)
         # self.image and self.rect are mandatory for the pygame sprite class
         self.high = 0 # used to signal highlight or not
         self.connect_callback(self.on_select_button, MOUSEBUTTONDOWN) # MOUSEBUTTONDOWN = pygame constant 
         self.scoreobs = scoreobs
+    
+    def set_number(self, s):
+        self.img.blit(s, (0,0))
+        self.img_high.blit(s, (0,0))
+        self.image = self.img
         
     def play(self):
         self.snd.play()
@@ -92,10 +97,7 @@ class SndBut(SPSpriteUtils.SPSprite):
             0 - a reference to the connected object.
             1 - the event that triggers this call.
             2 .. - data which where passed to the connect call.
-        """
-        
-        #print " obj,event,*args",obj,event,args
-        
+        """        
         if not SndBut.Selected: # nothing selected yet
             self.play() # play the sound
             self.highlight() # toggle the high light button
@@ -165,6 +167,11 @@ class Activity:
         # You MUST call SPInit BEFORE using any of the SpriteUtils stuff
         # it returns a reference to the special CPGroup
         self.actives = SPSpriteUtils.SPInit(self.screen,self.backgr)
+        self.beamer_set = 'on'
+        
+    def get_moviepath(self):
+        movie = os.path.join(self.my_datadir,'help.avi')
+        return movie
     
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
@@ -220,8 +227,11 @@ class Activity:
                                                     os.path.join(self.my_datadir,'Sounds','*.ogg')))
         # We use the same images for all the buttons.
         # We check the sound objects for equality not the images.
-        self.snd_img = utils.load_image(os.path.join(self.my_datadir,'but_bleu_up.png'),1)
-        self.snd_img_high = utils.load_image(os.path.join(self.my_datadir,'but_red_down.png'),1)
+        self.snd_img = utils.load_image(os.path.join(self.my_datadir,'but_bleu_up.png'))
+        self.snd_img_high = utils.load_image(os.path.join(self.my_datadir,'but_red_down.png'))
+        if self.beamer_set == 'on':
+            self.snd_img_b = utils.load_image(os.path.join(self.my_datadir,'but_bleu_up_beamer.png'))
+            self.snd_img_high_b = utils.load_image(os.path.join(self.my_datadir,'but_red_down_beamer.png'))
         # number of items y, number of items x, x offset, y offset
         self.gamelevels = [(2,3,200,100),(2,4,180,100),(3,4,180,60),(4,5,100,20),(4,6,50,20), (4, 7, 2,10 )]
         #self.SPG.tellcore_set_dice_minimal_level(1)
@@ -290,13 +300,25 @@ class Activity:
         # It's setup in the next_level method and used by the Card objects.
         # we store it into a class namespace to make it globally available.
         Global.selected_cards = {}
+        i = 1
         for y in range(r):
             for x in range(c): 
                 sfile = files.pop()
+                
                 snd = utils.load_sound(sfile)
-                obj = SndBut(snd,\
+                
+                if self.beamer_set == 'on':
+                    obj = SndBut(snd,\
                             (xoffset + x*x_offset,yoffset + y*y_offset+ty),\
-                            self.snd_img,self.snd_img_high, sfile, self.scoreobs)
+                            self.snd_img_b.copy(),self.snd_img_high_b.copy(), sfile, self.scoreobs)
+                    f = os.path.join(self.my_datadir, "%s.png" % i)
+                    s = utils.load_image(f)
+                    obj.set_number(s)
+                    i += 1
+                else:
+                    obj = SndBut(snd,\
+                            (xoffset + x*x_offset,yoffset + y*y_offset+ty),\
+                            self.snd_img.copy(),self.snd_img_high.copy(), sfile, self.scoreobs)
                 self.actives.add(obj) 
                 obj.display_sprite()
                 Global.selected_cards[obj] = 0
@@ -332,16 +354,16 @@ class Activity:
         # C = multiplier
         # S = time spend in seconds
         try:
-            T = float(self.num_of_buttons)
-            K = float(self.knownbuttons * 1.5)
+            T = float(self.num_of_buttons * 2)
+            K = float(self.knownbuttons)
         except AttributeError:
             return None
         m,s = timespend.split(':')
         S = float(int(m)*60 + int(s))
-        F = 8.0
-        F1 = 2.0
+        F = 9.0
+        F1 = 1.0
         C = 0.6
-        C1 = 0.3
+        C1 = 0.2
         points = F / max(K / T, 1.0 ) ** C1
         time = F1 / max(S / T , 1.0) ** C
         self.logger.info("@scoredata@ %s level %s T %s K %s S %s points %s time %s" %\
@@ -382,7 +404,7 @@ class Activity:
                         self.SPG.tellcore_level_end(level=self.level)
             else:
                 self.SPG.tellcore_level_end(store_db=True, \
-                                    level=min(6, self.level + levelup), \
+                                    level=min(6, self.level), \
                                     levelup=levelup)
         return 
         

@@ -104,7 +104,7 @@ class Activity(quiz.Activity):
         text = [_("The aim of this activity:"),
                 _("Answer the quiz questions."), 
         " ",
-        _("At the top of the screen, you will see a question."),
+        _("At the top of the screen, you will see a question about sayings."),
         _("Below it are a choice of possible answers.\nTouch the correct answer."), 
         " "]
         return text 

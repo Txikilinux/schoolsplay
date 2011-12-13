@@ -96,7 +96,7 @@ class Activity(quiz.Activity):
         else:
             img_ro = None
         but = SPWidgets.TransImgButton(img, img_ro, pos[0], name='30')
-        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONDOWN, 30)
+        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONUP, 30)
         self.prelevel_buttons.append(but)
         
         img = utils.load_image(os.path.join(self.my_datadir, '40s.png'))
@@ -106,7 +106,7 @@ class Activity(quiz.Activity):
         else:
             img_ro = None
         but = SPWidgets.TransImgButton(img, img_ro, pos[1], name='40')
-        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONDOWN, 40)
+        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONUP, 40)
         self.prelevel_buttons.append(but)
         
         img = utils.load_image(os.path.join(self.my_datadir, '50s.png'))
@@ -116,7 +116,7 @@ class Activity(quiz.Activity):
         else:
             img_ro = None
         but = SPWidgets.TransImgButton(img, img_ro, pos[2], name='50')
-        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONDOWN, 50)
+        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONUP, 50)
         self.prelevel_buttons.append(but)
         
         img = utils.load_image(os.path.join(self.my_datadir, '60s.png'))
@@ -126,7 +126,7 @@ class Activity(quiz.Activity):
         else:
             img_ro = None
         but = SPWidgets.TransImgButton(img, img_ro, pos[3], name='60')
-        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONDOWN, 60)
+        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONUP, 60)
         self.prelevel_buttons.append(but)
         
         img = utils.load_image(os.path.join(self.my_datadir, '70s.png'))
@@ -136,7 +136,7 @@ class Activity(quiz.Activity):
         else:
             img_ro = None
         but = SPWidgets.TransImgButton(img, img_ro, pos[4], name='70')
-        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONDOWN, 70)
+        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONUP, 70)
         self.prelevel_buttons.append(but)
         
         img = utils.load_image(os.path.join(self.my_datadir, self.lang,'age.png'))
@@ -146,7 +146,7 @@ class Activity(quiz.Activity):
         else:
             img_ro = None
         but = SPWidgets.TransImgButton(img, img_ro, pos[5], name='age')
-        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONDOWN, 'age')
+        but.connect_callback(self._prelevel_cbf, MOUSEBUTTONUP, 'age')
         self.prelevel_buttons.append(but)
         
     def _start_engine(self):
@@ -201,6 +201,20 @@ class Activity(quiz.Activity):
             self.stop_prelevel_loop = True
             return True
         else:
+            try:
+                year = int(self.SPG.get_current_user_dbrow().birthdate.year)
+            except (AttributeError, ValueError):
+                year = 1930 
+            else:
+                if year > 1900:
+                    if year < 1957:
+                        self.year = year + 18
+                    else:
+                        self.year = 1975
+                    self.logger.debug("setting year to %s" % self.year)
+                    self.stop_prelevel_loop = True
+                    return True
+
             pygame.display.update(self.screen.blit(self.background_keyboard,(115,140)))
             lbl = SPWidgets.Label(_("Please enter your year of birth."),\
                                 (125, 150),fsize=24, fgcol=(255,255,255), transparent=True)
@@ -254,7 +268,7 @@ class Activity(quiz.Activity):
     
     def get_helplevels(self):
         """Mandatory method, must return a string with the number of levels
-        in the follwing format:
+        in the following format:
         _("This level has %s levels") % number-of-levels"""
         return _("This activity has %s levels") % 2
 
@@ -274,18 +288,18 @@ class Activity(quiz.Activity):
                 if self.levelupcount >= int(self.rchash[self.theme]['autolevel_value']):
                     levelup = 1
                     self.SPG.tellcore_level_end(store_db=True,\
-                                                level=min(6, self.level + levelup), \
+                                                level=min(6, self.level), \
                                                 levelup=levelup)
                 else:
                     self.SPG.tellcore_level_end(store_db=True, level=self.level)
         else:
             for event in events:
-                if event.type in (MOUSEBUTTONDOWN, MOUSEMOTION):
+                if event.type in (MOUSEBUTTONUP, MOUSEMOTION):
                     self.actives.update(event)
                     if self.stop_prelevel_loop:
                         self.logger.debug("loop, got a result and stop this loop")
                         self.SPG.tellcore_pre_level_end()
                         self.pre_level_flag = False
                         self.SPG.tellcore_enable_level_indicator()
-                        break
+                        break                        
         return 

@@ -31,12 +31,13 @@ import datetime
 # Hash used by the quizengine.ContentFeeder to determine which contentdb table to use
 #possible quiz types are: history,math,pic,royal,sayings,text,melody and general
 # we don't pass the actual tables as they are requested through the Datamanager
-type2table = {'history':'game_quizhistory', 'pic':'game_quizpic', \
+type2table = {'history':'game_quizhistory', 'picture':'game_quizpic', \
             'text':'game_quiztext', 'math':'game_quiztext', \
             'royal':'game_quiztext', 'sayings':'game_quiztext', \
-            'melody':'game_quiztext' }
+            'melody':'game_quiztext', 'regional':'game_quizregional',\
+            'personal':'game_quizpersonal'}
 
-# ORMs for the content dbase
+# ORMs for the btp_content dbase
 # These MUST start with 'game_'
 class game_quiztext(object): pass
 class game_quizhistory(object): pass
@@ -54,13 +55,15 @@ class game_filenames(object): pass
 class game_available_content(object): pass
 class game_quotes(object): pass
 
+
 # ORMs for the sp_users dbase
 # Which attributes must be set depends if you want the ORM to be used to write
-# to the table, for every column you want to write to you must set attributes.
+# to the table, for every column you want to write too you must set attributes.
 class users(object):
     def __init__(self, login_name='', title='', first_name='', last_name='',\
                   birthdate=datetime.datetime(1900,1,1), \
-                    group='', profile='', passwrd='', activities='', audio=75):
+                    group='', profile='', passwrd='', activities='', audio=50, dt_target='default',\
+                    levelup_dlg='true'):
         self.login_name = login_name
         self.title = title
         self.first_name = first_name
@@ -71,6 +74,8 @@ class users(object):
         self.passwrd = passwrd
         self.activities = activities
         self.audio = audio
+        self.st_target = dt_target
+        self.levelup_dlg = levelup_dlg
         
 class served_content(object):
     def __init__(self, user_id='', CID='', game_theme_id='', module='', start_time=None, \
@@ -101,6 +106,16 @@ class activity_options(object):
         self.activity = activity
         self.mu = mu
         self.sigma = sigma
+
+class users_faces(object):
+    def __init__(self, face_id='', user_id='', shape_diff = '', temp_diff = '', pic_name='', datetime=''):
+        self.face_id = face_id
+        self.user_id = user_id
+        self.shape_diff = shape_diff
+        self.temp_diff = temp_diff
+        self.pic_name = pic_name
+        self.datetime = datetime
+
 class change_pass(object):
     def __init__(self, user='', passwrd=''):
         self.user = user
@@ -111,7 +126,45 @@ class zorgenquete(object):
         self.item = item
         self.state = state
         self.network = network
+        
+class dt_sequence(object):
+    def __init__(self, fortune=0, act_name='', group='', level='', cycles='', target='', order=0):
+        self.fortune = fortune
+        self.act_name = act_name
+        self.group = group
+        self.level= level
+        self.cycles = cycles
+        self.target = target
+        self.order = order
     
+    def get_values(self):
+        return {'fortune':self.fortune, 'act_name':self.act_name, 'group':self.group,\
+                'level':self.level,'cycles':self.cycles,'target':self.target,'order':self.order}
+    
+class dt_sequence_manual(object):
+    def __init__(self, user_id='', target=''):
+        self.user_id = user_id
+        self.target = target
+
+class stats(object):
+    def __init__(self, datetime='', activity_name='', message='', game_start_called=False, \
+                 game_nextlevel_called=False, game_end_called=False, is_cop=False, \
+                 user_id='', final_score='', session=''):
+        self.datetime = datetime
+        self.activity_name = activity_name
+        self.message = message
+        self.game_start_called = game_start_called
+        self.game_end_called = game_end_called
+        self.game_nextlevel_called = game_nextlevel_called
+        self.is_cop = is_cop
+        self.user_id =user_id
+        self.final_score = final_score
+        self.session = session
+        
+class stats_session(object):
+    def __init__(self, datetime=''):
+        self.datetime =datetime
+               
 # parent class for regular activities which provide mandatory attributes.
 class act_parent(object):
     def __init__(self, user_id, timespend, start_time, end_time, level, score):
@@ -272,13 +325,21 @@ class spinbottle(act_parent):
         self.total = total
         self.wrong = wrong
         self.correct = correct
-        
+
+class list_game(act_parent):
+    def __init__(self, user_id=None, timespend=None, start_time=None, end_time=None,\
+                  level=None, score=None, total=None, wrong=None, correct=None):
+        act_parent.__init__(self, user_id, timespend, start_time, end_time, level, score)
+        self.total = total
+        self.wrong = wrong
+        self.correct = correct
+ 
 class story(act_parent):
     def __init__(self, user_id=None, timespend=None, start_time=None, end_time=None,\
                   level=None, score=None):
         act_parent.__init__(self, user_id, timespend, start_time, end_time, level, score)
         
-class synonyms(act_parent):
+class dictionary(act_parent):
     def __init__(self, user_id=None, timespend=None, start_time=None, end_time=None,\
                   level=None, score=None):
         act_parent.__init__(self, user_id, timespend, start_time, end_time, level, score)
@@ -287,8 +348,17 @@ class wipe(act_parent):
     def __init__(self, user_id=None, timespend=None, start_time=None, end_time=None,\
                   level=None, score=None):
         act_parent.__init__(self, user_id, timespend, start_time, end_time, level, score)
-        
+
+class fourrow(act_parent):
+    def __init__(self, user_id=None, timespend=None, start_time=None, end_time=None,\
+                  level=None, score=None, stonesplayed=0):
+        act_parent.__init__(self, user_id, timespend, start_time, end_time, level, score)
+        self.stonesplayed = stonesplayed
+
+
 class test_act(act_parent):
     def __init__(self, user_id=None, timespend=None, start_time=None, end_time=None,\
                   level=None, score=None):
         act_parent.__init__(self, user_id, timespend, start_time, end_time, level, score)
+
+

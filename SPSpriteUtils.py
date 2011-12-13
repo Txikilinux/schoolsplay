@@ -41,10 +41,10 @@ from pygame.constants import *
 from types import StringType, ListType
 
 from utils import MyError, char2surf, load_image
-from SPConstants import ACTIVITYDATADIR
+from SPConstants import ACTIVITYDATADIR, BUTTON_FEEDBACK_TIME
 module_logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl")
 
-def SPInit(scr, back, group=pygame.sprite.Group(), theme='default'):
+def SPInit(scr, back, cmd_options={}):
     """ Init(back,scr,group=pygame.sprite.Group()) -> SPGroup instance
         
          This MUST be called BEFORE the SpriteUtils classes are used, and is needed
@@ -72,7 +72,8 @@ def SPInit(scr, back, group=pygame.sprite.Group(), theme='default'):
     # store a reference, needed for removal and erasing of sprites
     SPSprite.backgr = back
     SPSprite.screen = scr
-    
+    for k,v in cmd_options.items():
+        setattr(SPSprite, "_Init_cmd_opt_%s" % k, v)
     # SPGroup needs screen and backgr to erase and draw the sprites
     # belonging to this group
     g = SPGroup(scr, back)# special CP group
@@ -101,15 +102,17 @@ class SPSprite(pygame.sprite.Sprite):
                 why you want it too be None.
         name - a string so that one can do: if sprite_obj == 'foobar':"""
         pygame.sprite.Sprite.__init__(self)# This must be set before using this class
-        self.logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl.SPSprite")
+        self._logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl.SPSprite")
         self.DEBUG = 0
+        
         # make sure we have a correct background
         #self.backgr = self.backgr.convert()
         #self.backgr.blit(self.screen, (0, 0))
         self.image = image
         if self.image:
             self.rect = image.get_rect()
-        
+        else:
+            self.rect = pygame.Rect(0,0,0,0)
         self.hover_active = False
         self._args = [self] # default value to pass to update functions
         self._event_type = [] # default in case there's no callback while there's a mouseevent
@@ -121,17 +124,57 @@ class SPSprite(pygame.sprite.Sprite):
         self.__name = name
         self.name = name
         self._moveit_iter = None
-        # needed for rotation
-        self.__dir = 0
-        self.__OrgImage = self.image #comes from the derived class
+        
         # a group that owns this sprite, used to address common properties
         # of sprites within the group
         self.group_owner = None
         self.UseCurrentScreenAsBackground = False
         self.erasesurf = None
-    
+        # DnD
+        self._org_pos = self.rect.topleft
+            # needed for rotation
+        self.__dir = 0
+        self.__OrgImage = self.image #comes from the derived class
+        
+    def rotate_sprite(self, amount):
+        """ Rotate the sprite by the amount given. The image should be loaded
+        without setting aplha channel otherwise pygame will crash!!
+        See utils.load_image for arguments to unset alphachannel.
+        
+        Positive degrees rotates counterclockwise.
+        Negative degrees rotates clockwise"""
+        oldCenter = self.rect.center
+        self.__dir += amount
+        if self.__dir >= 360:
+            self.__dir = 0
+            self.image = self.__OrgImage
+        self.undraw_sprite()
+        self.image = pygame.transform.rotate(self.__OrgImage, self.__dir)
+        self.rect = self.image.get_rect()
+        self.rect.center = oldCenter
+        self.draw_sprite()
+        
+    def draw_sprite(self,pos=None): 
+        """Draw the sprite on the screen surface
+        """
+        if self.UseCurrentScreenAsBackground:
+            #self.backgr = pygame.display.get_surface()
+            self.erasesurf = pygame.Surface(self.image.get_size())
+            self.erasesurf.blit(pygame.display.get_surface(), (0, 0), self.rect)
+        if pos:
+            self.rect.topleft = pos
+        self.screen.blit(self.image, self.rect)
+        
+    def undraw_sprite(self):
+        """remove the sprite from the screen surface.
+        """
+        if self.erasesurf:
+            self.screen.blit(self.erasesurf, self.rect)
+        else:
+            self.screen.blit(self.backgr, self.rect, self.rect.inflate(2, 2))
+        
     def get_name(self):
-        return self.__name
+        return self.__name       
 
     def set_group_owner(self, group):
         """Set group that owns by this sprite"""
@@ -145,18 +188,18 @@ class SPSprite(pygame.sprite.Sprite):
     def __ne__(self, x):
         return x != self.__name
     
-    def mouse_hover_enter(self):
+    def mouse_hover_enter(self,*args):
         """Called by the update method when a MOUSEMOTION event occurs and the 
         mouse is inside our rect.
         Derived gui widget classes should override this method."""
         self.hover_active = True
         
-    def mouse_hover_leave(self):
+    def mouse_hover_leave(self,*args):
         """Called by the update method when a MOUSEMOTION event occurs and the 
         mouse is outside our rect.
         Derived gui widget classes should override this method."""
         self.hover_active = False
-
+        
     def connect_callback(self, callback=None, event_type=None,  * args):
         """ Connect a callback function to a pygame event type or list of events, 
          with a optional arguments, the *args tuple.
@@ -196,54 +239,88 @@ class SPSprite(pygame.sprite.Sprite):
         """ 
         cb, ou = None, None
         if event:
-            if self._callback and event.type in self._event_type:
-                # self.rect is the rect from the sub class
-                if event.type in (MOUSEBUTTONDOWN, MOUSEBUTTONUP) and \
-                        self.rect.contains((pygame.mouse.get_pos() + (0, 0))) or\
-                                                    event.type == KEYDOWN:
-                    if hasattr(self, '_IamWidget'):
-                        if event.type == MOUSEBUTTONDOWN and self._CanHaveInputFocus:
-                            SPGroup._WhoHasInputFocus = self
-                        if event.type == KEYDOWN and SPGroup._WhoHasInputFocus is not self:
-                            return
-                    # we check if we should call all possible matches
-                    if not (self.group_owner and self.group_owner.get_onematch()):
-                        try:
-                            #print "--------call cbf-----------", event
-                            cb = apply(self._callback, (self, event, self._args))
-                        except StandardError, info:
-                            self.logger.exception("Callback function %s failed" % self._callback)
-                            self.logger.error(info)
-                            raise MyError, info
-                    else:
-                        # we do not need to check existence of self.group_owner because we get
-                        # here only if it exists.
-                        if not self.group_owner.get_havematch():
-                            self.group_owner.set_havematch(True)
-                            try:
-                                cb = apply(self._callback, (self, event, self._args))
-                            except StandardError, info:
-                                self.logger.exception("Callback function %s failed" % self._callback)
-                                self.logger.error(info)
-                                raise Exception
+            if hasattr(self, '_scroll_focus') and not self._scroll_focus:
+                return
+            mouserect = pygame.mouse.get_pos() + (0, 0)
+            if not event.type == MOUSEMOTION:
+                if self._callback and event.type in self._event_type\
+                    or hasattr(self, '_IamWidget') and (self._DragEnabled or self._DropEnabled):
+                    # self.rect is the rect from the sub class
+                    if event.type in (MOUSEBUTTONDOWN, MOUSEBUTTONUP) and self.rect.contains(mouserect) or\
+                                    event.type == KEYDOWN or\
+                                    event.type == USEREVENT + 1:
+                        # First we do some widget focus stuff
+                        if hasattr(self, '_IamWidget'):
+                            if event.type == MOUSEBUTTONDOWN and self._CanHaveInputFocus:
+                                SPGroup._WhoHasInputFocus = self
+                            if event.type == KEYDOWN and SPGroup._WhoHasInputFocus is not self:
+                                return
+                            # here we check SPWidget objects for possible drag/drop events
+                            if self._DragEnabled:
+                                self.rect.contains(mouserect)
+                                if event.type == MOUSEBUTTONDOWN and self.rect.contains(mouserect):
+                                    self._logger.debug("start drag event")
+                                    self._org_pos = self.rect.topleft
+                                    
+                                    self._prev_mouse_pos = pygame.Rect(mouserect).inflate(self.MinimalDragTreshold, self.MinimalDragTreshold)
+                                    self.start_drag_event(self, (mouserect[0], mouserect[1]))
+                                    return
+                                elif event.type == MOUSEBUTTONUP:
+                                    if type(self._prev_mouse_pos) is pygame.Rect:
+                                        self._logger.debug("end drag event")
+                                        self.end_drag_event(self, (mouserect[0], mouserect[1]))
+                                        if not self._prev_mouse_pos.contains(mouserect):
+                                            self._prev_mouse_pos =  None
+                                            SPGroup._WhoWasDropped = self
+                                            return -2# signal to caller Group
+                                        elif self._callback and self.rect.contains(mouserect):
+                                            self._prev_mouse_pos = None 
+                                    else:
+                                        return
+
+                        # we check if we should call all possible matches
+                        if event.type != USEREVENT+1 and self._callback:
+                            if not (self.group_owner and self.group_owner.get_onematch()):
+                                try:
+                                    #print "--------call cbf-----------", event
+                                    cb = apply(self._callback, (self, event, self._args))
+                                except StandardError, info:
+                                    self._logger.exception("Callback function %s failed" % self._callback)
+                                    self._logger.error(info)
+                                    raise MyError, info
+                            else:
+                                # we do not need to check existence of self.group_owner because we get
+                                # here only if it exists.
+                                if not self.group_owner.get_havematch():
+                                    self.group_owner.set_havematch(True)
+                                    try:
+                                        cb = apply(self._callback, (self, event, self._args))
+                                    except StandardError, info:
+                                        self._logger.exception("Callback function %s failed" % self._callback)
+                                        self._logger.error(info)
+                                        raise Exception
+                        if hasattr(self, '_IamWidget'):
+                            pygame.time.wait(BUTTON_FEEDBACK_TIME)
+                            if self.mouse_hover_leave_action and not self.ImSelected:
+                                self.hover_active = False
+                                self.image = self._but
+                                self.erase_sprite()
+                                self.display_sprite()
             elif event.type is MOUSEMOTION:
-                if hasattr(self, '_scroll_focus') and not self._scroll_focus:
-                    return
                 collide = self.rect.collidepoint(pygame.mouse.get_pos())
                 if collide and not self.hover_active:
                     self.mouse_hover_enter()
                 elif self.hover_active and not collide:
-                    self.mouse_hover_leave()
+                    self.mouse_hover_leave()            
         if cb == -1:
             return -1
-        if hasattr(self, "on_update"):
-            if cb:
-                apply(self.on_update, self._args)
-            else:
-                ou = apply(self.on_update, self._args)
+        if cb:
+            apply(self.on_update, self._args)
+        else:
+            ou = apply(self.on_update, self._args)
         return cb or ou
     
-    def on_update(self,  * args):
+    def on_update(self,  *args):
         """ Always called by the group 'update' and 'refresh' methods and will
         move the sprite when a movement is set, you can override this to set
         your own 'update' stuff.
@@ -253,7 +330,8 @@ class SPSprite(pygame.sprite.Sprite):
         When you override this method you must call 'next' yourself on the
         iterator returnt by 'set_movement'. But be aware that if you don't
         override this method you shouldn't call 'next' on the iterator as it
-        would be called in here also."""
+        would be called in here also.
+        You can also override this for drag and drop animations."""
         if self._moveit_iter:
             try:
                 self._moveit_iter.next()
@@ -261,7 +339,7 @@ class SPSprite(pygame.sprite.Sprite):
                 self._moveit_iter = None
                 self.stop_movement(now=1)
             except:
-                self.logger.exception("Error while calling on_update. Killing sprite.")
+                self._logger.exception("Error while calling on_update. Killing sprite.")
                 self.dokill = 1
                 self.stop_movement(now=1)
     
@@ -352,6 +430,8 @@ class SPSprite(pygame.sprite.Sprite):
         Usefull for just displaying this sprite, nothing more.
         It takes an optional argument 'pos' which will place the sprite to
         that location."""
+        if hasattr(self, '_scroll_focus') and not self._scroll_focus:
+            return
         if self.UseCurrentScreenAsBackground:
             #self.backgr = pygame.display.get_surface()
             self.erasesurf = pygame.Surface(self.image.get_size())
@@ -375,6 +455,21 @@ class SPSprite(pygame.sprite.Sprite):
             r = self.screen.blit(self.backgr, self.rect, self.rect.inflate(2, 2))
         pygame.display.update(r)
     
+    def refresh_sprite(self):
+        """Erase and display sprite in one call"""
+        if hasattr(self, '_scroll_focus') and not self._scroll_focus:
+            return
+        if self.erasesurf:
+            r = self.screen.blit(self.erasesurf, self.rect)
+        else:
+            r = self.screen.blit(self.backgr, self.rect, self.rect.inflate(2, 2))
+        if self.UseCurrentScreenAsBackground:
+            #self.backgr = pygame.display.get_surface()
+            self.erasesurf = pygame.Surface(self.image.get_size())
+            self.erasesurf.blit(pygame.display.get_surface(), (0, 0), self.rect)
+        rr = self.screen.blit(self.image, self.rect)
+        pygame.display.update([r,rr])
+        
     def remove_sprite(self):
         """ Remove this sprite object from all the groups it belongs.
         
@@ -385,25 +480,7 @@ class SPSprite(pygame.sprite.Sprite):
         self.kill()# removes this object from any group it belongs
         self.erase_sprite()
         return self
-    
-    def rotate_sprite(self, amount):
-        """ Rotate the sprite by the amount given. The image should be loaded
-        without setting aplha channel otherwise pygame will crash!!
-        See utils.load_image for arguments to unset alphachannel.
-        
-        Positive degrees rotates counterclockwise.
-        Negative degrees rotates clockwise"""
-        oldCenter = self.rect.center
-        self.__dir += amount
-        if self.__dir >= 360:
-            self.__dir = 0
-            self.image = self.__OrgImage
-        self.erase_sprite()
-        self.image = pygame.transform.rotate(self.__OrgImage, self.__dir)
-        self.rect = self.image.get_rect()
-        self.rect.center = oldCenter
-        self.display_sprite()
-    
+       
     def get_sprite_height(self):
         """ Returns the height of the surface used in this sprite"""
         return self.image.get_height()
@@ -419,6 +496,7 @@ class SPSprite(pygame.sprite.Sprite):
 
 class SPGroup(pygame.sprite.RenderUpdates):
     _WhoHasInputFocus = None
+    _WhoWasDropped = None
     """ Group  wich extends the standard RenderUpdates group.
     
     This is meant to use together with the SPSprite class.
@@ -432,19 +510,23 @@ class SPGroup(pygame.sprite.RenderUpdates):
         """__init__(scr,bck)
            scr = reference to the display screen.
            bck = reference to a background screen."""
-        self.logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl.SPGroup")
+        self._logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl.SPGroup")
         self.DEBUG = 0
         pygame.sprite.RenderUpdates.__init__(self)
         self.scr = scr
         self.bck = bck
         self.__onematch = False
         self.__havematch = False 
-            
+        self.__dropables = []
+        
     def set_input_focus(self, widget):
         SPGroup._WhoHasInputFocus = widget
     
     def who_has_input_focus(self):
         return SPGroup._WhoHasInputFocus
+    
+    def register_dropable(self, widget):
+        self.__dropables.append(widget)
 
     def refresh(self,  * args):
         """ Clear the sprites, calls the update method on the sprites,
@@ -460,15 +542,17 @@ class SPGroup(pygame.sprite.RenderUpdates):
         rects = self.draw(self.scr)    
         pygame.display.update(rects)
         return v
-        
+    
     def redraw(self):
-        """ Clear the sprites, redraw the sprites.
+        """ Clear the sprites, redraw the sprites that have a their _scroll_focus attribute set and those who 
+        haven't a scroll_focus attribute (regular sprites).
         """
         for s in self.sprites():
+            if hasattr(s, '_scroll_focus') and not s._scroll_focus:
+                return
             s.erase_sprite()
             s.display_sprite()
-        
-
+    
     def get_stack_ids(self):
         return self.sprites()
 
@@ -499,11 +583,11 @@ class SPGroup(pygame.sprite.RenderUpdates):
         and the user clicks on the top sprite, all the sprites below the top one 
         reacts to the event as if they were also clicked.
         By setting one_match only one sprite reacts and the rest is ignored."""
-        #self.logger.debug("onematch is set to %s", onematch)
+        #self._logger.debug("onematch is set to %s", onematch)
         self.__onematch = onematch
 
     def get_onematch(self):
-        #self.logger.debug("onematch is %s", self.__onematch)
+        #self._logger.debug("onematch is %s", self.__onematch)
         return self.__onematch
 
     def set_havematch(self, havematch=False):
@@ -515,12 +599,18 @@ class SPGroup(pygame.sprite.RenderUpdates):
         sprites in the group will not handle this event
         The flag is used to re-set to false as soon as all sprites within the
         group are updated with the event"""
-        #self.logger.debug("havematch is set to %s", havematch)
+        #self._logger.debug("havematch is set to %s", havematch)
         self.__havematch = havematch
 
     def get_havematch(self):
-        #self.logger.debug("havematch is %s", self.__havematch)
+        #self._logger.debug("havematch is %s", self.__havematch)
         return self.__havematch
+
+    def purge(self):
+        """Will remove all sprites from this group and erase them from the screen."""
+        for s in self.sprites():
+            s.erase_sprite()
+        self.empty()
 
     def update(self, *args):
         """update(...), this overrides the pygame.sprite.group.update
@@ -533,19 +623,33 @@ class SPGroup(pygame.sprite.RenderUpdates):
            Example: [(sprite name,return val),(sprite name,return val)]
            sprite name is sprite.__class__, so you can change it to make the sprite name unique.
            return val is the val returnt by the SPSprite.update method and it's the value from the callback
-           function if it exist otherwise it's from the on_update."""
+           function if it exist otherwise it's from the on_update.
+           If your sprite returns -1 the loop will break and no other sprites will be called.
+           The return value -2 is used by DnD objects"""
         l = []
         l_append = l.append
         if args:
             a = apply
             for s in self.spritedict.keys():
                 v = a(s.update, args)
-                #v = s.update(args)
-                if self.DEBUG: print >> sys.stderr, self.__class__, "returnt from SPGroup update", v
                 if v:
+                    #self._logger.debug("returnt from SPSprite update %s" % v)
                     l_append((s, v))
                     if v == -1:
+                        pygame.event.clear()
+                        self._logger.debug("Got a -1 value breaking out of the update loop")
                         break
+                    elif v == -2 and SPGroup._WhoWasDropped:
+                        obj = SPGroup._WhoWasDropped
+                        index = obj.rect.collidelist(self.__dropables)
+                        if index != -1:
+                            if self.__dropables[index].drop_event(obj):
+                                obj._DnDreset()
+                            break
+                        else:
+                            SPGroup._WhoWasDropped = None
+                            obj._DnDreset()
+                        
         else:
             for s in self.spritedict.keys():
                 s.update()
@@ -762,14 +866,14 @@ class MySprite(SPSprite):
         value must be an pygame surface or a path to a supported image file.
         name is optional and can be used to identify this sprite.
         See also the SPSprite class."""
-        self.logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl.MySprite")
+        self._logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl.MySprite")
         if type(value) is pygame.Surface:
             self.image = value
         elif type(value) in (types.StringType, types.UnicodeType):
             try:
                 self.image = load_image(value)
             except Exception, info:
-                self.logger.error("failled to load image: %s" % value)
+                self._logger.error("failled to load image: %s" % value)
                 raise MyError, info
         self.rect = self.image.get_rect()
         SPSprite.__init__(self, self.image, name=name)

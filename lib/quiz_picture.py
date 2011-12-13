@@ -76,7 +76,7 @@ class Activity(quiz.Activity):
     
     def _start_engine(self):
         try:
-            self.quizengine = quiz.Engine('pic', self.SPG, \
+            self.quizengine = quiz.Engine('picture', self.SPG, \
                                                   self.observer, self.rchash)
         except Exception, info:
             self.logger.exception("error starting quiz engine: %s" % info)
@@ -102,7 +102,7 @@ class Activity(quiz.Activity):
         text = [_("The aim of this activity:"),
                 _("Answer the quiz questions."), 
         " ",
-        _("At the top of the screen, you will see a picture on the screen with a related question."),
+        _("At the top of the screen, you will see a question about a picture."),
         _("Below it are a choice of possible answers.\nTouch the correct answer."), 
         " "]
         return text 

@@ -33,7 +33,7 @@
 import datetime
 from sqlalchemy import *
 import sqlalchemy.orm as sqlorm
-
+    
 import SPORMs as ORMS
 
 def create_contentdb_orms(metadata):
@@ -71,7 +71,7 @@ class SqlTables:
         # These are the skipped Tables for default columns
         if t.name in ['users', 'options', 'activity_options', 'menu', \
                     'served_content', 'group_names', 'change_pass', 'zorgenquete', \
-                    'spconf',  'users_faces']:
+                    'spconf',  'users_faces', 'dt_sequence', 'stats', 'stats_session']:
             return 
         # Columns added to all act tables
         t.append_column(Column('table_id', Integer, primary_key=True))
@@ -97,7 +97,9 @@ class SqlTables:
             Column('profile', Unicode(200)), \
             Column('passwrd', Unicode(10)), \
             Column('activities', Unicode(250)), \
-            Column('audio', Integer, default=50)\
+            Column('audio', Integer, default=50),\
+            Column('dt_target', Unicode(250), default='default'),\
+            Column('levelup_dlg', Unicode(4), default='true')\
             )
     
         # The graph image needs two values:
@@ -142,7 +144,27 @@ class SqlTables:
         self.faces = Table('users_faces',  metadata, \
                            Column('face_id',  Integer, primary_key=True),  \
                            Column('user_id',  Integer),  \
-                           Column('pic_name',  Unicode(255)))
+                           Column('shape_diff', Float), \
+                           Column('temp_diff', Float), \
+                           Column('pic_name',  Unicode(10)),  \
+                           Column('datetime', DATETIME))
+
+        self.stats = Table('stats', metadata,\
+                           Column('ID', Integer, primary_key=True),\
+                           Column('datetime', DATETIME),\
+                           Column('activity_name', Unicode(50)),\
+                           Column('message', Unicode(255)),\
+                           Column('game_start_called', Boolean, default=False),\
+                           Column('game_nextlevel_called', Boolean, default=False),\
+                           Column('game_end_called', Boolean, default=False),\
+                           Column('is_cop', Boolean, default=False),\
+                           Column('user_id', Integer),\
+                           Column('final_score', Integer),\
+                           Column('session', Integer))
+        self.stats_session = Table('stats_session', metadata,\
+                            Column('ID', Integer, primary_key=True),\
+                            Column('datetime', DATETIME))
+
 
         ################ Activity tables ########################## 
         # Every activity *must* have a sql table set.
@@ -162,33 +184,15 @@ class SqlTables:
         
         # LEAVE THESE COMMENTS IN HERE, THE CreateTemplate SCRIPT NEEDS THEM.
         # @splitpoint@
-        self.numbers_sp = Table('numbers_sp',metadata)
-        self.language_select = Table('language_select',metadata)
-        self.zorgenquete = Table('zorgenquete',metadata, \
-                                 Column('table_id', Integer, primary_key=True), \
-                                 Column('item', Unicode(20)), \
-                                 Column('state', Unicode(3)), 
-                                 Column('network', Unicode(10)))
-        self.gamemanagement = Table('gamemanagement',metadata)
-        self.update_btp = Table('update_btp',metadata)
-        self.change_pass = Table('change_pass',metadata, \
-                                Column('table_id', Integer, primary_key=True), \
-                                Column('user', Unicode(20)), \
-                                Column('passwrd', Unicode(56)))
-        self.picimport = Table('picimport',metadata)
-        self.dt_sequence = Table('dt_sequence',metadata)
-        self.usermanagement = Table('usermanagement',metadata)
-        self.groupmanagement = Table('groupmanagement',metadata)
-        self.test_act = Table('test_act',metadata)
-        self.wipe = Table('wipe',metadata)
-        self.synonyms = Table('synonyms',metadata)
-        self.story = Table('story',metadata)
-        self.spinbottle = Table('spinbottle',metadata,\
-                Column('total', Integer),\
-                Column('wrong', Integer),\
-                Column('correct', Integer),\
+        
+        self.fourrow = Table('fourrow',metadata,\
+                Column('stonesplayed', Integer),\
                     )
-        self.photoalbum = Table('photoalbum',metadata)
+        self.numbers_sp = Table('numbers_sp',metadata)
+        
+        
+        self.test_act = Table('test_act',metadata)
+        
         self.fishtank = Table('fishtank',metadata,\
                 Column('fish', Integer),\
                 Column('clearfish', Integer),\
@@ -263,6 +267,16 @@ class SqlTables:
             Column('movie', Unicode(20)), \
             Column('answer', Integer))
         
+        self.dt_sequence = Table('dt_sequence',metadata,\
+                 Column('fortune', Integer),\
+                 Column('act_name', Unicode(255)),\
+                 Column('group', Unicode(255)),\
+                 Column('level', Integer),\
+                 Column('cycles', Integer),\
+                 Column('target', Unicode(255)),\
+                 Column('table_id', Integer, primary_key=True),\
+                 Column('order', Integer))
+        
         #TODO: This table is not finished, as soon as the specs are known we must update this
         self.dltr = Table('dltr', metadata, \
             Column('activity', Unicode(20)), \
@@ -274,20 +288,22 @@ class SqlTables:
         # Now we put all the tables we have into this list.
         # The Datamanager uses this list to setup the dbase tables.
         self.tableslist = [self.users, self.activity_options,self.served_content, \
-                           self.spconf, \
+                           self.spconf, self.stats,self.stats_session,\
                            self.group_names, self.findit_sp, self.electro_sp,\
                         self.quiz_text, self.quiz_melody, self.quiz_math,\
                         self.quiz_picture, self.quiz_history, self.quiz_royal,\
                         self.quiz, self.quiz_general, self.quiz_sayings, \
                         self.memory_sp, self.simon_sp, self.puzzle,\
                         self.soundmemory, self.ichanger, self.fishtank,\
-                        self.photoalbum, self.video, \
-                        self.dltr, self.spinbottle, self.story,\
-                        self.synonyms, self.wipe, self.test_act,\
-                        self.usermanagement,self.groupmanagement, self.dt_sequence,\
-                        self.picimport, self.change_pass, self.update_btp,\
-                        self.gamemanagement, self.zorgenquete, self.language_select,\
-                        self.numbers_sp,  self.faces]
+                        self.dltr, \
+                        self.test_act,\
+                        self.numbers_sp,\
+                        self.fourrow, self.dt_sequence
+                        ]
+
+
+
+
 
 
 if __name__ == '__main__':

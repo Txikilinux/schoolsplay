@@ -15,6 +15,14 @@ class Qwerty(Base):
         self.line2 = ('A','S','D','F','G','H','J','K','L','.')
         self.line3 = ('Z','X','C','V','B','N','M',',', '-')
 
+class QwertyMinus(Base):
+    def __init__(self):
+        Base.__init__(self)
+        self.line0 = ('Q','W','E', 'R', 'T', 'Y', 'U')
+        self.line1 = ('I', 'O', 'P', 'A', 'S', 'D', 'F')
+        self.line2 = ('G', 'H', 'J', 'K', 'L', 'Z', 'X')
+        self.line3 = ('C', 'V', 'B', 'N', 'M', '-')
+
 class QwertySquare(Base):
     def __init__(self):
         Base.__init__(self)
@@ -30,6 +38,14 @@ class Abc(Base):
         self.line1 = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J')
         self.line2 = ('K','L','M','N','O','P','Q','R','S',' . ')
         self.line3 = ('T','U','V','W','X','Y','Z','_',' - ')
+
+class AbcMinus(Base):
+    def __init__(self):
+        Base.__init__(self)
+        self.line0 = ('A', 'B', 'C', 'D', 'E', 'F', 'G')
+        self.line1 = ('H', 'I', 'J', 'K', 'L', 'M', 'N')
+        self.line2 = ('O', 'P', 'Q', 'R', 'S', 'T', 'U')
+        self.line3 = ('V', 'W', 'X', 'Y', 'Z', '-')
 
 class AbcSquare(Base):
     def __init__(self):

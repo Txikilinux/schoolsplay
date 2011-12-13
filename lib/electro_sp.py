@@ -28,7 +28,7 @@ import logging
 module_logger = logging.getLogger("schoolsplay.electro_sp")
 
 # standard modules you probably need
-import os,sys
+import os,sys, textwrap
 import glob
 import random
 import pygame
@@ -165,13 +165,16 @@ class Activity:
         self.Sound = Snd()
         for file in files:
             setattr(self.Sound, file[:-4], utils.load_sound(os.path.join(self.CPdatadir, file)))
-    
-        
+            
     def clear_screen(self):
         self.screen.blit(self.orgscreen,self.blit_pos)
         self.backgr.blit(self.orgscreen,self.blit_pos)
         pygame.display.update()
 
+    def get_moviepath(self):
+        movie = os.path.join(self.my_datadir,'help.avi')
+        return movie
+            
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
         and the possibility exists that your sprites are affected by it."""
@@ -215,12 +218,8 @@ class Activity:
         """Mandatory method."""
         # TODO: level 5&6 are the same
         #self.gamelevels = [(2,3,170,150),(2,4,95,100),(3,4,95,50),(4,4,160,40),(4,5,105,20),(4,5,105,20)]
-        self.imgdir = os.path.join(self.my_datadir,'images', self.theme)
-        if not os.path.exists(self.imgdir):
-            self.imgdir = os.path.join(self.my_datadir, 'images','childsplay')
-        self.images = []
-        self.images = glob.glob(os.path.join(self.imgdir,'*A.*'))
-        self.logger.debug("Found %s images in %s" % (len(self.images), self.imgdir))
+        self.tile = 'tileset_1'# default value as self.tile could be uninitialized when running from DT
+        self.pre_level_flag = False
         self.displaydscore = 0
         self.levelrestartcounter = 0
         self.level = 1
@@ -228,7 +227,40 @@ class Activity:
     
     def pre_level(self, level):
         """Mandatory method"""
-        pass
+        self.logger.debug("pre_level called with %s" % level)
+        self.pre_level_flag = True
+        if self.blit_pos[1] == 0:
+            y = 10
+        else:
+            y = 110
+        x = 100
+        
+        files = glob.glob(os.path.join(self.my_datadir,'tileset_*.png'))
+        files.sort()
+        lbl = SPWidgets.Label(_("Please, choose a set of cards."),\
+                                (30, y),fsize=24, transparent=True)
+        lbl.display_sprite()
+        y += lbl.get_sprite_height()
+        for line in textwrap.wrap(_("The difficulty of the set increases from left to right."), 40):
+            lbl = SPWidgets.Label(line,(30, y), fsize=24, transparent=True)
+            lbl.display_sprite()
+            y += lbl.get_sprite_height()
+        y += 50
+        tmp_img = utils.load_image(files[0])
+        count = 1
+        total_width = ((len(files) / 2) * (tmp_img.get_width())) + (((len(files) / 2) - 1)  * 20)
+        first_x = (self.screen.get_width() / 2) - (total_width / 2)
+        for tilepath in files:
+            x = first_x + (count-1)*tmp_img.get_width() + (count-1)*20
+            img = utils.load_image(tilepath)
+            data = os.path.splitext(os.path.split(tilepath)[1])[0]
+            if not data[-2:] == 'ro':
+                img_ro = utils.load_image(os.path.join(self.my_datadir, '%s_ro.png' % data))
+                b = SPWidgets.SimpleTransImgButton(img, img_ro, (x, y), data=data)
+                b.display_sprite()
+                self.actives.add(b)
+                count += 1
+        return True
     
     def dailytraining_pre_level(self, level):
         """Mandatory method"""
@@ -275,13 +307,15 @@ class Activity:
         imagelist = []
         # load all the images we need
         try:
+            imgdir = os.path.join(self.my_datadir, self.tile, self.theme)
             if self.rchash.has_key(self.theme):
                 cardfront = self.rchash[self.theme]['cardfront']
             else:
                 cardfront = self.rchash['childsplay']['cardfront']
-            emptycard = utils.load_image(os.path.join(self.imgdir,cardfront))
+            emptycard = utils.load_image(os.path.join(imgdir,cardfront))
             
-            images = random.sample(self.images, self.num_of_cards)
+            images = glob.glob(os.path.join(imgdir,'*A.*'))
+            images = random.sample(images, self.num_of_cards)
             #self.logger.debug("Contents of my_images %s" % myimages)
             for imgfile in images:
                 # load and put the images in a list together with their file name - A | B
@@ -422,8 +456,15 @@ class Activity:
         """Mandatory method.
         This is the main eventloop called by the core 30 times a minute."""
         for event in events:
-            if event.type is MOUSEBUTTONDOWN:
-                self.actives.update(event)
+            if event.type in (MOUSEBUTTONUP, MOUSEBUTTONDOWN, MOUSEMOTION):
+                result = self.actives.update(event)
+                if self.pre_level_flag:
+                    if result:
+                        self.logger.debug("loop, got a result and stop this loop")
+                        self.SPG.tellcore_pre_level_end()
+                        self.pre_level_flag = False
+                        self.tile = result[0][1][0]
+                        break
                 if not self.actives.sprites():
                     # no more sprites left so the level is done.
                     # count the times the cards are turned.
@@ -447,6 +488,6 @@ class Activity:
                         self.SPG.tellcore_level_end(level=self.level)
                     else:
                         self.SPG.tellcore_level_end(store_db=True, \
-                                            level=min(6, self.level + levelup), \
+                                            level=min(6, self.level), \
                                             levelup=levelup)
         return 

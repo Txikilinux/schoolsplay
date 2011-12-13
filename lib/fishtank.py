@@ -100,6 +100,7 @@ class Fish(SPSpriteUtils.SPSprite):
         else:
             endx = 0 - self.image.get_width()
         end = (endx,y)# move of the screen
+        self.end = end
         loop = 1
         self.moveit = self.set_movement(self.start,end,step,0,loop)# setup the movement of this object
         self.connect_callback(self.callback, event_type=MOUSEBUTTONDOWN)
@@ -127,11 +128,13 @@ class Fish(SPSpriteUtils.SPSprite):
                     # special behaviour, fish turns each time it reaches the end
                     self.mirror_image()
                     self.stop_movement(now=1)
-                    start = self.rect.topleft
-                    end = self.start
-                    self.start = start
+                    start = (self.end[0], self.end[1])
+                    end = (self.start[0],self.start[1])
+                    self.start = (start[0], start[1])
+                    self.end = (end[0],end[1])
+                    self.wait = self.delay
                     step = self.step
-                    self.moveit = self.set_movement(start,end,step,0,dokill=1)
+                    self.moveit = self.set_movement(start,end,step,0)
                 else:
                     self.remove_sprite()
                 # placeholder: no score
@@ -209,10 +212,8 @@ class Activity:
         self.splashsnd = utils.load_sound(os.path.join(self.sounddir,'poolsplash.wav'))
         self.WeAreAquarium = False
         self.aquarium_counter = 0
-        self.aquariumsound = False
-        self.aquarium_music_list = [os.path.join(self.sounddir,'bach0.ogg'),\
-                                    os.path.join(self.sounddir,'mozart0.ogg')]
-
+        
+        self.aquarium_music_list = glob.glob(os.path.join(self.sounddir,'*.ogg'))
         # You MUST call SPInit BEFORE using any of the SpriteUtils stuff
         # it returns a reference to the special CPGroup
         self.actives = SPSpriteUtils.SPInit(self.screen,self.backgr)
@@ -226,6 +227,10 @@ class Activity:
 
     def are_we_in_aquarium_mode(self):
         return self.WeAreAquarium
+
+    def get_moviepath(self):
+        movie = os.path.join(self.my_datadir,'help.avi')
+        return movie
 
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
@@ -244,7 +249,6 @@ class Activity:
         """Mandatory methods"""
         text = [_("The aim of this activity:"),
         _("Try to remove the fish by clicking on them with the mouse."),
-        _("In the last level the fish needs to be clicked two times while they try to escape."),
         " "]
         return text 
     
@@ -288,8 +292,8 @@ class Activity:
         self.WeAreAquarium = False
         self.aquarium_text.erase_sprite()
         self.actives.remove(self.aquarium_text)
-        if self.aquariumsound:
-            self.aquariumsound.stop()
+#        if self.aquariumsound:
+#            self.aquariumsound.stop()
 
         snd = utils.load_sound(os.path.join(self.my_datadir,'sounds', 'poolsplash.wav')) 
         snd.play()
@@ -324,7 +328,7 @@ class Activity:
         # x coord of 0 means both left and right
         # Third level adjust the speed of some of the fish
         # from the third level the speeds are randomized.
-        self.level_data = [(20,-90,8,4,2),(20,0,8,4,4),(20,0,8,4,4),(20,890,4,6,4),\
+        self.level_data = [(20,-90,8,4,4),(20,0,8,4,4),(20,0,8,4,4),(20,890,4,6,4),\
                             (20,0,4,8,4),(20,0,4,6,4)]
 
         surf = utils.char2surf("Aquarium mode", 14, fcol=GREEN)
@@ -349,6 +353,10 @@ class Activity:
         self.db_mapper = dbmapper
         # make sure we don't have fish left in the actives group.
         self.actives.empty()
+        self.WeAreAquarium = False
+        self.aquarium_counter = 0
+        #self.aquariumsound = False
+        self.aquariumsound = utils.load_music(random.choice(self.aquarium_music_list))
         #detrmine which background pic we will use:
         backimage = os.path.join(self.my_datadir, 'backgrounds', \
                                  self.theme,'%s.jpg' % level)
@@ -396,7 +404,10 @@ class Activity:
                 s = data[3]
                 step = random.choice((s,s,s*2))
             if level == 6:
-                react = 1
+                d = data[2]
+                delay = d//3
+                s = data[3]
+                step = s*2
             obj.start(x,y,step,delay,react)
             self.livefish.append(obj)
         
@@ -404,6 +415,8 @@ class Activity:
         self.totalfish = len(self.livefish)
         # we store the number of fish this level will have.
         self.db_mapper.insert('fish',self.totalfish)
+        
+        self.aquariumsound.play(-1)
         return True
     
     def pre_level(self, level):
@@ -461,8 +474,8 @@ class Activity:
             self.WeAreAquarium = True
             self.actives.add(self.aquarium_text)
             self.aquarium_text.display_sprite()
-            self.aquariumsound = utils.load_music(random.choice(self.aquarium_music_list))
-            self.aquariumsound.play(-1)
+#            self.aquariumsound = utils.load_music(random.choice(self.aquarium_music_list))
+#            self.aquariumsound.play(-1)
         self.aquarium_counter += 1
         if not self.livefish and not self.actives.sprites():
             # no more sprites left so the level is done.
@@ -475,6 +488,12 @@ class Activity:
                                             levelup=levelup, no_question=True)
         for event in events:
             if event.type is MOUSEBUTTONDOWN:
+                self.aquarium_counter = 0
+                self.WeAreAquarium = False
+                self.aquarium_text.erase_sprite()
+                self.actives.remove(self.aquarium_text)
+#                if self.aquariumsound:
+#                    self.aquariumsound.stop()
                 # no need to query all sprites with all the events
                 # we only pass it an event if it's an event were intrested in.
                 myevent = event

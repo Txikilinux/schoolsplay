@@ -112,9 +112,7 @@ class Debugscreen:
         self.entries.append(self.name_te)
         # buttons
         for label, func in self.buthash.items():
-            b = SPWidgets.Button(label, but_pos, fsize=16, padding=8, name=label, \
-                       fgcol=SPWidgets.THEME['dialog_but_fg_color'], \
-                       bgcol=SPWidgets.THEME['dialog_but_bg_color'])
+            b = SPWidgets.Button(label, but_pos, fsize=16, padding=8, name=label)
             b.connect_callback(func, MOUSEBUTTONDOWN, label)
             self.buttons.append(b)
             but_pos = (but_pos[0] + b.get_sprite_width()+12, but_pos[1])
@@ -182,7 +180,7 @@ class Debugscreen:
         if len(txtlist) > 13:
             txtlist = txtlist[:-40]
         txt = '\n'.join(txtlist)
-        dlg = SPWidgets.Dialog(txt, dialogwidth=500, buttons=["OK"], title='Information')
+        dlg = SPWidgets.Dialog(txt, dialogwidth=500, buttons=["OK"], title='Information',fsize=8)
         dlg.run()
         self.on_quit_clicked()
         return result
@@ -195,11 +193,11 @@ class Debugscreen:
             dbp = 'db.dev'
             kind = 'develop'
         rc_hash = utils.read_rcfile(dbp)
-        rc_hash['kind'] = kind
-        rc_hash['path'] = dbp
         cmd_list = []
-        for c, v in rc_hash['default'].items():
-            cmd_list.append('--%s=%s' % (c,v))
+        print rc_hash
+        for k in rc_hash.keys():
+            for c, v in rc_hash[k].items():
+                cmd_list.append('--%s=%s' % (c,v))
         
         ppp = os.path.expanduser(os.path.join('~', '.schoolsplay.rc', 'post_pull'))
         if os.path.exists(ppp):
@@ -209,11 +207,13 @@ class Debugscreen:
         else:
             scripts_done = []
         scripts = glob.glob(os.path.join('.','post_pull', '*.sh'))
+        scripts.sort()
         scripts_todo = []
         for s in scripts:
             if s not in scripts_done:
                 scripts_todo.append(s)
         out = ['Running any new post_pull scripts:']
+        scripts_todo.sort()
         f = open(ppp, 'a')
         for s in scripts_todo:
             self.logger.debug("Running post_pull script %s" % s)
@@ -240,7 +240,7 @@ class Debugscreen:
         except Exception, info:
             self.logger.error("Failed to make screenshot %s" % info)
             text = _("Failed to make screenshot %s") % info
-            dlg = Dialog(text, title="ERROR !")
+            dlg = SPWidgets.Dialog(text, title="ERROR !")
             dlg.run()
             raise utils.MyError, "failed to make a screenshot"
         return path

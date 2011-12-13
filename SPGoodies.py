@@ -38,7 +38,7 @@ class SPGoodies(Borg):
             cb_disable_exit_button, cb_enable_exit_button, \
             cb_disable_score_button, cb_enable_score_button, 
             cb_hide_level_indicator, cb_show_level_indicator, \
-            cb_get_orm):
+            cb_get_orm, cb_register_core_observers):
         Borg.__init__(self)
         # references to stuff, use the methods to get them
         self.logger = logging.getLogger("schoolsplay.SPGoodies")
@@ -71,6 +71,7 @@ class SPGoodies(Borg):
         self.enable_score_button = cb_enable_score_button
         self.hide_level_indicator = cb_hide_level_indicator
         self.show_level_indicator = cb_show_level_indicator
+        self.register_core_observer = cb_register_core_observers
         self._get_orm = cb_get_orm
         self.core = core
                 
@@ -143,6 +144,12 @@ class SPGoodies(Borg):
         apply(self.hide_level_indicator)
     def tellcore_show_level_indicator(self):
         apply(self.show_level_indicator)
+        
+    def tellcore_register_core_observer(self, obs):
+        """You must register any observer methods that should be called in case of an error
+        to clean up your mess. Your observer must be a method or funtion that takes no arguments.
+        For example; the camera used by facerecognition is crappy and must be stopped manually"""
+        apply(self.register_core_observer, (obs,))
     # these methods provide stuff needed by the activity.
     def get_screen(self):
         """get a references to the main SDL screen"""
@@ -182,7 +189,7 @@ class SPGoodies(Borg):
         return self.theme_rc
     def autolevelup(self):
         """Returns a boolean indicating if activities should do autolevelup"""
-        return autolevelup
+        return self.autolevelup
     def get_scoredisplay(self):
         """Returns a reference to the score display widget in the menubar."""
         return self.scoredisplay
@@ -211,6 +218,14 @@ class SPGoodies(Borg):
         return self.dm.get_mapper(activity, dbase)
     def get_current_user_id(self):
         return self.dm.get_user_id()
+    def get_current_user_name(self):
+        return self.dm.get_username()
+    def get_user_id_by_loginname(self, username):
+        return self.dm.get_user_id_by_loginname(username)
+    def get_user_dbrow_by_loginname(self, username):
+        return self.dm.get_user_dbrow_by_loginname(username)
+    def get_current_user_dbrow(self):
+        return self.get_user_dbrow_by_loginname(self.dm.current_user)
     def get_served_content_orm(self):
         return self.dm.get_served_content_orm()
     def get_served_content_mapper(self):
@@ -223,6 +238,10 @@ class SPGoodies(Borg):
         return self.dm._get_rcrow(actname, key)
     def set_rckey(self, actname, key, value, comment):
         self.dm._set_rcrow(actname, key, value, comment)
+    def update_rckey(self, actname, key, val):
+        self.dm._update_rcrow(actname, key, val)
+    def get_stats_hash(self):
+        return self.stats_hash
     # paths related to the place where SP is currently installed
     def get_libdir_path(self):
         """path to the 'lib' directory were activities store there stuff"""

@@ -17,12 +17,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+# Super class for the quiz acts
+
 #create logger, logger was setup in SPLogging
 import logging
-# In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.quiz.Activity")
-# self.logger.error("I don't understand logger")
-# See SP manual for more info 
 
 module_logger = logging.getLogger("schoolsplay.quiz_knowledge")
 
@@ -94,13 +92,17 @@ class Activity:
           
         self.num_questions = int(self.rchash[self.theme]['questions'])
         self.AreWeDT = False
-    
+            
     def stop_sound(self):
         """Called by the core when the audio needs to stopped"""
         try:
             self.quizengine.stop_sound()
         except:
             pass
+    
+    def quiz_voice_changed(self,state):
+        """Called by the core when the quiz voice audio setting is changed"""
+        self.quizengine.unmute_exer_audio = state
     
     def observer(self, result):
         self.logger.debug("observer called with: %s" % result)
@@ -117,6 +119,10 @@ class Activity:
         self.screen.blit(self.orgscreen,self.blit_pos)
         self.backgr.blit(self.orgscreen,self.blit_pos)
         pygame.display.update()
+
+    def get_moviepath(self):
+        movie = os.path.join(self.my_datadir,'help.avi')
+        return movie
 
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
@@ -180,7 +186,6 @@ class Activity:
         """Mandatory method.
         This should handle the DT logic"""
         self.AreWeDT = True
-        print "=====quiz dailytraining_next_level ",self.rchash[self.theme]
         self.num_questions = int(self.rchash[self.theme]['dt_questions'])
         self.next_level(level, dbmapper)
         return True
@@ -194,12 +199,14 @@ class Activity:
         self.levelupcount = 1
         self.quizengine.clear()
         self.score = 0# this is score for dbase which are stored per level
+        self.dbmapper = dbmapper
         return True
     
     def post_next_level(self):
         """Mandatory method.
         This is called once by the core after 'next_level' *and* after the 321 count.
         You should place stuff in here that run in a separate thread like sound play."""
+        self.dbmapper.insert('total_questions', self.num_questions)
         if self.level in (1, 2):
             self.maxpoints = 2
             self.quizengine.init_exercises(2, self.num_questions,self.level, self.AreWeDT)
@@ -259,13 +266,14 @@ class Activity:
             #print "name", self.get_name(), self.level        
             if not self.AreWeDT:
                 self.clear_screen()
-                self.ThumbsUp.display_sprite((229, 296))
-                pygame.time.wait(1500)
-                self.ThumbsUp.erase_sprite()
+                self.dbmapper.insert('total_wrongs', self.quizengine.get_totalwrongs())
+#                self.ThumbsUp.display_sprite((229, 296))
+#                pygame.time.wait(1500)
+#                self.ThumbsUp.erase_sprite()
                 if self.levelupcount >= int(self.rchash[self.theme]['autolevel_value']):
                     levelup = 1
                     self.SPG.tellcore_level_end(store_db=True,\
-                                                level=min(6, self.level + levelup), \
+                                                level=min(6, self.level), \
                                                 levelup=levelup)
                 else:
                     self.SPG.tellcore_level_end(store_db=True, level=self.level)

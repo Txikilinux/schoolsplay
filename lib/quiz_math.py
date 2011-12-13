@@ -105,7 +105,7 @@ class Activity(quiz.Activity):
         text = [_("The aim of this activity:"),
                 _("Answer the math questions."), 
         " ",
-        _("At the top of the screen, you will see a math problem."),
+        _("At the top of the screen, you will see a question about math problem."),
         _("Below it are a choice of possible answers.\nTouch the correct answer."),
         " ", 
         _("Remember, the order of operations is multiplication or division and then addition or subtraction.")]

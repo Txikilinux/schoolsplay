@@ -208,6 +208,10 @@ class Activity:
         self.backgr.blit(self.orgscreen,self.blit_pos)
         pygame.display.update()
 
+    def get_moviepath(self):
+        movie = os.path.join(self.my_datadir,'help.avi')
+        return movie
+
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
         and the possibility exists that your sprites are affected by it."""
@@ -265,7 +269,10 @@ class Activity:
         self.logger.debug("nextlevel called with: %s" % level)
         self.level = level
         # number of exercises in one level
-        self.exercises = int(self.rchash[self.theme]['exercises'])
+        if self.AreWeDT:
+            self.exercises = 1
+        else:
+            self.exercises = int(self.rchash[self.theme]['exercises'])
         self.WEcheat = 0
         self.levelrestartcounter = 0
         self.numblocks = 3 + self.level
@@ -357,7 +364,7 @@ class Activity:
         F = 7.0
         F1 = 3.0
         C = 0.6
-        C1 = 1.8
+        C1 = 2.1
         points = F / max( K / T, 1.0 ) ** C1
         time = F1 / max(S / T , 1.0) ** C
         self.logger.info("@scoredata@ %s level %s T %s K %s S %s points %s time %s" % \
@@ -391,7 +398,7 @@ class Activity:
                     self.SPG.tellcore_level_end(level=self.level)
                 else:
                     self.SPG.tellcore_level_end(store_db=True, \
-                                        level=min(6, self.level + levelup), \
+                                        level=min(6, self.level), \
                                                     levelup=levelup)
         return 
         

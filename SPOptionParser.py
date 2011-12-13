@@ -51,7 +51,9 @@ class OParser(OptionParser):
             user='', \
             no_level_pause=False, \
             checklog = False, \
-            crapplatform=False)
+            crapplatform=False,
+            moviepointer=False,\
+            plainversion=False)
         # add possible options to the parser
         self.add_option("--no-login", action="store_true",
             help="Don't show login window. This will run schoolsplay in 'anonymous' mode which means that there will be no data collecting",
@@ -111,9 +113,11 @@ class OParser(OptionParser):
             help="Check the SP log for anomalies in the logs.",
             dest="checklog") 
         self.add_option("--crapware", action="store_true",
-            help="When running on wellknown crapware like the white MSI set this option and we try to work around the various OS/hardware bugs.",
+            help="When running on wellknown crapware like the white MSI 1900 set this option and we try to work around the various OS/hardware bugs.",
             dest="crapware")
-         
+        self.add_option("--plainversion", action="store_true",
+            help="Return the version number in a plain string",
+            dest="plainversion")          
         (self.options, self.args) = self.parse_args()
         
         # in case the user starts us with a unknown theme

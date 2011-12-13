@@ -24,7 +24,7 @@ NoGtk = False
 WHICHDBASE = 'sqlite'
 
 # Set the default milestone for the mail tickets script 
-MILESTONE = 'BT2.2'
+MILESTONE = 'BT2.3'
 
 # DON'T CHANGE ANYTHING BELOW THIS LINE !!!!
 # If you want to change the paths, change SPBasePaths.py
@@ -36,6 +36,8 @@ import logging
 import os
 import time
 import shutil
+import pygame
+import glob 
 SPCmodule_logger = logging.getLogger("schoolsplay.SPConstants")
 
 #module_logger.debug("Contents of os.environ: %s" % os.environ)
@@ -58,9 +60,7 @@ ACTIVITYDATADIR = SPBasePaths.SHARELIBDATADIR
 LOCALEDIR = SPBasePaths.LOCALEDIR
 # Localized soundfiles
 ALPHABETDIR = SPBasePaths.ALPHABETDIR
-# Path to the childsplay_sp python modules
-PYTHONCPDIR = SPBasePaths.PYTHONCPDIR
-
+WWWDIR = SPBasePaths.WWWDIR
 GUITHEMESPATH = os.path.join(ACTIVITYDATADIR, 'SPData', 'gui','themes')
 DEFAULTGUITHEMESPATH = os.path.join(GUITHEMESPATH,'default')
 
@@ -69,10 +69,12 @@ DEFAULTTHEMESPATH = os.path.join(THEMESPATH,'default')
 
 CORESOUNDSDIR = os.path.join(ACTIVITYDATADIR, 'SPData', 'base', 'sounds')
 
+ACTDATADIR = os.path.join(ACTIVITYDATADIR, 'CPData')
+
 # Users sp dir
 HOME_DIR_NAME = '.schoolsplay.rc'
 # Name of the SQLite users dbase
-USERSDBASE = 'sp_users.db'
+DBASE = 'sen_sp.db'
 # name of the SQLite content dbase
 CONTENTDBASE = 'sp_content.db'
 
@@ -101,22 +103,34 @@ else:
         except KeyError, info:
             print info
             HOMEDIR = os.path.abspath(sys.path[0])
+
+# Create a schoolsplay directory and subdirectories.
+START_POSTPULL = 1
+if not os.path.exists(HOMEDIR):
+    os.makedirs(HOMEDIR)
+    ppl = ["%s\n" % f for f in glob.glob(os.path.join(BASEDIR, 'post_pull', '*.sh'))]
+    ppl.sort()
+    START_POSTPULL = len(ppl)
+    f = open(os.path.join(HOMEDIR, 'post_pull'), 'w')
+    f.writelines(ppl)
+    f.close()
+
 PSYCOPATH = os.path.join(HOMEDIR, 'schoolsplay_psyco.log')
-DBASEPATH = os.path.join(HOMEDIR, USERSDBASE)
+DBASEPATH = os.path.join(HOMEDIR, DBASE)
 
 TEMPDIR = os.path.join(HOMEDIR, 'tmp')
 if os.path.exists(TEMPDIR):
     shutil.rmtree(TEMPDIR)
 os.makedirs(TEMPDIR)
+os.chmod(TEMPDIR,0777)
 os.makedirs(os.path.join(TEMPDIR, 'birthday'))
+os.chmod(os.path.join(TEMPDIR, 'birthday'),0777)
+
 
 BASEPATH = os.getcwd()
 # lockfile path used to set a lock to prevent multiple instances of childsplay
 LOCKFILE = os.path.join(HOMEDIR, '.splock')
 HOMEIMAGES = os.path.join(HOMEDIR, 'my_images')
-# Create a schoolsplay directory and subdirectories.
-if not os.path.exists(HOMEDIR):
-    os.makedirs(HOMEDIR)
 
 # set font path and fontsize
 TTFSIZE = 19# used for default ttf
@@ -138,7 +152,8 @@ SPLC_TIMESTAMP = time.strftime("%y-%m-%d_%H-%M-%S", time.localtime())
 IMAGE_EXT_PATTERN = ['*.jpg','*.JPG','*.jpeg','*.png', '.*tiff', '*.gif', '*.bmp']
 IMAGE_EXT = ['.jpg','.JPG','.jpeg','.png', '.tiff', '.gif', '.bmp']
 
-XML_FILES_WE_MUST_HAVE = ["SP_menu.xml","dailytraining_default.xml","dailytraining_SPUser.xml",\
-                          "dailytraining_demo.xml","dailytraining.xml"]
+XML_FILES_WE_MUST_HAVE = ["SP_menu.xml"]
 
 BUTTON_FEEDBACK_TIME = 200
+
+

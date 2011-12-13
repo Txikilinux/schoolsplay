@@ -36,52 +36,12 @@ module_logger = logging.getLogger("schoolsplay.dltr")
 import textwrap
 import time
 import random
-import pygame
 from pygame.constants import *
 import sqlalchemy as sqla
 import utils
 from SPConstants import *
 import SPSpriteUtils
 import SPWidgets
-
-try:
-    from xml.etree.ElementTree import ElementTree
-except ImportError:
-    # try the python2.4 way 
-    from elementtree.ElementTree import ElementTree
-
-def parse_xml(xml):
-    """Parses the whole xml tree into a hash with lists. Each list contains hashes
-    with the elelements from a 'activity' element.
-    """  
-    logger = logging.getLogger("schoolsplay.dltr.parse_xml")
-    logger.debug("Starting to parse: %s" % xml)
-
-    tree = ElementTree()
-    tree.parse(xml)
-    xml = {}
-    # here we start the parsing
-    acts = tree.findall('activity')
-    logger.debug("found %s activities in total" % len(acts))
-    acthash = utils.OrderedDict()
-    #acthash = {}
-    for act in acts:
-        hash = {}
-        try:
-            hash['name'] = act.get('name')
-            hash['group'] = act.get('group')
-            e = act.find('level')
-            hash['level'] = int(e.text)
-            
-            e = act.find('cycles')
-            hash['cycles'] = int(e.text)
-        except AttributeError, info:
-            logger.error("The %s is badly formed, missing element(s):%s,%s" % (xml, info, e))
-            raise utils.MyError, _("XML data file is incorrect, please contact the maintainers.")
-        else:
-            acthash[hash['name']] = hash
-    logger.debug("xml hash:%s" % acthash)
-    return acthash
 
 class ProgressBar:
     """Displays a progressbar.
@@ -164,21 +124,10 @@ class Activity:
 
     def _set_up(self, mapper):
         """called by the core after this module is constructed."""
-        if self.theme == 'braintrainer' and mapper.currentuser == 'Demo':
-            self.logger.debug("User is 'Demo', using dailytraining_demo.xml")
-            xmlpath = os.path.join(self.SPG.get_home_theme_path(), 'dailytraining_demo.xml')
-            self.logger.debug("User is 'Demo', using xml file:%s" % xmlpath)
-        elif mapper.currentuser == 'SPuser' and os.path.exists\
-                (os.path.join(self.SPG.get_home_theme_path(), 'dailytraining_SPUser.xml')):
-            xmlpath = os.path.join(self.SPG.get_home_theme_path(), 'dailytraining_SPUser.xml')
-            self.logger.debug("User is 'SPuser', using xml file:%s" % xmlpath)
-        else:
-            xmlpath = os.path.join(self.SPG.get_home_theme_path(), 'dailytraining.xml')
-        if not os.path.exists(xmlpath):
-            raise utils.MyError, _("xml file %s is missing, this shouldn't happen,\
-                                    contact the %s developers" % (xmlpath, self.theme))    
+        self.logger.debug("Trying to fetch dbase dt data for user:%s" % mapper.currentuser)  
         
-        self.actdatahash = parse_xml(xmlpath)# returns a ordereddict object
+        orm = self.SPG.get_current_user_dbrow()
+        self.actdatahash = self._get_data(orm.dt_target)# returns a ordereddict object
         if self.actdatahash.has_key('fortune'):
             self.fortune = True
             del self.actdatahash['fortune']
@@ -191,9 +140,11 @@ class Activity:
         red = utils.load_image(os.path.join(self.my_datadir,'status_red_800_600.png'))
         self.PB = ProgressBar(self.screen, steps, red, green)
         
-        if self.theme == 'braintrainer' and mapper.currentuser == 'demo':
+        if self.theme == 'braintrainer' and mapper.currentuser.lower() == 'demo':
+            self.logger.debug("User is demo, no prev data used.")
             self.prev_data = None
             return
+        
         orm = mapper.get_orm()
         session = mapper.get_session()
         query = session.query(orm)
@@ -216,11 +167,33 @@ class Activity:
                 continue
             hash = {'score':row.score, 'level':row.level, 'epoch':row.epoch}
             self.prev_data[row.activity] = hash
+    
+    def _get_data(self, target):
+        self.logger.debug("Getting data for target %s" % target)
+        acthash = utils.OrderedDict()
+        orm, session = self.SPG.get_orm('dt_sequence', 'user')
+        rows = session.query(orm).filter(orm.target == target).order_by(orm.order).all()
+        for row in rows:
+            hash = {}
+            hash['fortune'] = row.fortune
+            hash['name'] = row.act_name
+            hash['group'] = row.group
+            hash['level'] = row.level
+            hash['cycles'] = row.cycles
+            hash['target'] = row.target
+            hash['order'] = row.order
+            acthash[row.act_name] = hash
+        self.logger.debug("Found data: %s" % acthash)
+        return acthash
 
     def clear_screen(self):
         self.screen.blit(self.orgscreen,self.blit_pos)
         self.backgr.blit(self.orgscreen,self.blit_pos)
         pygame.display.update()
+
+    def get_moviepath(self):
+        movie = os.path.join(self.my_datadir,'help.avi')
+        return movie
 
     def refresh_sprites(self):
         """Mandatory method, called by the core when the screen is used for blitting
@@ -364,12 +337,12 @@ class Activity:
             except Exception, msg:
                 self.logger.warning("Failed to query previous dt data: %s" % msg)
                 self.logger.warning("Possible dbase corruption, prevdata was: %s" % self.prev_data)
-                self.logger.warning("setting level to 3 and continue")
-                level = 3
+                self.logger.warning("setting level to 2 and continue")
+                level = 2
             self.logger.debug("old level: %s new level: %s" % \
                             (self.prev_data[self.currentactname]['level'], level))
         else:
-            self.logger.warning("No prevdata found for %s, getting level from xml" % self.currentactname)
+            self.logger.warning("No prevdata found for %s, getting level from current data" % self.currentactname)
             level = self.actdatahash[self.currentactname]['level']
         cycles = self.currentactdata['cycles']
         self.dbmapper.insert('cycles', cycles)
@@ -431,7 +404,7 @@ class Activity:
         
         for name, data in groups.items():
             score = data[0] / data[1]
-            sk = utils.char2surf(_(name).capitalize(), 20, WHITE) 
+            sk = utils.char2surf(name.capitalize(), 20, WHITE) 
             sc = '%4.2f' % score
             if score < 6:
                 # always just above 6 :-)

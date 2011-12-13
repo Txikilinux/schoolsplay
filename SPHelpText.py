@@ -116,7 +116,7 @@ class ActivityMenuText(object):
     in the menu xml. The attributes must be the name of the module."""
     usermanagement = _("Usermanagement")
     groupmanagement = _("Groupmanagement")
-    dt_sequence = _("Daily training sequence")
+    dt_sequence_manual = _("Daily training sequence")
     picimport = _("Picture import")
     change_pass = _("Change password")
     change_pass_admin = _("Change password")
@@ -124,7 +124,9 @@ class ActivityMenuText(object):
     gamemanagement = _("Gamemanagement")
     zorgenquete = "Zorg enquette"
     language_select = _("Select Language")
-    
+    settings_op = _("Settings")
+    settings_adm = _("Settings")
+    content_import = _("Content import")
     
 
 class ActivityType(object):
