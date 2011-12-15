@@ -20,7 +20,7 @@
 import os
 
 import logging
-module_logger = logging.getLogger("schoolsplay.SPDataManagerCreateDbase")
+module_logger = logging.getLogger("childsplay.SPDataManagerCreateDbase")
 from SPConstants import ACTIVITYDATADIR, DBASE, HOMEDIR, WHICHDBASE, CONTENTDBASE
 
 from utils import MyError, read_rcfile
@@ -76,7 +76,7 @@ else:
 
 class DbaseMaker:
     def __init__(self, theme, debug_sql=False):
-        self.logger = logging.getLogger("schoolsplay.SPDataManagerCreateDbase.DbaseMaker")
+        self.logger = logging.getLogger("childsplay.SPDataManagerCreateDbase.DbaseMaker")
         self.logger.debug("Starting")
         self.usersdbasepath= os.path.join(HOMEDIR, theme, DBASE)
         self.contentdbasepath = os.path.join(HOMEDIR, theme, CONTENTDBASE)

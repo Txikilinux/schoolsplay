@@ -21,7 +21,7 @@
 
 #create logger, logger was configured in SPLogging
 import logging
-module_logger = logging.getLogger("schoolsplay.SPDataManager")
+module_logger = logging.getLogger("childsplay.SPDataManager")
 
 import atexit, os, sys, datetime
 
@@ -95,7 +95,7 @@ class DataManager:
     """Class that handles all users data related stuff except the collecting that
     should be done by the activity."""
     def __init__(self, spgoodies, dbm):
-        self.logger = logging.getLogger("schoolsplay.SPDataManager.DataManager")
+        self.logger = logging.getLogger("childsplay.SPDataManager.DataManager")
         self.logger.debug("Starting")
         self.SPG = spgoodies
         self.cmd_options = self.SPG._cmd_options
@@ -490,7 +490,7 @@ class RowMapper:
     table and row beloging to the current activity.
     Don't use this class directly, use the DataManagers get_mapper method."""
     def __init__(self, orm, session, user_id=None, current_user=''):
-        self.logger = logging.getLogger("schoolsplay.SPDataManager.RowMapper")
+        self.logger = logging.getLogger("childsplay.SPDataManager.RowMapper")
         self.currentuser = current_user
         self.user_id = user_id
         self.orm = orm
@@ -517,6 +517,8 @@ class RowMapper:
             self.insert('user_id', self.user_id)
         self.logger.debug("raw row data:%s" % self.coldata)
         self.session.add(self.orm(**self.coldata))
+        if not self.session:
+            return
         self.session.commit()
         self.session.close()
 
@@ -542,6 +544,8 @@ class RowMapper:
     def get_session(self):
         return self.session
     def close(self):
+        if not self.session:
+            return
         self.session.close()
 
 class ServedMapper:
@@ -550,7 +554,7 @@ class ServedMapper:
     table and row beloging to the current activity.
     Don't use this class directly, use the DataManagers get_mapper method."""
     def __init__(self, orm, session, user_id=None, current_user=''):
-        self.logger = logging.getLogger("schoolsplay.SPDataManager.ServedMapper")
+        self.logger = logging.getLogger("childsplay.SPDataManager.ServedMapper")
         self.currentuser = current_user
         self.user_id = user_id
         self.orm = orm
@@ -568,11 +572,15 @@ class ServedMapper:
         self.session.add(svc)
         
     def commit(self):
+        if not self.session:
+            return
         self.logger.debug("commiting session")
         self.session.commit()
         self.session.close()
         
     def close(self):
+        if not self.session:
+            return
         self.session.close()
     
 class BogusMapper:

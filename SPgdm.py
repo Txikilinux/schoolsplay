@@ -25,7 +25,7 @@
 
 import logging
 import os
-module_logger = logging.getLogger("schoolsplay.SPgdm")
+module_logger = logging.getLogger("childsplay.SPgdm")
 
 from SPConstants import *
 from SPSpriteUtils import SPInit
@@ -66,7 +66,7 @@ class SPGreeter:
     """
     def __init__(self, cmd_options, theme='default', vtkb=None, fullscr=None):
         global ACTIVITYDATADIR
-        self.logger = logging.getLogger("schoolsplay.SPgdm.SPGreeter")
+        self.logger = logging.getLogger("childsplay.SPgdm.SPGreeter")
         self.logger.debug("Starting")
         self.cmd_options = cmd_options
         self.__name = ''

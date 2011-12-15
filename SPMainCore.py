@@ -39,7 +39,7 @@ import time
 
 #create logger, logger was configured in SPLogging
 import logging
-module_logger = logging.getLogger("schoolsplay.SPMainCore")
+module_logger = logging.getLogger("childsplay.SPMainCore")
 
 import utils
 ###### for debugging memoryleaks ###########
@@ -124,7 +124,7 @@ class MainCoreGui:
         held.
         Finally we call the the eventloop of the activity.
         """
-        self.logger = logging.getLogger("schoolsplay.SPMainCore.MainCoreGui")
+        self.logger = logging.getLogger("childsplay.SPMainCore.MainCoreGui")
         self.logger.debug("Start")
         self.myspritesactivated = None
         self.menubuttons_backup = []

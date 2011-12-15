@@ -20,11 +20,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.photoalbum.Activity")
+# self.logger =  logging.getLogger("childsplay.photoalbum.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.photoalbum")
+module_logger = logging.getLogger("childsplay.photoalbum")
 
 # standard modules you probably need
 import os, glob, random
@@ -85,7 +85,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("schoolsplay.photoalbum.Activity")
+        self.logger =  logging.getLogger("childsplay.photoalbum.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.lang = self.SPG.get_localesetting()[0][:2]

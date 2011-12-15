@@ -20,11 +20,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.quiz_mixed.Activity")
+# self.logger =  logging.getLogger("childsplay.quiz_mixed.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.quiz_sayings")
+module_logger = logging.getLogger("childsplay.quiz_sayings")
 
 # standard modules you probably need
 import os,sys
@@ -67,7 +67,7 @@ class Activity(quiz.Activity):
         to objects, callback methods and observers
         TODO: add more explaination"""
         quiz.Activity.__init__(self, SPGoodies)
-        self.logger =  logging.getLogger("schoolsplay.quiz_sayings.Activity")
+        self.logger =  logging.getLogger("childsplay.quiz_sayings.Activity")
         self.logger.info("Activity started")
         
         # The location of the activities Data dir (override the super class attributes)

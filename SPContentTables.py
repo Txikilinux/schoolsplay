@@ -55,7 +55,7 @@ def check_tables(dbase):
     When there's a xml file with no table it will be parsed and stored into a sql table.
     """
     # first check the quizcontent dbase and add any missing table.
-    logger = logging.getLogger("schoolsplay.SPContentTables.check_tables")
+    logger = logging.getLogger("childsplay.SPContentTables.check_tables")
     logger.debug("Sync quiz content dbase: %s" % dbase)
     
     contentdir = os.path.join(ACTIVITYDATADIR,'CPData','Quizcontent', '*', 'content_*.xml')
@@ -174,7 +174,7 @@ def check_tables(dbase):
     close_dbase(con)
     
 def close_dbase(con):
-    logger = logging.getLogger("schoolsplay.SPContentTables.close_dbase")
+    logger = logging.getLogger("childsplay.SPContentTables.close_dbase")
     logger.debug("Commiting transactions and closing dbase.")
     con.commit()    
     con.close()    
@@ -185,7 +185,7 @@ def parse_xml(xml, cursor, tname):
     When year is set only the entries that have a year element and whos value
     is between 'year' and 'year'+9 is put into the hash.
     This is used by the history activity."""  
-    logger = logging.getLogger("schoolsplay.SPContentTables.parse_xml")
+    logger = logging.getLogger("childsplay.SPContentTables.parse_xml")
     logger.debug("Starting to parse: %s" % xml)
     
     #     xml file:

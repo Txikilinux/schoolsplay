@@ -20,11 +20,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.fishtank.Activity")
+# self.logger =  logging.getLogger("childsplay.fishtank.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.fishtank")
+module_logger = logging.getLogger("childsplay.fishtank")
 
 # standard modules you probably need
 import os,sys
@@ -73,7 +73,7 @@ class Fish(SPSpriteUtils.SPSprite):
         @delay is used as a counter to delay the movement,
         when it's zero the sprite moveit method is called.
         """
-        self.logger = logging.getLogger("schoolsplay.fishtank.Fish")
+        self.logger = logging.getLogger("childsplay.fishtank.Fish")
         # we will use the two images to create a simple animation in on_update
         self.image_0,self.image_1 = imagepair
         self.image = self.image_0
@@ -186,7 +186,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("schoolsplay.fishtank.Activity")
+        self.logger =  logging.getLogger("childsplay.fishtank.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.scoredisplay = self.SPG.get_scoredisplay()

@@ -25,7 +25,7 @@ import threading
 from SPSpriteUtils import MySprite, SPSprite
 from utils import char2surf
 
-module_logger = logging.getLogger("schoolsplay.Timer")
+module_logger = logging.getLogger("childsplay.Timer")
 
 # In the Timer related classes the logger is disabled because it can flood the
 # logfile. (especially with find_char_sound)
@@ -34,7 +34,7 @@ class Worker(threading.Thread):
     Don't use this directly, use Timer.""" 
     
     def __init__(self, delay=None, func=None, fargs=None, loop=1, lock=None, cb_func=None, now=False):
-        self.logger = logging.getLogger("schoolsplay.Timer.Worker")
+        self.logger = logging.getLogger("childsplay.Timer.Worker")
         threading.Thread.__init__(self)
         self.__delay = delay
         self.__func = func
@@ -117,7 +117,7 @@ class Timer:
         atexit function might not work. (not normal ways are exceptions that are
         not cached by your app and terminate the program.)        
         """
-        self.logger = logging.getLogger("schoolsplay.Timer.Timer")
+        self.logger = logging.getLogger("childsplay.Timer.Timer")
         #self.logger.debug("Timer created")
         self.worker = Worker(delay, func, fargs, loop, lock, cb_func, now=startnow)
     
@@ -154,7 +154,7 @@ class Clock(SPSprite):
         
         This class implements the Timer.Timer object so you should make sure
         you don't leave threads running in case of a exception."""
-        self.logger = logging.getLogger("schoolsplay.Timer.Clock")
+        self.logger = logging.getLogger("childsplay.Timer.Clock")
         self.__csurf = char2surf(start, clocksize, clockcolor)
         SPSprite.__init__(self, self.__csurf)
         

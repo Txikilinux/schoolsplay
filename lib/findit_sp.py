@@ -20,11 +20,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.findit_sp.Activity")
+# self.logger =  logging.getLogger("childsplay.findit_sp.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.findit_sp")
+module_logger = logging.getLogger("childsplay.findit_sp")
 
 # standard modules you probably need
 import os, sys, random
@@ -164,7 +164,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("schoolsplay.findit_sp.Activity")
+        self.logger =  logging.getLogger("childsplay.findit_sp.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.lang = self.SPG.get_localesetting()[0][:2]
@@ -273,17 +273,7 @@ class Activity:
         self.AreWeDT = False
         # get language code
         loclang = utils.get_locale_local()
-        orm, session = self.SPG.get_orm('game_languages', 'content')
-        query = session.query(orm).filter_by(language = loclang)
-        self.dblang = query.first().ID
-        session.close()
-        # get game_theme(s)
-        orm, session = self.SPG.get_orm('game_released_content', 'content')
-        query = session.query(orm)
-        query = query.filter_by(module = 'findit').filter_by(language = self.dblang)
-        self.gt_list = [gt.game_theme for gt in query.all()]
-        session.close()
-            
+        
     def dailytraining_pre_level(self, level):
         """Mandatory method"""
         pass
@@ -326,8 +316,22 @@ class Activity:
             y = 110
         Img_Display.wrongs = 0
         Img_Display.points = 0
-        self.ImgDiffHash = self._get_image_paths_diffs()
-        self.logger.debug("found %s images"  % len(self.ImgDiffHash.keys()))
+        self.logger.debug("searching images in %s"  % self.imgdir)
+        p = os.path.join(self.imgdir, 'img_diffs_%s.csv')
+        self.ImgDiffHash = {}
+        self.ImgDiffList = []
+        try:
+            lines = open(p % level, 'r').readlines()
+        except IOError, info:
+            raise utils.MyError, info
+        for line in lines:
+            k, v = line[:-1].split(';',1)
+            try:
+                self.ImgDiffHash[os.path.join(self.imgdir, k)] = \
+                                [pygame.Rect(eval(x,{'__builtins__': None},\
+                                {'True':True,'False':False})) for x in v.split(':')]
+            except SyntaxError, info:
+                self.logger.error('Badly formed rect line in %s; %s' % (p % level, line))
         self.LevelScoreHash = {1:3, 2:3, 3:3, 4:3, 5:3, 6:3}
         
         self.start_exercise()
@@ -384,43 +388,7 @@ class Activity:
                     pygame.event.clear()
                     break
         return 
-    
-    def _get_image_paths_diffs(self):
-        ##### dbase stuff, boilerplate code #################
-        # Get a mapper to store our served content
-        self.served_content_mapper = self.SPG.get_served_content_mapper()
-                
-        orm, session = self.SPG.get_orm('game_filenames', 'content')
-        f_template = session.query(orm).\
-                filter_by(tableName = 'game_findit').one().fileNameFormat
-        session.close()
-                
-        orm, session = self.SPG.get_orm('game_findit', 'content')
-        query = session.query(orm)
-        query = query.filter(orm.language == self.dblang).\
-                filter(orm.game_theme.in_(self.gt_list)).\
-                filter(orm.content_checked > 0).\
-                filter(orm.difficulty == self.level)
-        rows = [row for row in query.all()]
-        rows = [row for row in query.all()]
-        all_ids = [row.CID for row in rows]
-        rows = self.SPG.check_served_content(rows,\
-                                    int(self.rchash[self.theme]['exercises']), \
-                                    self.gt_list, all_ids)
-        session.close()
-        hash = {}
-        for row in rows:
-            k = [row]
-            diff = (pygame.Rect(tuple([int(x) for x in row.answer1.split(',')])),\
-                    pygame.Rect(tuple([int(x) for x in row.answer2.split(',')])),\
-                   pygame.Rect(tuple([int(x) for x in row.answer3.split(',')])))
-            for fname in ('file1', 'file2'):
-                f = f_template % (fname, row.ID)
-                p = os.path.join(self.DbAssets, 'Images', f)
-                k.append(p)
-            hash[tuple(k)] = diff
-        return hash
-
+        
     def _cbf_prevnext_button(self, sprite, event, data):
         self.logger.debug('_cbf_prevnext_button called with: %s' % data[0])
         if data[0] == 'prev': 
@@ -449,8 +417,7 @@ class Activity:
         self.prevnextBut.toggle()
         
     def end_exercise(self, thumbs=True): 
-        # we commit the current cid
-        self.served_content_mapper.commit()
+        
         result = self.ImgA.get_result()
         
         self.logger.debug("got score from ImgA, points: %s, wrongs: %s" % (result[0], result[1]))
@@ -474,7 +441,7 @@ class Activity:
             self.clear_screen()
         if thumbs:
             self.clear_screen()
-            self.ThumbsUp.display_sprite((229, 296))
+            self.ThumbsUp.display_sprite((229, 120))
             utils.sleep(2000)
             self.ThumbsUp.erase_sprite()
         if not self.ImgDiffHash or self.done == int(self.rchash[self.theme]['exercises']):
@@ -498,14 +465,11 @@ class Activity:
         
         v = self.ImgDiffHash[k]
         del self.ImgDiffHash[k]
-        row, file1, file2 = k
-        self.served_content_mapper.insert(row.CID, row.game_theme)
-        
-        ImgA = Img_Display(utils.load_image(file1), v,\
+        ImgA = Img_Display(utils.load_image(k+'A.jpg'), v,\
                                      (self.GoodSound, self.WrongSound), self.wrongImg, self.rchash)
         ImgA.set_position(15, y)
         ImgA.name = 'ImgA'# needed for debugging only
-        ImgB = Img_Display(utils.load_image(file2), v,\
+        ImgB = Img_Display(utils.load_image(k+'B.jpg'), v,\
                                  (self.GoodSound, self.WrongSound), self.wrongImg, self.rchash)
         ImgB.set_position(435, y)
         ImgB.name = 'ImgB'

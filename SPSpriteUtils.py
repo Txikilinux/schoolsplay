@@ -42,7 +42,7 @@ from types import StringType, ListType
 
 from utils import MyError, char2surf, load_image
 from SPConstants import ACTIVITYDATADIR, BUTTON_FEEDBACK_TIME
-module_logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl")
+module_logger = logging.getLogger("childsplay.SPSpriteUtils_lgpl")
 
 def SPInit(scr, back, cmd_options={}):
     """ Init(back,scr,group=pygame.sprite.Group()) -> SPGroup instance
@@ -65,7 +65,7 @@ def SPInit(scr, back, cmd_options={}):
          that they all share the same screen and background surfaces. 
          """
     
-    logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl.SPInint")
+    logger = logging.getLogger("childsplay.SPSpriteUtils_lgpl.SPInint")
     
     SPSprite.group = pygame.sprite.Group()# base class to hold sprites
     # All the objects which derives from SPSprite belongs to this group.
@@ -102,7 +102,7 @@ class SPSprite(pygame.sprite.Sprite):
                 why you want it too be None.
         name - a string so that one can do: if sprite_obj == 'foobar':"""
         pygame.sprite.Sprite.__init__(self)# This must be set before using this class
-        self._logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl.SPSprite")
+        self._logger = logging.getLogger("childsplay.SPSpriteUtils_lgpl.SPSprite")
         self.DEBUG = 0
         
         # make sure we have a correct background
@@ -510,7 +510,7 @@ class SPGroup(pygame.sprite.RenderUpdates):
         """__init__(scr,bck)
            scr = reference to the display screen.
            bck = reference to a background screen."""
-        self._logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl.SPGroup")
+        self._logger = logging.getLogger("childsplay.SPSpriteUtils_lgpl.SPGroup")
         self.DEBUG = 0
         pygame.sprite.RenderUpdates.__init__(self)
         self.scr = scr
@@ -866,7 +866,7 @@ class MySprite(SPSprite):
         value must be an pygame surface or a path to a supported image file.
         name is optional and can be used to identify this sprite.
         See also the SPSprite class."""
-        self._logger = logging.getLogger("schoolsplay.SPSpriteUtils_lgpl.MySprite")
+        self._logger = logging.getLogger("childsplay.SPSpriteUtils_lgpl.MySprite")
         if type(value) is pygame.Surface:
             self.image = value
         elif type(value) in (types.StringType, types.UnicodeType):

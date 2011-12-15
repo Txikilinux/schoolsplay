@@ -30,6 +30,8 @@ if len(sys.argv) > 2:
     # construct proper restart command if we need to restart
     prog = "python %s " % os.path.join(os.getcwd(), " ".join(sys.argv))
 
+print sys.argv
+
 import subprocess
 #import gc
 #gc.set_debug(gc.DEBUG_COLLECTABLE | gc.DEBUG_UNCOLLECTABLE | gc.DEBUG_INSTANCES | gc.DEBUG_OBJECTS)
@@ -56,8 +58,23 @@ SPLogging.start()
 
 #create logger, configuration of logger was done above
 import logging
-CPmodule_logger = logging.getLogger("schoolsplay.seniorplay")
+CPmodule_logger = logging.getLogger("childsplay.childsplay")
 CPmodule_logger.debug("Created schoolsplay loggers")
+
+BTPPID = None
+BTPSTART = None
+try:
+    BTPPID = CMD_Options.kill_btp
+    BTPSTART = CMD_Options.restart_btp
+except AttributeError:
+    CPmodule_logger.info("No kill_btp or restart_btp option given")
+else:
+    if BTPPID and BTPSTART:
+        CPmodule_logger.warning("Found BTP pid, killing BTP with pid: %s" % BTPPID)
+        subprocess.Popen("kill -9 %s" % BTPPID, shell=True)
+        BTPSTART = 'cd .. && ' + BTPSTART
+    else:
+        CPmodule_logger.error("No pid for BTP")
 
 try:
     import sqlalchemy as sqla
@@ -110,7 +127,9 @@ for name in SUPPORTEDTHEMES:
     existingxmlfiles = os.listdir(p)
     for f in  XML_FILES_WE_MUST_HAVE:
         if f not in existingxmlfiles and os.path.exists(os.path.join(THEMESPATH, name, f)):
-            shutil.copy(os.path.join(THEMESPATH, name, f), p)
+            src = os.path.join(THEMESPATH, name, f)
+            CPmodule_logger.debug("Copying %s to %s" % (src, p))
+            shutil.copy(src, p)
 
 ## We also want to have the default photo albums in a writable location
 #p = os.path.join(HOMEDIR, 'braintrainer', 'DefaultAlbums')
@@ -147,18 +166,6 @@ if CMD_Options.checklog:
     except utils.MyError:
         sys.exit(1)
     sys.exit(0)
-
-if CMD_Options.admingui:
-    # This will not return
-    try:
-        import gui.AdminGui as AdminGui
-        AdminGui.main()
-    except Exception,info:
-        print "GUI raised an exception"
-        print info
-        sys.exit(1)
-    else:
-        sys.exit(0)
         
 if not utils._set_lock():
     sys.exit(1)
@@ -278,10 +285,13 @@ time.sleep(0.5)
 #    CPmodule_logger.info("Removing pyc files")
 #    subprocess.Popen('find . -name "*.pyc" -exec rm {} \;',shell=True )
 
+
 # BT+ specific stuff
-if CMD_Options.theme == 'braintrainer' and restartme:
+if (CMD_Options.theme == 'braintrainer' and restartme) or (BTPPID and BTPSTART):
     restartme = False
-    CPmodule_logger.info("respawing with :%s" % prog)
-    pid = subprocess.Popen(prog, shell=True).pid
+    CPmodule_logger.info("respawing with :%s" % BTPSTART)
+    pid = subprocess.Popen(BTPSTART, shell=True).pid
     CPmodule_logger.debug("launched Control Panel with pid %s" % pid)
     sys.exit()
+
+

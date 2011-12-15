@@ -21,11 +21,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.electro_sp.Activity")
+# self.logger =  logging.getLogger("childsplay.electro_sp.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.electro_sp")
+module_logger = logging.getLogger("childsplay.electro_sp")
 
 # standard modules you probably need
 import os,sys, textwrap
@@ -138,7 +138,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("schoolsplay.electro_sp.Activity")
+        self.logger =  logging.getLogger("childsplay.electro_sp.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.theme = self.SPG.get_theme()

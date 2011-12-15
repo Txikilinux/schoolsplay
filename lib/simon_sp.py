@@ -25,11 +25,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.simon_sp.Activity")
+# self.logger =  logging.getLogger("childsplay.simon_sp.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.simon_sp")
+module_logger = logging.getLogger("childsplay.simon_sp")
 
 # standard modules you probably need
 import os,sys,random
@@ -103,7 +103,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("schoolsplay.simon_sp.Activity")
+        self.logger =  logging.getLogger("childsplay.simon_sp.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.theme = self.SPG.get_theme()
@@ -346,8 +346,9 @@ class Activity:
         F = 8.0
         F1 = 2.0
         C = 0.4
+        C1 = 1.3
         S = float(seconds)
-        points = max((F/100) * (P/(N/100)), 1.0)
+        points = max((F/100) * ((P/(N/100)) * C1), 1.0)
         time = min(F1 / ((S/(N*2)) ** C), F1)
         self.logger.info("@scoredata@ %s level %s N %s P %s S %s points %s time %s" %\
                           (self.get_name(),self.level, N, P, S, points, time))

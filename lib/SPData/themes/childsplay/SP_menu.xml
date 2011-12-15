@@ -76,10 +76,10 @@
     <menuitem enable="False" file="photoalbum.icon.png" hoverfile="photoalbum_ro.icon.png">
       <activity>photoalbum</activity>
     </menuitem>
-    <menuitem enable="True" file="dltr.icon.png" hoverfile="dltr_ro.icon.png">
+    <menuitem enable="False" file="dltr.icon.png" hoverfile="dltr_ro.icon.png">
       <activity>dltr</activity>
     </menuitem>
-    <menuitem enable="True" file="wipe.icon.png" hoverfile="wipe_ro.icon.png">
+    <menuitem enable="False" file="wipe.icon.png" hoverfile="wipe_ro.icon.png">
       <activity>wipe</activity>
     </menuitem>
     <menuitem enable="False" file="test_act.icon.png" hoverfile="">

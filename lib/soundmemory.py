@@ -21,11 +21,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.soundmemory.Activity")
+# self.logger =  logging.getLogger("childsplay.soundmemory.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.soundmemory")
+module_logger = logging.getLogger("childsplay.soundmemory")
 
 # standard modules you probably need
 import os,sys,random,glob
@@ -143,7 +143,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("schoolsplay.soundmemory.Activity")
+        self.logger =  logging.getLogger("childsplay.soundmemory.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.theme = self.SPG.get_theme()
@@ -167,7 +167,7 @@ class Activity:
         # You MUST call SPInit BEFORE using any of the SpriteUtils stuff
         # it returns a reference to the special CPGroup
         self.actives = SPSpriteUtils.SPInit(self.screen,self.backgr)
-        self.beamer_set = 'on'
+        self.beamer_set = 'off'
         
     def get_moviepath(self):
         movie = os.path.join(self.my_datadir,'help.avi')

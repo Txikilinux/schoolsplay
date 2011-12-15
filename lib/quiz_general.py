@@ -20,11 +20,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.quiz_general.Activity")
+# self.logger =  logging.getLogger("childsplay.quiz_general.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.quiz_knowledge")
+module_logger = logging.getLogger("childsplay.quiz_knowledge")
 
 # standard modules you probably need
 import os,sys
@@ -47,7 +47,7 @@ def parse_xml(xml):
     """Parses the whole xml tree into a hash with lists. Each list contains hashes
     with the elelements from a 'activity' element.
     """  
-    logger = logging.getLogger("schoolsplay.quiz_general.parse_xml")
+    logger = logging.getLogger("childsplay.quiz_general.parse_xml")
     logger.debug("Starting to parse: %s" % xml)
 
     tree = ElementTree()
@@ -83,7 +83,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("schoolsplay.quiz_general.Activity")
+        self.logger =  logging.getLogger("childsplay.quiz_general.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.lang = self.SPG.get_localesetting()[0][:2]

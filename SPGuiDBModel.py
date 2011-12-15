@@ -27,7 +27,7 @@ import atexit,sys
 sys.path.insert(0, 'gui')
 #create logger, logger was configured in SPLogging
 import logging
-module_logger = logging.getLogger("schoolsplay.SPGuiDBModel")
+module_logger = logging.getLogger("childsplay.SPGuiDBModel")
 
 # first parse commandline options, it's fake ofcourse as we are run from inside
 # a python module but we need the options object
@@ -83,7 +83,7 @@ class DataManagerWrapper(SPDataManager.DataManager):
     This is meant for GUI's that want to interface with the SP dbase.
     Don't use this class directly, use the 'get_datamanager' function."""
     def __init__(self,spgoodies):
-        self.logger = logging.getLogger("schoolsplay.SPGuiDBModel.DataManagerWrapper")
+        self.logger = logging.getLogger("childsplay.SPGuiDBModel.DataManagerWrapper")
         self.logger.debug("Starting")
         self.current_user_id = None # needed for the testsuite
         self.spg = spgoodies

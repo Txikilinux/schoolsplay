@@ -41,7 +41,7 @@ class SPGoodies(Borg):
             cb_get_orm, cb_register_core_observers):
         Borg.__init__(self)
         # references to stuff, use the methods to get them
-        self.logger = logging.getLogger("schoolsplay.SPGoodies")
+        self.logger = logging.getLogger("childsplay.SPGoodies")
         self.screen = screen
         self.virtkb = virtkb
         self.pre_level_end = cb_pre_level_end

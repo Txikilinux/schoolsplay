@@ -46,13 +46,13 @@ from SPSpriteUtils import SPInit, SPSprite
 import SPDataManager
 import Version
 
-module_logger = logging.getLogger("schoolsplay.SPMenu")
+module_logger = logging.getLogger("childsplay.SPMenu")
 
 
 
 class ParseMenu:
     def __init__(self, xml, complete=False):
-        self.logger = logging.getLogger("schoolsplay.SPMenu.ParseMenu")
+        self.logger = logging.getLogger("childsplay.SPMenu.ParseMenu")
         self.tree = ElementTree()
         self.tree.parse(xml)
         root = self.tree.getroot()
@@ -111,7 +111,7 @@ class ParseMenu:
       
 class Menu:
     def __init__(self, iconpath, menu, cbf, theme, lang, default, removeables=None):
-        self.logger = logging.getLogger("schoolsplay.SPMenu.Menu")
+        self.logger = logging.getLogger("childsplay.SPMenu.Menu")
         lang = lang[:2]
         buttons = utils.OrderedDict()
         acttext = ActivityMenuText()
@@ -213,7 +213,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         This SPGoodies differs from the regular SPGoodies the activities get."""
-        self.logger = logging.getLogger("schoolsplay.SPMenu.Activity")
+        self.logger = logging.getLogger("childsplay.SPMenu.Activity")
         self.logger.info("Activity started")
         self.displayed_buttons = []
         self.displayed_bottom_buttons = []

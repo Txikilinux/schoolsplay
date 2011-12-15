@@ -21,11 +21,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.memory_sp.Activity")
+# self.logger =  logging.getLogger("childsplay.memory_sp.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.memory_sp")
+module_logger = logging.getLogger("childsplay.memory_sp")
 
 # standard modules you probably need
 import os,sys, glob,random, textwrap
@@ -143,7 +143,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("schoolsplay.memory_sp.Activity")
+        self.logger =  logging.getLogger("childsplay.memory_sp.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.scoredisplay = self.SPG.get_scoredisplay()
@@ -171,7 +171,7 @@ class Activity:
         for file in files:
             setattr(self.Sound, file[:-4], utils.load_sound(os.path.join(self.CPdatadir, file)))
         
-        self.beamer_set = 'on'
+        self.beamer_set = 'off'
     
     def clear_screen(self):
         self.screen.blit(self.orgscreen,self.blit_pos)

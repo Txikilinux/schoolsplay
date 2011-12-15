@@ -24,7 +24,7 @@ from SPLogging import LOGPATH
 from utils import SPError, MyError
 
 import logging
-SPLCmodule_logger = logging.getLogger("schoolsplay.SPlogCheck")
+SPLCmodule_logger = logging.getLogger("childsplay.SPlogCheck")
 SPLCmodule_logger.debug("Starting to parse SP log %s for warning messages and higher" % LOGPATH)
 
 oldfiles = glob.glob(os.path.join(HOMEDIR, "SPErrorLog_*"))

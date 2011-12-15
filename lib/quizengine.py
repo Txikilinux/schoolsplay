@@ -22,11 +22,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.quiz_text.Activity")
+# self.logger =  logging.getLogger("childsplay.quiz_text.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.quizengine")
+module_logger = logging.getLogger("childsplay.quizengine")
 
 import os, sys
 import random
@@ -62,7 +62,7 @@ class ContentFeeder:
         tp - string  which type of questions we want.
         possible types are: history,math,picture,royal,sayings,text,melody
         """
-        self.logger = logging.getLogger("schoolsplay.quizengine.ContentFeeder")
+        self.logger = logging.getLogger("childsplay.quizengine.ContentFeeder")
         self.logger.debug("start ContentFeeder with %s" % dbase)
         self.tp = tp
         self.SPG = spgoodies
@@ -337,7 +337,7 @@ class ContentFeeder:
 
 class AudioPlayer:
     def __init__(self, audio, ad_audio, ss):
-        self.logger = logging.getLogger("schoolsplay.quizengine.AudioPlayer")
+        self.logger = logging.getLogger("childsplay.quizengine.AudioPlayer")
         self.logger.debug("setup audio stream: %s" % audio)
         self.ss = ss
         if not os.path.splitext(audio['question'])[1]:
@@ -386,7 +386,7 @@ class AudioPlayer:
 class Answer(SPSprite):
     def __init__(self, image, alt_image, result_img, sound, pos, cbf, state):
         SPSprite.__init__(self, image)
-        self.logger = logging.getLogger("schoolsplay.quizengine.Answer")
+        self.logger = logging.getLogger("childsplay.quizengine.Answer")
         self.connect_callback(self._cbf, MOUSEBUTTONUP, state)
         self.moveto(pos, hide=True)
         self.alt_image = alt_image
@@ -415,7 +415,7 @@ class Answer(SPSprite):
 class Question(SPSprite):
     def __init__(self, image, pos):
         SPSprite.__init__(self, image)
-        self.logger = logging.getLogger("schoolsplay.quizengine.Question")
+        self.logger = logging.getLogger("childsplay.quizengine.Question")
         self.moveto(pos, hide=True)
         
 class Engine:
@@ -430,7 +430,7 @@ class Engine:
         actives - SPGroup instance which is used by the caller in the eventloop
         observers - list with observer objects
         """
-        self.logger = logging.getLogger("schoolsplay.quizengine.Engine")
+        self.logger = logging.getLogger("childsplay.quizengine.Engine")
         self.SPG = spgoodies
         self.theme = self.SPG.get_theme()
         self.lang = self.SPG.get_localesetting()[0][:2]

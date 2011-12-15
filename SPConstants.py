@@ -38,7 +38,7 @@ import time
 import shutil
 import pygame
 import glob 
-SPCmodule_logger = logging.getLogger("schoolsplay.SPConstants")
+SPCmodule_logger = logging.getLogger("childsplay.SPConstants")
 
 #module_logger.debug("Contents of os.environ: %s" % os.environ)
 #module_logger.debug("Contents of sys.argv %s " % sys.argv)

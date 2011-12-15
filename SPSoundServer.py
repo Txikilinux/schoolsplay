@@ -37,7 +37,7 @@ class SoundServer:
     def __init__(self, sleep=0.2):
         """ This will start the server, the sleep value is the time the server
         will sleep between polling the message queue"""
-        self.logger = logging.getLogger("schoolsplay.SPSoundServer")
+        self.logger = logging.getLogger("childsplay.SPSoundServer")
         if self.server_allready_running:
             self.logger.debug("Soundserver allready running. You should first stop the server before you start a new one.")
             return

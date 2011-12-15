@@ -138,7 +138,7 @@ class KeyBoard(SPWidgets.Widget):
          otherwise nothing is shown.
         """
         SPWidgets.Widget.__init__(self)
-        self.logger = logging.getLogger("schoolsplay.SPVirtkeyboard.Keyboard")
+        self.logger = logging.getLogger("childsplay.SPVirtkeyboard.Keyboard")
         self.cbf = cbf
         self.position = position
         self.password_mode = password_mode

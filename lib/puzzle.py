@@ -21,11 +21,11 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("schoolsplay.puzzle.Activity")
+# self.logger =  logging.getLogger("childsplay.puzzle.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("schoolsplay.puzzle")
+module_logger = logging.getLogger("childsplay.puzzle")
 
 # standard modules you probably need
 import os,sys,random,glob, textwrap
@@ -84,7 +84,7 @@ class Piece(SPSpriteUtils.SPSprite):
         self.connect_callback(self._activated_cbf, MOUSEBUTTONDOWN)
         self.correct_position = correct_position
         self.name = name
-        self.logger = logging.getLogger("schoolsplay.puzzle.Piece")
+        self.logger = logging.getLogger("childsplay.puzzle.Piece")
         self.ImSelected = False
         self.obs = obs
         Piece.Brothers.append(self) 
@@ -174,7 +174,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("schoolsplay.puzzle.Activity")
+        self.logger =  logging.getLogger("childsplay.puzzle.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.lang = self.SPG.get_localesetting()[0][:2]
@@ -284,20 +284,7 @@ class Activity:
         self.score = 0
         self.AreWeDT = False
         self.pre_level_flag = False
-        
-        # get language code
-        loclang = utils.get_locale_local()
-        orm, session = self.SPG.get_orm('game_languages', 'content')
-        query = session.query(orm).filter_by(language = loclang)
-        self.dblang = query.first().ID
-        session.close()
-        # get game_theme(s)
-        orm, session = self.SPG.get_orm('game_released_content', 'content')
-        query = session.query(orm)
-        query = query.filter_by(module = 'puzzle').filter_by(language = self.dblang)
-        self.gt_list = [gt.game_theme for gt in query.all()]
-        session.close()
-             
+     
     def pre_level(self, level):
         """Mandatory method"""
         self.logger.debug("pre_level called with: %s" % level)
@@ -358,20 +345,13 @@ class Activity:
         self.db_mapper = dbmapper
         self.rows, self.cols ,self.bonus = self.gamelevels[level-1]
         self.npieces=self.cols*self.rows
-        
-        rows = self._get_rows()
-        
-        # get the filename template string
-        orm, session = self.SPG.get_orm('game_filenames', 'content')
-        f_template = session.query(orm).\
-                filter_by(tableName = 'game_puzzle').one().fileNameFormat
-        session.close()
-        
-        self.pzimages = []
-        for row in rows:
-            f = f_template % row.ID
-            p = os.path.join(self.DbAssets, 'Images', f)
-            self.pzimages.append((p, row))
+        imgdir = os.path.join(self.my_datadir, self.theme, self.tile)
+        if not os.path.exists(imgdir):
+            old = imgdir
+            imgdir = os.path.join(self.my_datadir,'childsplay', self.tile)
+            self.logger.debug("not found %s using %s" % (old, imgdir))
+        self.logger.debug("Using imagedir %s" % imgdir)
+        self.pzimages = glob.glob(os.path.join(imgdir,'*.jpg'))
         random.shuffle(self.pzimages)
         self.logger.debug("Found %s images" % len(self.pzimages))
         # store number of cards into the db table 'cards' col
@@ -386,25 +366,7 @@ class Activity:
 
         return True
     
-    def _get_rows(self):
-        ##### dbase stuff, boilerplate code #################
-        # Get a mapper to store our served content
-        self.served_content_mapper = self.SPG.get_served_content_mapper()
-            
-        # build our content query with the stuff found in start       
-        orm, session = self.SPG.get_orm('game_puzzle', 'content')
-        query = session.query(orm)
-        query = query.filter(orm.language == self.dblang).\
-                filter(orm.game_theme.in_(self.gt_list)).\
-                filter(orm.content_checked > 0).\
-                filter(orm.tileset == self.tile.split('_')[1])
-        rows = [row for row in query.all()]
-        all_ids = [row.CID for row in rows]
-        rows = self.SPG.check_served_content(rows,self.exercises, \
-                                                  self.gt_list, \
-                                                  all_ids)
-        session.close()
-        return rows
+    
     
     def dailytraining_pre_level(self, level):
         """Mandatory method"""
@@ -495,7 +457,7 @@ class Activity:
                     self.scoredisplay.set_score(self.score*3)
                     pygame.time.wait(int(self.rchash[self.theme]['wait_value']))
                     self.clear_screen()
-                    self.ThumbsUp.display_sprite((229, 296))
+                    self.ThumbsUp.display_sprite((229, 120))
                     pygame.time.wait(1000)
                     self.ThumbsUp.erase_sprite()
                     if self.next_exercise():
@@ -514,8 +476,7 @@ class Activity:
      
     def next_exercise(self):
         self.logger.debug("next_exercise called, exercises = %s" % (self.exercises))
-        # we commit the previous cid
-        self.served_content_mapper.commit()
+        
         self.actives.purge()# remove sprites from previous exercise and erase them
         if not self.exercises:
             return True
@@ -532,8 +493,7 @@ class Activity:
         """  Load an image to split, it choose one between the images in
          myimages folder and the childsplay images.
         """
-        imgpath, row = self.pzimages.pop()
-        self.served_content_mapper.insert(row.CID, row.game_theme)
+        imgpath = self.pzimages.pop()
         image=utils.load_image(imgpath)
         img = utils.aspect_scale(image.convert(),(140,140))
         self.puzzlethumb = SPSpriteUtils.MySprite(img)

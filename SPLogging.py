@@ -19,7 +19,7 @@
 
 ### example "application" code to use in your module
 ##import logging
-##module_logger = logging.getLogger("schoolsplay.<name of your module>")
+##module_logger = logging.getLogger("childsplay.<name of your module>")
 ##logger.debug("debug message")
 ##logger.info("info message")
 ##logger.warn("warn message")
@@ -29,7 +29,7 @@
 
 import os
 from SPConstants import HOMEDIR
-LOGPATH = os.path.join(HOMEDIR, "schoolsplay.log")
+LOGPATH = os.path.join(HOMEDIR, "childsplay.log")
 
 # remove old log
 if os.path.exists(LOGPATH):
@@ -67,7 +67,7 @@ def set_level(level):
 def start():
     global CONSOLELOGLEVEL, FILELOGLEVEL
     #create logger
-    logger = logging.getLogger("schoolsplay")
+    logger = logging.getLogger("childsplay")
     logger.setLevel(CONSOLELOGLEVEL)
     sqla_logger = logging.getLogger("sqlalchemy")
     #create console handler and set level
@@ -88,7 +88,7 @@ def start():
     logger.info("File logger created: %s" % LOGPATH)
     
     # test
-    module_logger = logging.getLogger("schoolsplay.SPLogging")
+    module_logger = logging.getLogger("childsplay.SPLogging")
     module_logger.info("logger created, start logging")
     import Version
     module_logger.info("Starting childsplay version: %s" % Version.version)

@@ -79,9 +79,6 @@ class OParser(OptionParser):
         self.add_option("--no-text",action="store_true",
             help="Disable text before every level's activities.",
             dest="no_text")
-        self.add_option("--admin-gui", action="store_true",
-            help="Start the SQL administrator GUI. This is a simple GUI to set the mu and sigma values for the activities.",
-        dest="admingui")
         self.add_option("--language",
             help="Set the language schoolsplay should use. Be aware that not all languages are supported yet. If your language isn't supported and you want to provide language support,please contact the schoolsplay team.",
             dest="lang")
@@ -117,7 +114,13 @@ class OParser(OptionParser):
             dest="crapware")
         self.add_option("--plainversion", action="store_true",
             help="Return the version number in a plain string",
-            dest="plainversion")          
+            dest="plainversion")
+        self.add_option("--kill-btp",
+            help="If we should kill any running btp, a pid must be given. BTP is started again when childsplay quits. (ONLY available on BTP machines)",
+            dest="kill_btp") 
+        self.add_option("--restart-btp",
+            help="If we killed any running btp, we use this to start BTP again when childsplay quits. (ONLY available on BTP machines)",
+            dest="restart_btp")          
         (self.options, self.args) = self.parse_args()
         
         # in case the user starts us with a unknown theme

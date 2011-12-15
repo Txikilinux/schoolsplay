@@ -86,7 +86,7 @@ from pygame import surface
 from pygame.font import Font
 import cairoimage as _cairoimage
 
-log = logging.getLogger('schoolsplay.pangofont')
+log = logging.getLogger('childsplay.pangofont')
 
 # Install myself on top of pygame.font
 def install():
@@ -382,7 +382,7 @@ if __name__ == '__main__':
     import SPLogging
     SPLogging.set_level('debug')
     SPLogging.start()
-    log = logging.getLogger('schoolsplay.pangofont')
+    log = logging.getLogger('childsplay.pangofont')
     
     # setup a test gettext environment
     import __builtin__ , os,gettext

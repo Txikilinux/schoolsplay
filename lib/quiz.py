@@ -22,7 +22,7 @@
 #create logger, logger was setup in SPLogging
 import logging
 
-module_logger = logging.getLogger("schoolsplay.quiz_knowledge")
+module_logger = logging.getLogger("childsplay.quiz_knowledge")
 
 # standard modules you probably need
 import os,sys
@@ -58,7 +58,7 @@ class Activity:
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("schoolsplay.quiz.Activity")
+        self.logger =  logging.getLogger("childsplay.quiz.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.lang = self.SPG.get_localesetting()[0][:2]

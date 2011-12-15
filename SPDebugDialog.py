@@ -32,7 +32,7 @@ GITBRANCH = 'master'
 
 class Debugscreen:
     def __init__(self, actname, milestone, screen):
-        self.logger = logging.getLogger("schoolsplay.SPDebugDialog.Debugscreen")
+        self.logger = logging.getLogger("childsplay.SPDebugDialog.Debugscreen")
         self.orgscreen = pygame.display.get_surface()
         self.act_name = actname
         self.currentmilestone = milestone

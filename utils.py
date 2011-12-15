@@ -46,7 +46,7 @@ import textwrap
 CAMFOUND = None
 if CAMFOUND:
     import opencv.adaptors as adaptors
-module_logger = logging.getLogger("schoolsplay.utils")
+module_logger = logging.getLogger("childsplay.utils")
 
 if NoGtk:
     module_logger.warning("NoGtk is set, not using GTK pango font rendering some non-latin characters might be missing.")
@@ -745,7 +745,7 @@ class ScaleImages:
                    the scaled images. Else the images are blitted on this object.
         TargetSize = desired scale size (tuple)
         """
-        self.logger = logging.getLogger("schoolsplay.utils.ScaleImages")
+        self.logger = logging.getLogger("childsplay.utils.ScaleImages")
         self.TargetSize = pygame.Rect((0, 0) + TargetSize)# convert this tuple in a pygame rect
             # see: def _scale_if_needed
         if stdCardObj:
@@ -949,7 +949,7 @@ def calculate_time(start, end):
     returned in a format suitable to put into the dbase.
     Times must be in the format as returnt from current_time.
     """
-    logger = logging.getLogger("schoolsplay.utils.calculate_time")
+    logger = logging.getLogger("childsplay.utils.calculate_time")
     logger.debug("Called with start:%s, end:%s" % (start, end))
     start = start.replace('-', ':').replace('_', ':')
     end = end.replace('-', ':').replace('_', ':')
