@@ -168,7 +168,7 @@ class ContentFeeder:
             query = query.filter(orm.language.in_(lang))
             query = query.filter(orm.game_theme.in_(gt_list))
             query = query.filter(orm.difficulty == difficulty)
-            query = query.filter(orm.content_checked > 0)
+            #query = query.filter(orm.content_checked > 0)
             if tp == 'melody' or self._not_serve_all_content:
                 self.logger.debug("Serving only questions with audio")
                 query = query.filter(orm.audiofiles == 5)
@@ -184,7 +184,7 @@ class ContentFeeder:
                 query = query.filter(orm.language.in_(lang))
                 query = query.filter(orm.game_theme.in_(gt_list))
                 query = query.filter(orm.difficulty == difficulty)
-                query = query.filter(orm.content_checked > 0)
+                #query = query.filter(orm.content_checked > 0)
                 if tp == 'personal':
                     query = query.filter(orm.user_id == self.current_user_id)
                 rows_without_audio = [result for result in query.all()]
@@ -478,7 +478,8 @@ class Engine:
         self.currentscreen = None
         self.correct_answer = None
         self.unmute_exer_audio = self.SPG._unmute_quiz_voice
-        self.CF.serve_all_content(self.unmute_exer_audio)
+        #self.CF.serve_all_content(self.unmute_exer_audio)
+        self.CF.serve_all_content(False)
         p = os.path.join(self.CPdatadir,'good_%s.png' % self.lang)
         if not os.path.exists(p):
             p = os.path.join(self.CPdatadir,'thumbs.png')

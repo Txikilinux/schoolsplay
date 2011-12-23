@@ -53,9 +53,6 @@ from utils import set_locale
 
 #import SPgdm
 
-from SPDataManagerCreateDbase import DbaseMaker
-DEBUG = False
-
 DEMO_DT = [{'fortune': 0, 'target': 'demo', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_picture', 'order': 0}, \
            {'fortune': 0, 'target': 'demo', 'level': 2, 'group': 'Puzzels', 'cycles': 1,'act_name': 'electro_sp', 'order': 1}, \
            {'fortune': 0, 'target': 'demo', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_melody', 'order': 2},\

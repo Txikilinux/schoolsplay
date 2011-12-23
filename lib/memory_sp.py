@@ -416,7 +416,7 @@ class Activity:
         self.cards_list = self.actives.get_sprites()
         self.actives.empty()
 #        self.startbutton = SPWidgets.SimpleButtonDynamic(_("Start"), (690, y+430), fsize=24, data='start')
-        self.startbutton = SPWidgets.SimpleButtonDynamic(_("Start"), (0,0), fsize=24, data='start')
+        self.startbutton = SPWidgets.SimpleButtonDynamic(_("Start"), (0,0), fsize=24,colorname='green', data='start')
         x = 790 - self.startbutton.get_sprite_width()
         self.startbutton.moveto((x, y+430))
         self.startbutton.set_use_current_background(True)

@@ -74,7 +74,7 @@ ACTDATADIR = os.path.join(ACTIVITYDATADIR, 'CPData')
 # Users sp dir
 HOME_DIR_NAME = '.schoolsplay.rc'
 # Name of the SQLite users dbase
-DBASE = 'sen_sp.db'
+DBASE = 'sp_users.db'
 # name of the SQLite content dbase
 CONTENTDBASE = 'sp_content.db'
 

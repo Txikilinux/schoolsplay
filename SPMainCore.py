@@ -129,7 +129,6 @@ class MainCoreGui:
         self.myspritesactivated = None
         self.menubuttons_backup = []
         self.volume_level = 50
-        self.quiz_voice_unmute = True
         self.levelcount = 1
         self.DTmode = False
         self.DTactivity = None
@@ -266,7 +265,7 @@ class MainCoreGui:
         self.spgoodies._cmd_options = self.cmd_options
         self.spgoodies.stats_hash = self.statshash  
         # and one for the quizengine
-        self.spgoodies._unmute_quiz_voice = False
+        self.spgoodies._unmute_quiz_voice = True
              
         if error:
             # there was an error in sp and the core is restarted
