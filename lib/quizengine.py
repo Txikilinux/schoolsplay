@@ -477,7 +477,7 @@ class Engine:
         self.answers_list = []
         self.currentscreen = None
         self.correct_answer = None
-        self.unmute_exer_audio = self.SPG._mute_quiz_voice
+        self.unmute_exer_audio = self.SPG._unmute_quiz_voice
         self.CF.serve_all_content(self.unmute_exer_audio)
         p = os.path.join(self.CPdatadir,'good_%s.png' % self.lang)
         if not os.path.exists(p):

@@ -266,7 +266,7 @@ class MainCoreGui:
         self.spgoodies._cmd_options = self.cmd_options
         self.spgoodies.stats_hash = self.statshash  
         # and one for the quizengine
-        self.spgoodies._mute_quiz_voice = False
+        self.spgoodies._unmute_quiz_voice = False
              
         if error:
             # there was an error in sp and the core is restarted
@@ -949,15 +949,15 @@ class MainCoreGui:
         x, y = r.topleft
         x += 50
         y += 30
-        va = VolumeAdjust((x, y), volume=int(self.volume_level), voice_unmute=self.spgoodies._mute_quiz_voice)
+        va = VolumeAdjust((x, y), volume=int(self.volume_level), voice_unmute=self.spgoodies._unmute_quiz_voice)
         va.set_use_current_background(True)# it will use the current screen as background as we blit over a dialog
         va.display()
         dlg.run(va.get_actives())
         self.volume_level = va.get_volume()
-        self.spgoodies._mute_quiz_voice = va.get_voice_state()
+        self.spgoodies._unmute_quiz_voice = va.get_voice_state()
         if hasattr(self.activity, 'quiz_voice_changed'):
-            self.activity.quiz_voice_changed(self.spgoodies._mute_quiz_voice)
-        self.logger.debug("quiz voice unmute: %s" % self.spgoodies._mute_quiz_voice)
+            self.activity.quiz_voice_changed(self.spgoodies._unmute_quiz_voice)
+        self.logger.debug("quiz voice unmute: %s" % self.spgoodies._unmute_quiz_voice)
         pos = (CORE_BUTTONS_XCOORDS[7], self.menu_rect.top+8)
         self.volumebutton.erase_sprite()
         self.actives_group.remove(self.volumebutton)

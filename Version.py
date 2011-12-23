@@ -1,5 +1,5 @@
 #version stuff
 
-# seniorplay version
+# childsplay version
 version='2.3.3'
 
