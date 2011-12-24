@@ -180,7 +180,7 @@ CPmodule_logger.debug("commandline options: %s" % CMD_Options)
 CPmodule_logger.debug("SPMainCore running from: %s" % SPMainCore)
 
 from SPDataManagerCreateDbase import DbaseMaker
-DEBUG = True
+DEBUG = False
 try:
     #This will setup the dbases and ORMS
     dbm = DbaseMaker(CMD_Options.theme, debug_sql=DEBUG)            

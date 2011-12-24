@@ -294,9 +294,8 @@ class ContentFeeder:
             self.served[0] = self.served[1]
             self.served[1] = i
         # TODO: how to get the module name ?? XXX
-        
-        svc = self.served_content_orm(user_id=self.current_user_id, CID=i,\
-                       game_theme_id=row.game_theme, \
+        svc = self.served_content_orm(user_id=self.current_user_id, CID=str(i),\
+                       game_theme_id=str(row.game_theme), \
                        module='', start_time=datetime.datetime.now(), \
                         count_served=1)
         self.served_content_session.add(svc)
@@ -504,7 +503,7 @@ class Engine:
         self.data_display_center = (600, 200 + y)
         if self.quiz == 'picture':
             y = 0
-        self.good_image.moveto((229, 280 + y))
+        self.good_image.moveto((229, 120 + y))
         self.good_image.set_use_current_background(True)
 
         picture_button_width = 385
