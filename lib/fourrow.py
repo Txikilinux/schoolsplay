@@ -536,7 +536,7 @@ class Activity:
             txt = _("Congratulations, try again ?")
         else:
             txt = _("Pity, try again ?")
-        but = ButtonDynamic(txt, (250,110), fgcol=WHITE)
+        but = ButtonDynamic(txt, (250,110), fgcol=BLACK, colorname='green')
         but.connect_callback(self.next_exercise, MOUSEBUTTONUP)
         but.display_sprite()
         self.actives.add(but)

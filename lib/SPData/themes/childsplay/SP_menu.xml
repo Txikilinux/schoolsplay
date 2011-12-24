@@ -28,28 +28,32 @@
 <menuitem enable="True" file="pong.icon.png" hoverfile="pong_ro.icon.png">
       <activity>pong</activity>
     </menuitem>
+        <menuitem enable="True" file="fourrow.icon.png" hoverfile="fourrow_ro.icon.png">
+      <activity>fourrow</activity>
+    </menuitem>
+
   </submenu>
   <submenu file="quiz.png" hoverfile="quiz_active.png">
   <position>220,540</position>
-    <menuitem enable="True" file="quiz_text.icon.png" hoverfile="quiz_text_ro.icon.png">
+    <menuitem enable="False" file="quiz_text.icon.png" hoverfile="quiz_text_ro.icon.png">
       <activity>quiz_general</activity>
     </menuitem>
     <menuitem enable="True" file="quiz_math.icon.png" hoverfile="quiz_math_ro.icon.png">
       <activity>quiz_math</activity>
     </menuitem>
-    <menuitem enable="True" file="quiz_history.icon.png" hoverfile="quiz_history_ro.icon.png">
+    <menuitem enable="False" file="quiz_history.icon.png" hoverfile="quiz_history_ro.icon.png">
       <activity>quiz_history</activity>
     </menuitem>
-    <menuitem enable="True" file="quiz_royal.icon.png" hoverfile="quiz_royal_ro.icon.png">
+    <menuitem enable="False" file="quiz_royal.icon.png" hoverfile="quiz_royal_ro.icon.png">
       <activity>quiz_royal</activity>
     </menuitem>
-    <menuitem enable="True" file="quiz_pic.icon.png" hoverfile="quiz_pic_ro.icon.png">
+    <menuitem enable="False" file="quiz_pic.icon.png" hoverfile="quiz_pic_ro.icon.png">
       <activity>quiz_picture</activity>
     </menuitem>
-    <menuitem enable="True" file="quiz_melody.icon.png" hoverfile="quiz_melody_ro.icon.png">
+    <menuitem enable="False" file="quiz_melody.icon.png" hoverfile="quiz_melody_ro.icon.png">
       <activity>quiz_melody</activity>
     </menuitem>
-    <menuitem enable="True" file="quiz_sayings.icon.png" hoverfile="quiz_sayings_ro.icon.png">
+    <menuitem enable="False" file="quiz_sayings.icon.png" hoverfile="quiz_sayings_ro.icon.png">
       <activity>quiz_sayings</activity>
     </menuitem>
   </submenu>
