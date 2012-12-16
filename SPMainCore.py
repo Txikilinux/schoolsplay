@@ -911,7 +911,7 @@ class MainCoreGui:
         if self.activity.get_name() != 'menu' and not self.COPmode:
             tip = self.activity.get_helptip()
             if tip:
-                help.append(_("Tip:%s") % tip)
+                help.append(_("Tip:%s") % tip[0])
             help.append(self.activity.get_helplevels())
             #help.append(_("This activity belongs to the category: %s") % self.activity.get_helptype())
         if hasattr(self.activity, 'get_extra_info'):
