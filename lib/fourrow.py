@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2011 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2011 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 # Code is taken from 
 #   http://inventwithpython.com/blog/2011/06/10/new-game-source-code-four-in-a-row
@@ -536,7 +536,7 @@ class Activity:
             txt = _("Congratulations, try again ?")
         else:
             txt = _("Pity, try again ?")
-        but = ButtonDynamic(txt, (250,110), fgcol=BLACK, colorname='green')
+        but = ButtonDynamic(txt, (250,110), fgcol=WHITE)
         but.connect_callback(self.next_exercise, MOUSEBUTTONUP)
         but.display_sprite()
         self.actives.add(but)

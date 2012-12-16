@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 #           synonyms.py
 # This program is free software; you can redistribute it and/or
@@ -339,11 +339,11 @@ class Activity:
             fgcol = THEME['label_fg_color']
             txt = lbl.get_text()
             txt = txt[:-6] + '...'
-            s = utils.char2surf(txt,fsize=lbl.fsize,ttf=P_TTF, fcol=lbl.fgcol, bold=lbl.bold)
+            s = utils.char2surf(txt,fsize=lbl.fsize,ttf=TTF, fcol=lbl.fgcol, bold=lbl.bold)
             if s.get_size()[0] > found_width:
                 for i in range(6):
                     txt = txt[:-4] + '...'
-                    s = utils.char2surf(txt,fsize=lbl.fsize,ttf=P_TTF, fcol=lbl.fgcol, bold=lbl.bold)
+                    s = utils.char2surf(txt,fsize=lbl.fsize,ttf=TTF, fcol=lbl.fgcol, bold=lbl.bold)
                     if s.get_size()[0] < found_width:
                         break
             lbl.settext(txt)    

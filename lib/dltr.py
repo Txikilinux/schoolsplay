@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 #           dltr.py
 # This program is free software; you can redistribute it and/or
@@ -415,7 +415,7 @@ class Activity:
             y += 26
         
         if self.fortune:
-            lang = utils.get_locale_local().split('_')[0]
+            lang = utils.get_locale_local()[0].split('_')[0]
             orm, session = self.SPG.get_orm('game_languages', 'content')
             query = session.query(orm).filter_by(lang = lang)
             lang = [l.ID for l in query.all()]

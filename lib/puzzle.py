@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 # Copyright (c) 2006 Miguel Pérez Francisco <mperez@icc.uji.es>
 #
 #           puzzle.py

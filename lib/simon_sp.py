@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 # Parts are taken from the Braintrainer project http://www.braintrainerplus.com
 #
 #           simon_sp.py

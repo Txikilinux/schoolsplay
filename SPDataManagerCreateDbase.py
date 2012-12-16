@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2007-2010 Stas Zykiewicz <stas.zytkiewicz@gmail.com>
+# Copyright (c) 2007-2010 Stas Zykiewicz <stas.zytkiewicz@schoolsplay.org>
 #
 #           SPDataManagerCreateDbase.py
 # This program is free software; you can redistribute it and/or
@@ -61,15 +61,19 @@ if WHICHDBASE == 'mysql':
         # suppress warnings from MySQLdb which seems to use Python warnings iso exceptions
         import warnings
         warnings.filterwarnings("ignore")
-        if os.path.exists('db.conf'):
-            dbp = 'db.conf'
+        try:
+            import db_conf as dbrc
+            rckind = 'db_conf'
+        except ImportError:
+            import db_dev as dbrc
+            rckind = 'db_dev'
+        rc_hash = dbrc.rc
+        if rc_hash['default']['production']:
             kind = 'production'
         else:
-            dbp = 'db.dev'
             kind = 'develop'
-        rc_hash = read_rcfile(dbp)
         rc_hash['kind'] = kind
-        rc_hash['path'] = dbp
+        rc_hash['path'] = rckind
 else:
     module_logger.info("Using SQLite for the user dbase")
     USESQLITE = True

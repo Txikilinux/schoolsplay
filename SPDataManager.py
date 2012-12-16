@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2007-2010 Stas Zykiewicz <stas.zytkiewicz@gmail.com>
+# Copyright (c) 2007-2010 Stas Zykiewicz <stas.zytkiewicz@schoolsplay.org>
 #
 #           SPDataManager.py
 # This program is free software; you can redistribute it and/or
@@ -52,6 +52,9 @@ sys.setrecursionlimit(2000) # 1000 is the default
 from utils import set_locale
 
 #import SPgdm
+
+from SPDataManagerCreateDbase import DbaseMaker
+DEBUG = False
 
 DEMO_DT = [{'fortune': 0, 'target': 'demo', 'level': 2, 'group': 'Lange termijn', 'cycles': 1,'act_name': 'quiz_picture', 'order': 0}, \
            {'fortune': 0, 'target': 'demo', 'level': 2, 'group': 'Puzzels', 'cycles': 1,'act_name': 'electro_sp', 'order': 1}, \
@@ -198,7 +201,7 @@ class DataManager:
             neworm.last_name = ''
             neworm.login_name = 'Demo'
             neworm.audio = 50
-            neworm.group = 0
+            neworm.usersgroup = 0
             neworm.dt_target = 'demo'
             session.add(neworm)
         session.commit()
@@ -297,7 +300,7 @@ class DataManager:
             self.logger.debug("found existing username: %s" % result.login_name)
         else:
             # insert just user_name, NULL for others, the user_id will be generated
-            session.add(orm(login_name=username, first_name=username, group='SPusers'))
+            session.add(orm(login_name=username, first_name=username, usersgroup='SPusers'))
             self.logger.debug("inserted %s" % username)
             session.commit()
             query = session.query(orm)

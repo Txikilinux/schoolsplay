@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 #           quiz_royal.py
 # This program is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ module_logger = logging.getLogger("childsplay.quiz_royal")
 # standard modules you probably need
 import os,sys
 # needed to import quiz
-sys.path.insert(0, './lib')
+#sys.path.insert(0, './lib')
 
 import pygame
 from pygame.constants import *

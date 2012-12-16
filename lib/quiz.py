@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 #           quiz.py
 # This program is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@ from SPConstants import *
 import SPSpriteUtils
 
 # needed to import quizengine
-sys.path.insert(0, './lib')
+#sys.path.insert(0, './lib')
 from quizengine import Engine
 
 class Activity:

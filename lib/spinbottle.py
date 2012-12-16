@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 #           spinbottle.py
 # This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ from SPConstants import *
 import SPSpriteUtils
 from SPVirtkeyboard import KeyBoard, WordCompleter
 
-sys.path.insert(0, './lib')
+#sys.path.insert(0, './lib')
 import synonyms
 
     

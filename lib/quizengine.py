@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 #           quizengine.py
 # This program is free software; you can redistribute it and/or
@@ -80,7 +80,7 @@ class ContentFeeder:
         self.year = None
         self.questions_order = {}
         # we make one query for the language code and use that for all queries
-        lang = get_locale_local().split('_')[0] # we filter on language, not country
+        lang = get_locale_local()[0].split('_')[0] # we filter on language, not country
         orm, session = self.SPG.get_orm('game_languages', 'content')
         query = session.query(orm).filter_by(lang = lang)
         self.lang = [l.ID for l in query.all()]
@@ -168,7 +168,7 @@ class ContentFeeder:
             query = query.filter(orm.language.in_(lang))
             query = query.filter(orm.game_theme.in_(gt_list))
             query = query.filter(orm.difficulty == difficulty)
-            #query = query.filter(orm.content_checked > 0)
+            query = query.filter(orm.content_checked > 0)
             if tp == 'melody' or self._not_serve_all_content:
                 self.logger.debug("Serving only questions with audio")
                 query = query.filter(orm.audiofiles == 5)
@@ -184,7 +184,7 @@ class ContentFeeder:
                 query = query.filter(orm.language.in_(lang))
                 query = query.filter(orm.game_theme.in_(gt_list))
                 query = query.filter(orm.difficulty == difficulty)
-                #query = query.filter(orm.content_checked > 0)
+                query = query.filter(orm.content_checked > 0)
                 if tp == 'personal':
                     query = query.filter(orm.user_id == self.current_user_id)
                 rows_without_audio = [result for result in query.all()]
@@ -294,8 +294,9 @@ class ContentFeeder:
             self.served[0] = self.served[1]
             self.served[1] = i
         # TODO: how to get the module name ?? XXX
-        svc = self.served_content_orm(user_id=self.current_user_id, CID=str(i),\
-                       game_theme_id=str(row.game_theme), \
+        
+        svc = self.served_content_orm(user_id=self.current_user_id, CID=i,\
+                       game_theme_id=row.game_theme, \
                        module='', start_time=datetime.datetime.now(), \
                         count_served=1)
         self.served_content_session.add(svc)
@@ -477,8 +478,7 @@ class Engine:
         self.currentscreen = None
         self.correct_answer = None
         self.unmute_exer_audio = self.SPG._unmute_quiz_voice
-        #self.CF.serve_all_content(self.unmute_exer_audio)
-        self.CF.serve_all_content(False)
+        self.CF.serve_all_content(self.unmute_exer_audio)
         p = os.path.join(self.CPdatadir,'good_%s.png' % self.lang)
         if not os.path.exists(p):
             p = os.path.join(self.CPdatadir,'thumbs.png')
@@ -503,7 +503,7 @@ class Engine:
         self.data_display_center = (600, 200 + y)
         if self.quiz == 'picture':
             y = 0
-        self.good_image.moveto((229, 120 + y))
+        self.good_image.moveto((229, 280 + y))
         self.good_image.set_use_current_background(True)
 
         picture_button_width = 385

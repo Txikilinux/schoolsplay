@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010-2011 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010-2011 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 #           ichanger.py
 # This program is free software; you can redistribute it and/or
@@ -114,7 +114,7 @@ class TextBox(SPSpriteUtils.SPSprite):
         ai = Act_ichanger()
         self.textsurfs = []
         for txt in (ai.box1, ai.box2, ai.box3):
-            s = SPWidgets.render_textrect(_(txt), 18, P_TTF, surf, WHITE, \
+            s = SPWidgets.render_textrect(_(txt), 18, TTF, surf, WHITE, \
                               None, justification=0, \
                               autofit=False, border=0, padding=24)
             self.textsurfs.append(s)

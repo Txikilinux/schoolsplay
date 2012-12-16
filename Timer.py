@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2006 Stas Zykiewicz <stas.zytkiewicz@gmail.com>
+# Copyright (c) 2006 Stas Zykiewicz <stas.zytkiewicz@schoolsplay.org>
 #
 #           Timer.py
 # This program is free software; you can redistribute it and/or

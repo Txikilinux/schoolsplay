@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 #           quiz_math.py
 # This program is free software; you can redistribute it and/or
@@ -21,17 +21,17 @@
 
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("childsplay.quiz_mixed.Activity")
+# self.logger =  logging.getLogger("schoolsplay.quiz_mixed.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("childsplay.quiz_math")
+module_logger = logging.getLogger("schoolsplay.quiz_math")
 
 # standard modules you probably need
 import os,sys
 # needed to import quiz
-sys.path.insert(0, './lib')
-
+#sys.path.insert(0, './lib')
+print "++++++++++++++++++++++", sys.path
 import pygame
 from pygame.constants import *
 
@@ -68,7 +68,7 @@ class Activity(quiz.Activity):
         to objects, callback methods and observers
         TODO: add more explaination"""
         quiz.Activity.__init__(self, SPGoodies)
-        self.logger =  logging.getLogger("childsplay.quiz_math.Activity")
+        self.logger =  logging.getLogger("schoolsplay.quiz_math.Activity")
         self.logger.info("Activity started")
         
         # The location of the activities Data dir (override the super class attributes)
@@ -108,7 +108,7 @@ class Activity(quiz.Activity):
         _("At the top of the screen, you will see a question about math problem."),
         _("Below it are a choice of possible answers.\nTouch the correct answer."),
         " ", 
-        _("Remember, the order of operations is multiplication or division and then addition or subtraction.")]
+        _("Remember, the order of operations is multiplication or division and followed by addition or subtraction.")]
         return text 
     
     def get_helptip(self):

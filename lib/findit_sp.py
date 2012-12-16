@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 #           findit_sp.py
 # This program is free software; you can redistribute it and/or
@@ -272,7 +272,7 @@ class Activity:
         self.score = 0
         self.AreWeDT = False
         # get language code
-        loclang = utils.get_locale_local()
+        loclang = utils.get_locale_local()[0]
         
     def dailytraining_pre_level(self, level):
         """Mandatory method"""

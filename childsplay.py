@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zykiewicz <stas.zytkiewicz@gmail.com>
+# Copyright (c) 2010 Stas Zykiewicz <stas.zytkiewicz@schoolsplay.org>
 #
 #           seniorplay
 # This program is free software; you can redistribute it and/or
@@ -46,11 +46,6 @@ CMD_Options = op.get_options()
 ######## Here we add options for debugging #####
 ### Must be removed or at least discussed before release #####
 #CMD_Options.loglevel = 'debug'
-# TODO: remove this when the login is using SPWidgets iso ocempgui
-#CMD_Options.no_login = True
-#if not CMD_Options.user:
-#    CMD_Options.user = 'BT_user'
-#CMD_Options.nocountdown = True
 
 import SPLogging
 SPLogging.set_level(CMD_Options.loglevel)
@@ -60,6 +55,8 @@ SPLogging.start()
 import logging
 CPmodule_logger = logging.getLogger("childsplay.childsplay")
 CPmodule_logger.debug("Created schoolsplay loggers")
+
+import utils
 
 BTPPID = None
 BTPSTART = None
@@ -72,6 +69,7 @@ else:
     if BTPPID and BTPSTART:
         CPmodule_logger.warning("Found BTP pid, killing BTP with pid: %s" % BTPPID)
         subprocess.Popen("kill -9 %s" % BTPPID, shell=True)
+        utils._remove_lock()
         BTPSTART = 'cd .. && ' + BTPSTART
     else:
         CPmodule_logger.error("No pid for BTP")
@@ -101,6 +99,9 @@ import datetime
 #CPmodule_logger.info("These must be removed before releasing this to the real world")
 #CPmodule_logger.info("Look at the top of this module for these options")
 from SPConstants import *
+sys.path.insert(0, BASEDIR)
+sys.path.insert(0, os.path.join(BASEDIR, 'lib'))
+
 if CMD_Options.loglevel == 'debug':
     CPmodule_logger.debug("Paths defined in SPConstants:")
     for v in ['ACTIVITYDATADIR', 'ALPHABETDIR', 'BASEDIR',\
@@ -117,19 +118,17 @@ if loc.find('_') == -1 or loc.upper().find('utf8') == -1:
     pass
     
 # Make sure we have xml files in a writeable place    
-for name in SUPPORTEDTHEMES:
-    p = os.path.join(HOMEDIR, name)
-    if not os.path.exists(p):
-        os.makedirs(p)
-    orgxmlfiles = glob.glob(os.path.join(THEMESPATH, name, '*.xml'))
-    if not orgxmlfiles:
-        continue
-    existingxmlfiles = os.listdir(p)
-    for f in  XML_FILES_WE_MUST_HAVE:
-        if f not in existingxmlfiles and os.path.exists(os.path.join(THEMESPATH, name, f)):
-            src = os.path.join(THEMESPATH, name, f)
-            CPmodule_logger.debug("Copying %s to %s" % (src, p))
-            shutil.copy(src, p)
+name = 'childsplay'
+p = os.path.join(HOMEDIR, name)
+if not os.path.exists(p):
+    os.makedirs(p)
+orgxmlfiles = glob.glob(os.path.join(THEMESPATH, name, '*.xml'))
+existingxmlfiles = os.listdir(p)
+for f in  XML_FILES_WE_MUST_HAVE:
+    if f not in existingxmlfiles and os.path.exists(os.path.join(THEMESPATH, name, f)):
+        src = os.path.join(THEMESPATH, name, f)
+        CPmodule_logger.debug("Copying %s to %s" % (src, p))
+        shutil.copy(src, p)
 
 ## We also want to have the default photo albums in a writable location
 #p = os.path.join(HOMEDIR, 'braintrainer', 'DefaultAlbums')
@@ -154,7 +153,7 @@ import pygame
 pygame.mixer.pre_init(22050, -16, 2, 2048)
 pygame.init()
 
-import utils
+
 # this will return the tuple (lang,rtl=bool)
 LANG = utils.set_locale(lang=CMD_Options.lang)
 

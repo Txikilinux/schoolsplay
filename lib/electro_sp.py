@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 stas zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 stas zytkiewicz stas.zytkiewicz@schoolsplay.org
 # Parts are taken from the Braintrainer project http://www.braintrainerplus.com
 # 
 #           electro_sp.py

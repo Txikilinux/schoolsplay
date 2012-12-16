@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@gmail.com
+# Copyright (c) 2010 Stas Zytkiewicz stas.zytkiewicz@schoolsplay.org
 #
 #           memory_sp.py
 # This program is free software; you can redistribute it and/or
@@ -416,7 +416,7 @@ class Activity:
         self.cards_list = self.actives.get_sprites()
         self.actives.empty()
 #        self.startbutton = SPWidgets.SimpleButtonDynamic(_("Start"), (690, y+430), fsize=24, data='start')
-        self.startbutton = SPWidgets.SimpleButtonDynamic(_("Start"), (0,0), fsize=24,colorname='green', data='start')
+        self.startbutton = SPWidgets.SimpleButtonDynamic(_("Start"), (0,0), fsize=24, data='start')
         x = 790 - self.startbutton.get_sprite_width()
         self.startbutton.moveto((x, y+430))
         self.startbutton.set_use_current_background(True)

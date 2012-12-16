@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2006 Stas Zykiewicz <stas.zytkiewicz@gmail.com>
+# Copyright (c) 2006 Stas Zykiewicz <stas.zytkiewicz@schoolsplay.org>
 #
 #           utils.py
 # This program is free software; you can redistribute it and/or
@@ -153,7 +153,7 @@ def set_locale(lang=None):
 def get_locale_local():
     """Returns the locale set by set_locale.
     This can differ from systems locale."""
-    return LANG
+    return (LANG, LOCALE_RTL)
 
 def get_locale():
     """Get the systems locale.
@@ -255,17 +255,6 @@ def map_keys(key_map, key):
         else:
             module_logger.error("No key: %s found" % key)
             return key
-
-def replace_rcfile():
-    """This is only used when we want to replace an existing configfile."""
-    #pass #enable this and comment out the rest when not replacing
-    src = os.path.join(RCDIR, CHILDSPLAYRC)
-    dst = os.path.join(HOMEDIR, 'ConfigData', CHILDSPLAYRC)
-    if os.path.exists(src) and os.path.exists(dst):
-        shutil.move(dst, dst + '.old')
-        module_logger.info("Backup made from your old config file called %s." % dst + '.old')
-        module_logger.info("Replace childsplayrc file:\n %s\n->%s" % (src, dst))
-        shutil.copyfile(src, dst)
 
 class NoneSound:
     """Used by the load_sound and load_music functions to provide
@@ -1158,19 +1147,22 @@ class OrderedDict(dict, MutableMapping):
             d[key] = value
         return d
 
-if os.path.exists('db.conf'):
-    dbp = 'db.conf'
-else:
-    dbp = 'db.dev'
-rc_hash = read_rcfile(dbp)
-try:
-    WEAREPRODUCTION = int(rc_hash['default']['production'])
-except KeyError:
-    WEAREPRODUCTION = '0'
+#try:
+#    import db_conf as dbrc
+#    rckind = 'db_conf'
+#except ImportError:
+#    import db_dev as dbrc
+#    rckind = 'db_dev'
+#rc_hash = dbrc.rc
+#if rc_hash['default']['production']:
+#    kind = 'production'
+#else:
+#    kind = 'develop'
+#rc_hash['kind'] = kind
+#try:
+#    WEAREPRODUCTION = int(rc_hash['default']['production'])
+#except KeyError:
+#    WEAREPRODUCTION = '0'
+WEAREPRODUCTION = '0'
 
-if __name__ == '__main__':
-    import SPLogging
-    SPLogging.set_level(CMD_Options.loglevel)
-    SPLogging.start()
-    
     

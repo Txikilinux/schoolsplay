@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2006-2010 Stas Zykiewicz <stas.zytkiewicz@gmail.com>
+# Copyright (c) 2006-2010 Stas Zykiewicz <stas.zytkiewicz@schoolsplay.org>
 #
 #           SPMainCore.py
 # This program is free software; you can redistribute it and/or
@@ -285,6 +285,9 @@ class MainCoreGui:
         if not self.cmd_options.lang:
             language = self.dm._get_language()
             self.spgoodies.localesetting = language
+        else:
+            language = (language, None)
+            self.spgoodies.localesetting = language
         # get session id, needed for the stats hash
         # get user data
         user_id = self.dm.get_user_id()
@@ -553,7 +556,7 @@ class MainCoreGui:
                 p = os.path.join('controlpanel_lgpl', 'lib')
             else:
                 p = 'lib'
-            self.activity_module = utils.import_module(os.path.join(p, name))
+            self.activity_module = utils.import_module(os.path.join(BASEDIR, p, name))
             self.activity = self.activity_module.Activity(self.spgoodies)
             if self.COPmode:
                 if self.activity.get_name() == 'menu':
@@ -640,17 +643,17 @@ class MainCoreGui:
         sdim.dim(darken_factor=200, color_filter=(51, 10, 10))
         # display text
         txt = _("Starting level %s") % level
-        txt_s0 = utils.char2surf(txt, P_TTFSIZE + 20, fcol=GREEN, ttf=P_TTF, bold=True)
+        txt_s0 = utils.char2surf(txt, TTFSIZE + 20, fcol=GREEN, ttf=TTF, bold=True)
         self.screen.blit(txt_s0, ((780-txt_s0.get_width()) / 2, 100))
          
         txt = self.activity.get_help()[1]
-        txt_s1 = utils.char2surf(txt, P_TTFSIZE + 2, fcol=GREEN, ttf=P_TTF, bold=True)
+        txt_s1 = utils.char2surf(txt, TTFSIZE + 2, fcol=GREEN, ttf=TTF, bold=True)
         self.screen.blit(txt_s1, ((780-txt_s1.get_width()) / 2, 200))
         
         txt = utils.txtfmt([_("Hit the 'space' key or a mousebutton to skip the countdown")], 60)
         txtlist = []
         for line in txt:
-            txtlist.append(utils.char2surf(line, P_TTFSIZE + 2, fcol=GREEN, ttf=P_TTF, bold=True))
+            txtlist.append(utils.char2surf(line, TTFSIZE + 2, fcol=GREEN, ttf=TTF, bold=True))
         y = 260
         for s in txtlist:
             self.screen.blit(s, (40, y))
@@ -685,7 +688,7 @@ class MainCoreGui:
                 if counter == 0:
                     runloop = False
                 else:
-                    num_s = utils.char2surf(str(counter), 72, fcol=RED, ttf=P_TTF, bold=True)
+                    num_s = utils.char2surf(str(counter), 72, fcol=RED, ttf=TTF, bold=True)
                     spr = MySprite(num_s)
                     spr.display_sprite((350, 300))
                     i = 0
@@ -826,7 +829,7 @@ class MainCoreGui:
             txt = utils.txtfmt([_("Stopping timers, please wait...")], 50)
             y = 240
             for line in txt:
-                s = utils.char2surf(line, P_TTFSIZE + 12, fcol=GREEN, ttf=P_TTF, bold=True)
+                s = utils.char2surf(line, TTFSIZE + 12, fcol=GREEN, ttf=TTF, bold=True)
                 self.screen.blit(s, (10, y))
                 y += s.get_height()
             pygame.display.update()

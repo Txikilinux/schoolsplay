@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2006 Stas Zykiewicz <stas.zytkiewicz@gmail.com>
+# Copyright (c) 2006 Stas Zykiewicz <stas.zytkiewicz@schoolsplay.org>
 #
 #           SPgdm.py
 # This program is free software; you can redistribute it and/or
@@ -93,7 +93,7 @@ class SPGreeter:
             vs = vs.replace('Childsplay_sp', self.cmd_options.theme)
         if self.cmd_options.adminmode:
             vs = vs + " (Adminmode)"
-        vsurf = char2surf(vs, P_TTFSIZE-4, (0, 0, 0), ttf=P_TTF, bold=True, antialias=False)
+        vsurf = char2surf(vs, TTFSIZE-4, (0, 0, 0), ttf=TTF, bold=True, antialias=False)
         self.screen.blit(vsurf, (300, 0))
         
         self.actives = SPInit(self.screen, self.screen.convert())
@@ -101,7 +101,7 @@ class SPGreeter:
         pygame.display.set_caption(captxt.encode('utf-8'))
 
         # setup our SP widgets
-        label = SPLabel(_("Username:"), fontsize=P_TTFSIZE + 2)
+        label = SPLabel(_("Username:"), fontsize=TTFSIZE + 2)
         label.moveto((340, 250))
         self.actives.add(label)
         
@@ -123,7 +123,7 @@ class SPGreeter:
         but.set_text(t)# we set the fontsize below
         
         but.child.create_style()
-        but.child.style["font"]["size"] = P_TTFSIZE
+        but.child.style["font"]["size"] = TTFSIZE
         but.child.style['bgcolor'][ocwc.STATE_NORMAL] = KOBALT_LIGHT_BLUE
         but.create_style()['bgcolor'][ocwc.STATE_NORMAL] = KOBALT_LIGHT_BLUE
         but.connect_signal(ocwc.SIG_CLICKED, self._login_button_callback, self.entry)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2010 Stas Zykiewicz <stas.zytkiewicz@gmail.com>
+# Copyright (c) 2010 Stas Zykiewicz <stas.zytkiewicz@schoolsplay.org>
 #
 #           SPDebugDialog.py
 # This program is free software; you can redistribute it and/or
@@ -186,13 +186,19 @@ class Debugscreen:
         return result
 
     def _run_post_pull(self):
-        if os.path.exists('db.conf'):
-            dbp = 'db.conf'
+        try:
+            import db_conf as dbrc
+            rckind = 'db_conf'
+        except ImportError:
+            import db_dev as dbrc
+            rckind = 'db_dev'
+        rc_hash = dbrc.rc
+        if rc_hash['default']['production']:
             kind = 'production'
         else:
-            dbp = 'db.dev'
             kind = 'develop'
-        rc_hash = utils.read_rcfile(dbp)
+        rc_hash['kind'] = kind
+        
         cmd_list = []
         print rc_hash
         for k in rc_hash.keys():

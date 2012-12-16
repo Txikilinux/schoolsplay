@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2006-2008 Stas Zykiewicz <stas.zytkiewicz@gmail.com>
+# Copyright (c) 2006-2008 Stas Zykiewicz <stas.zytkiewicz@schoolsplay.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 3 of the GNU General Public License
