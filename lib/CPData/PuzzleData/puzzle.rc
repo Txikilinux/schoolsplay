@@ -12,10 +12,13 @@ autolevel_up = 1
 
 # Value indicates when the level up suggestion is done.
 # In the case of the quiz activity a value of 5 means after 5 correct answers.
-autolevel_value = 5
+autolevel_value = 3
 
 # number of exercises in one level
-exercises = 5
+exercises = 3
+
+# Number od ms to wait between puzzles.
+wait_value = 3000
 
 
 # Put any theme specific options in the proper sections.
