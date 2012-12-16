@@ -248,6 +248,8 @@ class ContentFeeder:
 #        session.close()
         ###################################################
         i = row.CID
+        print row
+        print row.CID
         bad = ('\t', '\r', '\n')
         rq = ''.join(c for c in row.question if c not in bad).strip()
         ra = ''.join(c for c in row.answer if c not in bad).strip()

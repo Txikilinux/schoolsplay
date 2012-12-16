@@ -31,7 +31,7 @@ module_logger = logging.getLogger("schoolsplay.quiz_math")
 import os,sys
 # needed to import quiz
 #sys.path.insert(0, './lib')
-print "++++++++++++++++++++++", sys.path
+#print "++++++++++++++++++++++", sys.path
 import pygame
 from pygame.constants import *
 
