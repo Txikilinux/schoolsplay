@@ -37,7 +37,6 @@ import datetime
 import types
 import ConfigParser
 import math
-from pwd import getpwnam  
 from collections import MutableMapping
 from pygame.constants import *
 from pygame import surfarray
@@ -93,11 +92,6 @@ class TextRectException(Exception):
 #    f.write('\n\n')
 #    f.close()
 #####################################################
-
-def get_gid(groupname):
-    return getpwnam(groupname)[2]
-def get_uid(username):
-    return getpwnam(username)[1]
 
 def calcdist(v1, v2):
     """Calculate the distance between two vectors where a vector is a tuple (x,y)"""
