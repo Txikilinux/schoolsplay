@@ -1,3 +1,8 @@
+develop (2.3.4)
+    * Bring in sync with BTP 2.3 GPL version.
+    * Fixed various bugs related to childsplay specific stuff.
+    * Updated Catalan and German language support.
+
 develop (2.2):
     * Replaced SPWidgets.TextEntry with the code from the 
     SPVirtkeyboard.TextInput so that it doesn't have a eventloop of it's own.

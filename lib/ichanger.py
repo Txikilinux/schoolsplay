@@ -20,14 +20,14 @@
 #create logger, logger was setup in SPLogging
 import logging
 # In your Activity class -> 
-# self.logger =  logging.getLogger("childsplay.ichanger.Activity")
+# self.logger =  logging.getLogger("schoolsplay.ichanger.Activity")
 # self.logger.error("I don't understand logger")
 # See SP manual for more info 
 
-module_logger = logging.getLogger("childsplay.ichanger")
+module_logger = logging.getLogger("schoolsplay.ichanger")
 
 # standard modules you probably need
-import os,sys, random, glob
+import os, sys, random, glob
 
 import pygame
 from pygame.constants import *
@@ -40,13 +40,16 @@ from SPHelpText import Act_ichanger
 # containers that can be used globally to store stuff
 class Img:
     pass
+
+
 class Snd:
     pass
 
+
 class Card(SPSpriteUtils.SPSprite):
-    def __init__(self,closedcard,opencard,pos, observer, name):
+    def __init__(self, closedcard, opencard, pos, observer, name):
         """This class has it's own callback function and it will connect itself"""
-        SPSpriteUtils.SPSprite.__init__(self,opencard)
+        SPSpriteUtils.SPSprite.__init__(self, opencard)
         self.rect.move_ip(pos)
         self.name = name
         self.closedimage = closedcard
@@ -59,71 +62,73 @@ class Card(SPSpriteUtils.SPSprite):
         self.newpos = pos
         self.orgpos = pos
         # connect to the MOUSEBUTTONDOWN event, no need for passing data
-        self.connect_callback(self.callback,MOUSEBUTTONDOWN)
-    
+        self.connect_callback(self.callback, MOUSEBUTTONDOWN)
+
     def reset(self):
         self.openimage = self.org_image
         self.moveto(self.orgpos)
-    
+
     def restart(self):
         self.moveto(self.newpos)
         if not self.IMchanged:
             self.openimage = self.org_image
         else:
             self.openimage = self.changed_image
-        
-            
+
+
     def close(self):
         self.image = self.closedimage
         self.display_sprite()
-               
+
     def open(self):
         self.image = self.openimage
         self.display_sprite()
-        
+
     def change_image(self):
         if not self.changed_image:
             return
         self.openimage = self.changed_image
         self.IMchanged = True
-        
+
     def set_changed_image(self, image):
         self.changed_image = image
-        
+
     def set_new_position(self, pos):
         self.moveto(pos)
         self.newpos = pos
-                
-    def callback(self,sprite,event,*args):
+
+    def callback(self, sprite, event, *args):
         if self.IMchanged:
             #print "correct"
-            pygame.draw.rect(self.image,ROSYBROWN,self.image.get_rect(), 12)
+            pygame.draw.rect(self.image, SPRING_GREEN, self.image.get_rect(), 12)
             self.display_sprite()
-            self.observer(True)
+            self.observer(True, self)
         else:
             self.wrongs += 1
             #print "wrong"
             self.close()
             self.disconnect_callback()
-            self.observer(False)
+            self.observer(False, self)
+
 
 class TextBox(SPSpriteUtils.SPSprite):
     def __init__(self, surf, pos):
         """This class has it's own callback function and it will connect itself"""
-        SPSpriteUtils.SPSprite.__init__(self,surf)
+        SPSpriteUtils.SPSprite.__init__(self, surf)
         ai = Act_ichanger()
         self.textsurfs = []
         for txt in (ai.box1, ai.box2, ai.box3):
-            s = SPWidgets.render_textrect(_(txt), 18, TTF, surf, WHITE, \
-                              None, justification=0, \
-                              autofit=False, border=0, padding=24)
+            s = SPWidgets.render_textrect(_(txt), 18, TTF, surf, WHITE,\
+                None, justification=0,\
+                autofit=False, border=0, padding=24)
             self.textsurfs.append(s)
         self.moveto(pos)
-        
+
     def set_text(self, i):
         self.image = self.textsurfs[i]
         self.display_sprite()
-                
+
+
 class Activity:
     """  Base class mandatory for any SP activty.
     The activity is started by instancing this class by the core.
@@ -140,11 +145,11 @@ class Activity:
     stop_timer (self) must stop any timers if any.
   """
 
-    def __init__(self,SPGoodies):
+    def __init__(self, SPGoodies):
         """SPGoodies is a class object that SP sets up and will contain references
         to objects, callback methods and observers
         TODO: add more explaination"""
-        self.logger =  logging.getLogger("childsplay.ichanger.Activity")
+        self.logger = logging.getLogger("schoolsplay.ichanger.Activity")
         self.logger.info("Activity started")
         self.SPG = SPGoodies
         self.lang = self.SPG.get_localesetting()[0][:2]
@@ -158,54 +163,54 @@ class Activity:
         self.orgscreen.blit(self.screen, (0, 0), self.screenclip)
         self.backgr = self.SPG.get_background()
         # The location of the activities Data dir
-        self.my_datadir = os.path.join(self.SPG.get_libdir_path(),'CPData','IchangerData')
+        self.my_datadir = os.path.join(self.SPG.get_libdir_path(), 'CPData', 'IchangerData')
         self.rchash = utils.read_rcfile(os.path.join(self.my_datadir, 'ichanger.rc'))
         self.rchash['theme'] = self.theme
         self.my_rchash = self.rchash[self.theme]
         self.logger.debug("found rc: %s" % self.rchash)
         # Location of the CPData dir which holds some stuff used by multiple activities
-        self.CPdatadir = os.path.join(self.SPG.get_libdir_path(),'CPData')
+        self.CPdatadir = os.path.join(self.SPG.get_libdir_path(), 'CPData')
         # Location of the alphabet sounds dir
         self.absdir = self.SPG.get_absdir_path()# alphabet sounds dir
         # You MUST call SPInit BEFORE using any of the SpriteUtils stuff
         # it returns a reference to the special CPGroup
-        self.actives = SPSpriteUtils.SPInit(self.screen,self.backgr)
-        
-        imgdir = os.path.join(self.my_datadir,'images', self.theme)
+        self.actives = SPSpriteUtils.SPInit(self.screen, self.backgr)
+
+        imgdir = os.path.join(self.my_datadir, 'images', self.theme)
         if not os.path.exists(imgdir):
-            imgdir = os.path.join(self.my_datadir, 'images','childsplay')
-        
+            imgdir = os.path.join(self.my_datadir, 'images', 'childsplay')
+
         self.imagepaths_org = [f for f in glob.glob(os.path.join(imgdir, '*'))\
-                            if os.path.basename(f) not in ('cardfront.png', 'cardback.png')]
+                               if os.path.basename(f) not in ('cardfront.png', 'cardback.png')]
         self.imagepaths = self.imagepaths_org[:]
         random.shuffle(self.imagepaths)
-        self.opencard = utils.load_image(os.path.join(imgdir,'cardfront.png'))
-        self.closedcard = utils.load_image(os.path.join(imgdir,'cardback.png'))
-        
-        boxsurf = utils.load_image(os.path.join(self.my_datadir,'box.png'))
-        self.pausesnd = utils.load_music(os.path.join(self.CPdatadir,'pause_0_35.ogg'))
-        self.good_sound=utils.load_music(os.path.join(self.CPdatadir,'good.ogg'))
-        self.wrong_sound=utils.load_music(os.path.join(self.CPdatadir,'wrong.ogg'))
-        p = os.path.join(self.CPdatadir,'good_%s.png' % self.lang)
+        self.opencard = utils.load_image(os.path.join(imgdir, 'cardfront.png'))
+        self.closedcard = utils.load_image(os.path.join(imgdir, 'cardback.png'))
+
+        boxsurf = utils.load_image(os.path.join(self.my_datadir, 'box.png'))
+        self.pausesnd = utils.load_music(os.path.join(self.CPdatadir, 'pause_0_35.ogg'))
+        self.good_sound = utils.load_music(os.path.join(self.CPdatadir, 'good.ogg'))
+        self.wrong_sound = utils.load_music(os.path.join(self.CPdatadir, 'wrong.ogg'))
+        p = os.path.join(self.CPdatadir, 'good_%s.png' % self.lang)
         if not os.path.exists(p):
-            p = os.path.join(self.CPdatadir,'thumbs.png')
+            p = os.path.join(self.CPdatadir, 'thumbsup.png')
         self.good_image = SPSpriteUtils.MySprite(utils.load_image(p))
-        self.good_image.moveto((229,296))
+        self.good_image.moveto((229, 296))
         # Your top blit position, this depends on the menubar position
         if self.blit_pos[1] == 0:
             y = 10
         else:
             y = 110
-        self.cardpositions = [(10, y), (260, y), (10, y+250), (260, y+250)]
+        self.cardpositions = [(10, y), (260, y), (10, y + 250), (260, y + 250)]
         #self.start_pos = (600, 380 + y)
-        self.but_pos = [(560, 420 + y), (700, 400+y)]
+        self.but_pos = [(560, 420 + y), (700, 400 + y)]
         boxpos = (510, y)
         self.box = TextBox(boxsurf, boxpos)
-            
-    def observer(self, result):
+
+    def observer(self, result, card):
         self.logger.debug("observer called with %s" % result)
         if result:# correct card picked
-            self.dbscore += (2 - self.WEcheat)
+            self.dbscore += (8 - self.WEcheat)
             self.actives.empty()
             self.EndExerciseFlag = True
             self.exercises -= 1
@@ -216,7 +221,8 @@ class Activity:
             self.good_image.display_sprite()
             pygame.time.wait(1500)
         else:
-            self.dbscore -= 2
+            self.cardlist.remove(card)
+            self.dbscore -= 1
             if self.dbscore < 0:
                 self.dbscore = 0
             self.displayedscore -= 10 * 50
@@ -226,7 +232,12 @@ class Activity:
             self.scoredisplay.set_score(self.displayedscore)
             self.wrong_sound.play()
             pygame.time.wait(1500)
-            
+            print self.cardlist
+            if len(self.cardlist) == 1:
+                self.exercises -= 1
+                self.actives.empty()
+                self.EndExerciseFlag = True
+
     def _startbutton_cbf(self, sprite, *args):
         self.actives.remove(sprite)
         self.startbut.erase_sprite()
@@ -245,14 +256,14 @@ class Activity:
                 c.restart()
         self.pausesnd.play()
         pygame.time.wait(3500)
-        
+
         for c in self.cardlist:
             c.open()
         self.actives.add(self.cardlist)
         self.actives.add(self.cheatbut)
         self.box.set_text(1)
         self.cheatbut.display_sprite()
-    
+
     def _cheatbutton_cbf(self, sprite, *args):
         self.WEcheat = True
         self.actives.remove(sprite)
@@ -266,15 +277,15 @@ class Activity:
             c.open()
         self.actives.add(self.startbut)
         self.box.set_text(2)
-        self.startbut.display_sprite()        
-    
+        self.startbut.display_sprite()
+
     def clear_screen(self):
-        self.screen.blit(self.orgscreen,self.blit_pos)
-        self.backgr.blit(self.orgscreen,self.blit_pos)
+        self.screen.blit(self.orgscreen, self.blit_pos)
+        self.backgr.blit(self.orgscreen, self.blit_pos)
         pygame.display.update()
 
     def get_moviepath(self):
-        movie = os.path.join(self.my_datadir,'help.avi')
+        movie = os.path.join(self.my_datadir, 'help.avi')
         return movie
 
     def refresh_sprites(self):
@@ -285,24 +296,26 @@ class Activity:
     def get_helptitle(self):
         """Mandatory method"""
         return _("Ichanger")
-    
+
     def get_name(self):
         """Mandatory method, returnt string must be in lowercase."""
         return "ichanger"
-    
+
     def get_help(self):
         """Mandatory methods"""
         text = [_("The aim of this activity:"),
-                _("Several images from the past will appear on the screen.\nLook carefully at them and remember what you see."), 
-        " ",
-        _("Touch the 'START' button on the right.\nThe images will dissappear and when they return, one will have changed.\nTouch the picture which has changed."), 
-        " "]
-        return text 
-    
+                _(
+                    "Several images from the past will appear on the screen.\nLook carefully at them and try to remember what you see."),
+                " ",
+                _(
+                    "Touch the 'START' button on the right.\nThe images will disappear and when they return, one will have changed.\nTouch the picture which has changed."),
+                " "]
+        return text
+
     def get_helptip(self):
         """Mandatory method, when no tips available returns an empty list"""
         return []
-        
+
     def get_helptype(self):
         """Mandatory method, you must set an type"""
         # Possible types are: Memory, Math, Puzzle, Keyboardtraining, Mousetraining
@@ -318,35 +331,36 @@ class Activity:
     def start(self):
         """Mandatory method."""
         self.SPG.tellcore_set_dice_minimal_level(3)
-        self.startbut = SPWidgets.SimpleButtonDynamic(_('Start'), self.but_pos[0], fsize=24, colorname='green')
+        self.startbut = SPWidgets.SimpleButtonDynamic(_('Start'), self.but_pos[0], fsize=24)
         self.startbut.set_use_current_background(True)
-        self.cheatbut = SPWidgets.SimpleButtonDynamic(_('Cheat'), self.but_pos[0], fsize=24, colorname='green')
+        self.cheatbut = SPWidgets.SimpleButtonDynamic(_('Cheat'), self.but_pos[0], fsize=24)
         self.cheatbut.set_use_current_background(True)
         self.startbut.connect_callback(self._startbutton_cbf, MOUSEBUTTONDOWN)
         self.cheatbut.connect_callback(self._cheatbutton_cbf, MOUSEBUTTONDOWN)
         self.AreWeDT = False
-        p = os.path.join(self.CPdatadir,'good_%s.png' % self.lang)
+        p = os.path.join(self.CPdatadir, 'good_%s.png' % self.lang)
         if not os.path.exists(p):
-            p = os.path.join(self.CPdatadir,'thumbs.png')
+            p = os.path.join(self.CPdatadir, 'thumbsup.png')
         self.ThumbsUp = SPSpriteUtils.MySprite(utils.load_image(p))
-    
+
     def dailytraining_pre_level(self, level):
         """Mandatory method"""
         pass
-        
+
     def dailytraining_next_level(self, level, dbmapper):
         """Mandatory method.
         This should handle the DT logic"""
         self.AreWeDT = True
         self.SPG.tellcore_disable_level_indicator()
+        self.exercises = 1
         self.next_level(level, dbmapper)
         return True
-        
+
     def pre_level(self, level):
         """Mandatory method"""
         pass
-  
-    def next_level(self,level,dbmapper):
+
+    def next_level(self, level, dbmapper):
         """Mandatory method.
         Return True if there levels left.
         False when no more levels left."""
@@ -355,20 +369,20 @@ class Activity:
         self.level = level
         self.levelupcount = 1
         self.dbscore = 0
-        # number of exercises in one level
-        self.exercises = int(self.rchash[self.theme]['exercises'])
         self.actives.empty()
         self.changepositions = False
+        # number of exercises in one level
+        self.exercises = int(self.rchash[self.theme]['exercises'])
         # let the cards open until user hits start, then close them for some time, replace
         # image on one of the cards and show them again.
         self.next_exercise()
         return True
-    
+
     def next_exercise(self):
         self.logger.debug("next_exercise called, exercises = %s" % (self.exercises))
         self.clear_screen()
         self.box.set_text(0)
-        
+
         self.WEcheat = False
         self.EndExerciseFlag = False
         if not self.exercises:
@@ -381,11 +395,12 @@ class Activity:
             if self.level == 4:
                 self.changepositions = True
             num = 4
-        if len(self.imagepaths) < num+1:
+        if len(self.imagepaths) < num + 1:
             self.imagepaths = self.imagepaths_org[:]
             random.shuffle(self.imagepaths)
         self.cardlist = []
         i = 0
+        self.numOfcards = num
         for i in range(num):
             f = self.imagepaths.pop()
             img = utils.load_image(f)
@@ -410,21 +425,21 @@ class Activity:
         card.set_changed_image(c)
         self.actives.add(self.startbut)
         self.startbut.display_sprite()
-        
+
     def post_next_level(self):
         """Mandatory method.
         This is called once by the core after 'next_level' *and* after the 321 count.
         You should place stuff in here that run in a seperate thread like sound play."""
-        pass 
-        
-    def get_score(self,timespend):
+        pass
+
+    def get_score(self, timespend):
         """Mandatory method.
         @timespend is the time spend inside the level as it's calculated
         by the core.
         returns the score value for the past level.
         return None if no score value is used"""
-        m,s = timespend.split(':')
-        seconds = int(m)*60 + int(s)
+        m, s = timespend.split(':')
+        seconds = int(m) * 60 + int(s)
         # M = Maximum score (number of exercises * 2)
         # P = Users result in points
         # F = Fraction of total result related to points. (maximum result is 10)
@@ -437,24 +452,24 @@ class Activity:
         F1 = 3.0
         C = 0.2
         S = float(seconds)
-        points = max((F/100) * (P/(M / 100)), 1.0)
+        points = max((F / 100) * (P / (M / 100)), 1.0)
         time = min(F1 / ((S / (M * 2)) ** C), F1)
         self.logger.info("@scoredata@ %s level %s M %s P %s S %s points %s time %s" %\
-                          (self.get_name(),self.level, M, P, S, points, time))
+                         (self.get_name(), self.level, M, P, S, points, time))
         score = points + time
         result = points + time
         return result
-    
+
     def stop_timer(self):
         """You *must* provide a method to stop timers if you use them.
         The SPC will call this just in case and catch the exception in case 
-        there's no 'stop_timer' method""" 
+        there's no 'stop_timer' method"""
         try:
             self.timer.stop()
         except:
             pass
 
-    def loop(self,events):
+    def loop(self, events):
         """Mandatory method.
         This is the main eventloop called by the core 30 times a minute."""
         for event in events:
@@ -475,8 +490,8 @@ class Activity:
                     if self.AreWeDT:
                         self.SPG.tellcore_level_end(level=self.level)
                     else:
-                        self.SPG.tellcore_level_end(store_db=True, \
-                                            level=min(4, self.level), \
-                                            levelup=levelup)
+                        self.SPG.tellcore_level_end(store_db=True,\
+                            level=min(4, self.level),\
+                            levelup=levelup)
         return 
         
